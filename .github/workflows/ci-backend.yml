@@ -1,0 +1,78 @@
+name: CI Backend
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci-backend.yml'
+      - 'pyproject.toml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci-backend.yml'
+      - 'pyproject.toml'
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cineglobe_test
+          POSTGRES_USER: cineglobe
+          POSTGRES_PASSWORD: cineglobe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: 'backend/requirements/*.txt'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements/dev.txt
+
+      - name: Run Ruff Lint
+        run: ruff check backend/
+
+      - name: Run Black Format Check
+        run: black --check backend/
+
+      - name: Run Pytest
+        env:
+          DATABASE_URL: postgres://cineglobe:cineglobe@localhost:5432/cineglobe_test
+          REDIS_URL: redis://localhost:6379/0
+          DJANGO_SECRET_KEY: ci-test-secret-key
+          DJANGO_DEBUG: "False"
+        run: |
+          if [ -d "backend/tests" ] && [ "$(ls -A backend/tests | grep -v '\.gitkeep')" ]; then
+            pytest --cov=backend/apps --cov-report=term-missing
+          else
+            echo "No tests to run yet. Skipping pytest."
+          fi
