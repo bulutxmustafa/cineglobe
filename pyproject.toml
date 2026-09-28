@@ -56,13 +56,16 @@ testpaths = ["backend/tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["backend"]
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
 
 [tool.coverage.run]
-source = ["backend/apps"]
+source = ["backend/apps", "backend/config"]
 omit = [
     "*/migrations/*",
     "*/tests/*",
-    "backend/config/*",
+    "backend/config/wsgi.py",
+    "backend/config/asgi.py",
     "backend/manage.py",
 ]
 branch = true
