@@ -1,0 +1,40 @@
+name: CI Mobile
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/ci-mobile.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/ci-mobile.yml'
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Run Flutter Analyze and Test
+        run: |
+          if [ -f "pubspec.yaml" ]; then
+            flutter pub get
+            flutter analyze
+            flutter test
+          else
+            echo "pubspec.yaml not found yet. Skipping flutter analyze."
+          fi
