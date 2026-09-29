@@ -63,7 +63,7 @@ Servis durumunu kontrol edin:
 docker compose ps
 ```
 
-### 3. Backend Ortamı Kurulumu
+### 3. Backend Ortamı Kurulumu & Çalıştırma
 ```bash
 python -m venv .venv
 # Windows:
@@ -72,9 +72,30 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r backend/requirements/dev.txt
+
+# Veritabanı tablolarını oluşturun
+python backend/manage.py migrate
+
+# Backend geliştirme sunucusunu başlatın
+python backend/manage.py runserver
 ```
 
-### 4. Kod Standartları ve Pre-commit
+### 4. API & Dokümantasyon Erişimi
+Sunucu çalıştıktan sonra:
+- **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
+- **Swagger UI:** [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
+- **ReDoc:** [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
+
+### 5. Test Paketi & Kapsam
+```bash
+# Birim ve entegrasyon testlerini çalıştırın
+pytest
+
+# Test kapsam raporu ile birlikte çalıştırın
+pytest --cov=backend --cov-report=term-missing
+```
+
+### 6. Kod Standartları ve Pre-commit
 ```bash
 pre-commit install
 pre-commit run --all-files
