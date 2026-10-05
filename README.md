@@ -83,6 +83,7 @@ python backend/manage.py runserver
 ### 4. API & Dokümantasyon Erişimi
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
+- **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
 - **Swagger UI:** [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
 - **ReDoc:** [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
 
@@ -112,6 +113,8 @@ pre-commit run --all-files
 
 ---
 
-## 📄 Lisans & Atıf
+## 📄 Lisans & Atıf (TMDB Attribution)
 
 Bu ürün film ve dizi verilerini sağlamak için TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.
+
+> **Önemli Lisans Notu:** TMDB ücretsiz API kullanımı ticari olmayan projeler içindir ve platform arayüzünde (özellikle web ve mobil footer alanlarında) **TMDB logosu ve atıf metni zorunludur**. Projenin ileride ticari gelir modeli içermesi durumunda TMDB ticari lisansı edinilmelidir.
