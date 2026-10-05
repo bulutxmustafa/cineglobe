@@ -1,12 +1,16 @@
-"""Catalog API views: Title detail endpoint (movie + TV) with multi-language support."""
+"""Catalog API views: Title detail, Curated Categories, and Upcoming releases with multi-language support."""
 
 import logging
+from datetime import date, datetime
+from typing import Any
 
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.catalog.categories import get_all_curated_categories, get_curated_category
+from apps.catalog.image_utils import backdrop_url, poster_url
 from apps.catalog.models import Title
 from apps.catalog.serializers import TitleSerializer
 from apps.catalog.tmdb_client import (
@@ -22,12 +26,7 @@ logger = logging.getLogger(__name__)
 def _fetch_and_cache_title(
     media_type: str, tmdb_id: int, language: str = "tr-TR"
 ) -> Title:
-    """Fetch a Title from TMDB, persist/update in DB, and return the instance.
-
-    Raises:
-        TMDBNotFoundError: if TMDB returns 404.
-        TMDBServiceUnavailableError: on network / 5xx failures.
-    """
+    """Fetch a Title from TMDB, persist/update in DB, and return the instance."""
     client = TMDBClient()
     normalized_lang = normalize_language(language)
 
@@ -39,7 +38,6 @@ def _fetch_and_cache_title(
     fetched_title = data.get("title") or data.get("name", "")
     fetched_overview = data.get("overview", "")
 
-    # Common fields baseline
     common = {
         "original_title": data.get("original_title") or data.get("original_name", ""),
         "poster_path": data.get("poster_path", "") or "",
@@ -67,13 +65,32 @@ def _fetch_and_cache_title(
     return title_obj
 
 
-class TitleDetailView(APIView):
-    """Retrieve a single movie or TV show by TMDB ID.
+def _format_raw_tmdb_title(
+    item: dict[str, Any], default_media_type: str = "movie"
+) -> dict[str, Any]:
+    """Format raw TMDB item into clean standard response item."""
+    media_type = item.get("media_type") or default_media_type
+    title_name = item.get("title") or item.get("name", "")
+    rel_date = item.get("release_date") or item.get("first_air_date") or ""
 
-    The `media_type` path parameter must be either `movie` or `tv`.
-    Supports `?lang=tr` (default) or `?lang=en` for Turkish and English responses.
-    If TMDB is unavailable, a meaningful 503 is returned instead of 500.
-    """
+    return {
+        "media_type": media_type,
+        "tmdb_id": item.get("id"),
+        "title": title_name,
+        "display_title": title_name,
+        "original_title": item.get("original_title") or item.get("original_name", ""),
+        "overview": item.get("overview", ""),
+        "poster_url": poster_url(item.get("poster_path", "")),
+        "backdrop_url": backdrop_url(item.get("backdrop_path", "")),
+        "vote_average": item.get("vote_average", 0.0),
+        "vote_count": item.get("vote_count", 0),
+        "popularity": item.get("popularity", 0.0),
+        "release_date": rel_date,
+    }
+
+
+class TitleDetailView(APIView):
+    """Retrieve a single movie or TV show by TMDB ID."""
 
     @extend_schema(
         summary="Retrieve a movie or TV show detail",
@@ -158,3 +175,213 @@ class TitleDetailView(APIView):
 
         serializer = TitleSerializer(title, context={"language": lang})
         return Response(serializer.data)
+
+
+class CuratedCategoryListView(APIView):
+    """List all curated and mood-based categories."""
+
+    @extend_schema(
+        summary="List all curated / mood categories",
+        parameters=[
+            OpenApiParameter(
+                "lang",
+                location=OpenApiParameter.QUERY,
+                description="Language: 'tr' or 'en'",
+            ),
+        ],
+        tags=["Categories"],
+    )
+    def get(self, request):
+        lang = request.query_params.get("lang") or request.headers.get(
+            "Accept-Language", "tr"
+        )
+        categories = get_all_curated_categories(language=lang)
+        return Response({"categories": categories, "count": len(categories)})
+
+
+class CuratedCategoryDetailView(APIView):
+    """Get titles belonging to a specific curated mood category."""
+
+    @extend_schema(
+        summary="Get titles for a curated category",
+        parameters=[
+            OpenApiParameter(
+                "slug", location=OpenApiParameter.PATH, description="Category slug"
+            ),
+            OpenApiParameter(
+                "page", location=OpenApiParameter.QUERY, type=int, default=1
+            ),
+            OpenApiParameter(
+                "lang",
+                location=OpenApiParameter.QUERY,
+                description="Language: 'tr' or 'en'",
+            ),
+        ],
+        tags=["Categories"],
+    )
+    def get(self, request, slug: str):
+        category = get_curated_category(slug)
+        if not category:
+            return Response(
+                {
+                    "error": {
+                        "code": "category_not_found",
+                        "message": f"Kategori '{slug}' bulunamadı.",
+                        "status_code": 404,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        lang = request.query_params.get("lang") or request.headers.get(
+            "Accept-Language", "tr"
+        )
+        page = int(request.query_params.get("page", 1))
+        client = TMDBClient()
+
+        results: list[dict[str, Any]] = []
+
+        try:
+            if category.media_type in ("movie", "both") and category.tmdb_params_movie:
+                movie_params = {"page": page, **category.tmdb_params_movie}
+                movie_res = client.discover_movies(movie_params, language=lang)
+                for item in movie_res.get("results", []):
+                    results.append(
+                        _format_raw_tmdb_title(item, default_media_type="movie")
+                    )
+
+            if category.media_type in ("tv", "both") and category.tmdb_params_tv:
+                tv_params = {"page": page, **category.tmdb_params_tv}
+                tv_res = client.discover_tv(tv_params, language=lang)
+                for item in tv_res.get("results", []):
+                    results.append(
+                        _format_raw_tmdb_title(item, default_media_type="tv")
+                    )
+
+        except TMDBServiceUnavailableError as exc:
+            logger.error("TMDB error in category fetch: %s", exc)
+            return Response(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "Film veritabanı geçici olarak erişilemiyor.",
+                        "status_code": 503,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        # Sort combined results by popularity or vote average
+        results.sort(
+            key=lambda x: (x.get("vote_average", 0), x.get("popularity", 0)),
+            reverse=True,
+        )
+
+        return Response(
+            {
+                "category": category.to_dict(language=lang),
+                "page": page,
+                "count": len(results),
+                "results": results,
+            }
+        )
+
+
+class UpcomingTitlesView(APIView):
+    """List upcoming film and TV releases with release countdown and reminder support."""
+
+    @extend_schema(
+        summary="List upcoming movies and series",
+        parameters=[
+            OpenApiParameter(
+                "media_type",
+                location=OpenApiParameter.QUERY,
+                enum=["both", "movie", "tv"],
+                default="both",
+            ),
+            OpenApiParameter(
+                "page", location=OpenApiParameter.QUERY, type=int, default=1
+            ),
+            OpenApiParameter(
+                "lang",
+                location=OpenApiParameter.QUERY,
+                description="Language: 'tr' or 'en'",
+            ),
+        ],
+        tags=["Upcoming"],
+    )
+    def get(self, request):
+        media_type = request.query_params.get("media_type", "both")
+        lang = request.query_params.get("lang") or request.headers.get(
+            "Accept-Language", "tr"
+        )
+        page = int(request.query_params.get("page", 1))
+        client = TMDBClient()
+        today = date.today()
+
+        items: list[dict[str, Any]] = []
+
+        try:
+            if media_type in ("movie", "both"):
+                movie_data = client.get_upcoming_movies(page=page, language=lang)
+                for m in movie_data.get("results", []):
+                    formatted = _format_raw_tmdb_title(m, default_media_type="movie")
+                    items.append(self._enrich_upcoming(formatted, today))
+
+            if media_type in ("tv", "both"):
+                tv_data = client.get_upcoming_tv(page=page, language=lang)
+                for t in tv_data.get("results", []):
+                    formatted = _format_raw_tmdb_title(t, default_media_type="tv")
+                    items.append(self._enrich_upcoming(formatted, today))
+
+        except TMDBServiceUnavailableError as exc:
+            logger.error("TMDB error in upcoming fetch: %s", exc)
+            return Response(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "Yaklaşan yapımlar verisi şu an alınamıyor.",
+                        "status_code": 503,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        # Sort by release date ascending (soonest first)
+        items.sort(
+            key=lambda x: (
+                x.get("countdown_days") if x.get("countdown_days") is not None else 9999
+            )
+        )
+
+        return Response(
+            {
+                "page": page,
+                "media_type": media_type,
+                "count": len(items),
+                "results": items,
+            }
+        )
+
+    def _enrich_upcoming(self, item: dict[str, Any], today: date) -> dict[str, Any]:
+        """Calculate countdown days and attach reminder readiness flag."""
+        rel_str = item.get("release_date", "")
+        countdown_days = None
+        is_upcoming = True
+
+        if rel_str:
+            try:
+                rel_date = datetime.strptime(rel_str, "%Y-%m-%d").date()
+                delta = (rel_date - today).days
+                countdown_days = max(0, delta)
+                is_upcoming = delta >= 0
+            except ValueError:
+                pass
+
+        item["countdown_days"] = countdown_days
+        item["is_unreleased"] = is_upcoming
+        item["can_set_reminder"] = is_upcoming
+        return item

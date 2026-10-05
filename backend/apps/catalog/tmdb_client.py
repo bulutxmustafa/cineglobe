@@ -148,6 +148,19 @@ class TMDBClient:
             "/search/person", params={"query": query, "include_adult": False}
         )
 
+    def get_person_details(
+        self, person_id: int, language: str = "tr-TR"
+    ) -> dict[str, Any]:
+        """Fetch full details of a person/actor. Cached for 24 hours."""
+        lang = normalize_language(language)
+        cache_key = self._key("person", person_id, lang, "details")
+        return self._cached_get(
+            f"/person/{person_id}",
+            params={"language": lang},
+            cache_key=cache_key,
+            ttl=TTL_PERSON,
+        )
+
     def get_person_combined_credits(
         self, person_id: int, language: str = "tr-TR"
     ) -> dict[str, Any]:
@@ -193,6 +206,38 @@ class TMDBClient:
             params={"page": page, "language": lang},
             cache_key=cache_key,
             ttl=TTL_DISCOVER,
+        )
+
+    def get_upcoming_movies(
+        self, page: int = 1, language: str = "tr-TR"
+    ) -> dict[str, Any]:
+        """Fetch upcoming movie releases. Cached 6 hours."""
+        lang = normalize_language(language)
+        cache_key = self._key("upcoming_movies", page, lang)
+        return self._cached_get(
+            "/movie/upcoming",
+            params={"page": page, "language": lang},
+            cache_key=cache_key,
+            ttl=TTL_DETAIL_ONGOING_TV,
+        )
+
+    def get_upcoming_tv(self, page: int = 1, language: str = "tr-TR") -> dict[str, Any]:
+        """Fetch upcoming TV shows airing in the future. Cached 6 hours."""
+        from datetime import date
+
+        today = date.today().isoformat()
+        lang = normalize_language(language)
+        cache_key = self._key("upcoming_tv", page, lang, today)
+        return self._cached_get(
+            "/discover/tv",
+            params={
+                "page": page,
+                "language": lang,
+                "first_air_date.gte": today,
+                "sort_by": "first_air_date.asc",
+            },
+            cache_key=cache_key,
+            ttl=TTL_DETAIL_ONGOING_TV,
         )
 
     # ------------------------------------------------------------------

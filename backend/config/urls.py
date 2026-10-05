@@ -15,8 +15,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Health check
     path("api/v1/health/", HealthCheckView.as_view(), name="health-check"),
-    # Catalog (movies & tv shows)
+    # Catalog (movies, tv shows, curated categories, upcoming)
     path("api/v1/", include("apps.catalog.urls")),
+    # People (actors, directors, filmography)
+    path("api/v1/people/", include("apps.people.urls")),
     # OpenAPI Schema and Interactive Documentation
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
