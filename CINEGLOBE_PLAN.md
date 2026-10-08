@@ -8,6 +8,7 @@
 > **Sürüm notu (v1.4):** **Ürün şimdilik tamamen ücretsiz ve reklamsız/aboneliksiz** çalışır (TMDB'nin ücretsiz, ticari olmayan API kullanımına uymak için). **Faz 10 (Gelir Modeli) ERTELENDİ**; uygulama tutarsa yeniden değerlendirilir. Buna karşılık **LLM maliyet koruması** (önbellek, ucuz model, kota, günlük bütçe tavanı, ücretsiz yedek arama) artık **Faz 3'ün zorunlu parçasıdır** → §3.10.
 > **Sürüm notu (v1.5):** **LLM katmanı sağlayıcı-bağımsızdır.** Başlangıç sağlayıcısı **Google Gemini ücretsiz katmanı** (Flash-Lite); sonuç kalitesi geçiş kriterini sağlamazsa **Claude Haiku 5.5**'e (ücretli, çok ucuz) tek ayarla geçilir. Zincir: `gemini → classic` (varsayılan); LLM erişilemezse veya kota dolarsa AI'sız **klasik arama**. Ücretsiz katmanda istekler sağlayıcı tarafından ürün geliştirmede kullanılabildiği için **gizlilik metninde belirtilir** ve LLM'e kişisel veri gönderilmez → §3.10.
 > **Sürüm notu (v1.6):** **Sosyal katman eklendi (gizlilik-öncelikli):** herkese açık **profil** (isteğe bağlı), **kişisel listeler/sıralamalar** (örn. "Top 10 Nolan"), **defter paylaşımı** (salt-okunur, iptal edilebilir bağlantı), ve **"Birlikte Seç"** (iki kişinin izlenecek listesinden ortak film seçimi + Şans Globu). Her şey **varsayılan özel**dir; yorum, mesajlaşma ve fotoğraf yükleme **yoktur** (moderasyon yükü ve hukuki risk nedeniyle). Yeni bölüm: §3.11; yeni fazlar: **Faz 7C**, **Faz 7D (opsiyonel)**.
+> **Sürüm notu (v1.8):** **Sıfır Ödeme Politikası.** Proje bir **deneme/prototip** ve gelirsizdir; hedef altyapıda **hiç para ödememek**. Barındırma: **Vercel Hobby** (web arayüzü + Django, Python fonksiyonu olarak) + **Neon ücretsiz PostgreSQL** + **Gemini ücretsiz katman**. DigitalOcean ve Redis planlardan çıkarıldı (Redis isteğe bağlı). Kart/fatura hesabı gerektiren hiçbir servis kullanılmaz; ücretli plana geçiş yalnızca kullanıcının açık onayıyla olur. Faz 0'a **barındırma denemesi (spike)** eklendi: Django'nun Vercel + Neon üzerinde gecikmesi ölçülür, kötü çıkarsa yedek plana geçilir → **Faz 0, Faz 9, ADR 0002**.
 
 ---
 
@@ -21,6 +22,7 @@
 6. **Emin olmadığın bir karar varsa varsayım yapma, sor.** Özellikle: veri lisansı, ücretli servis, deploy maliyeti.
 7. **Hata olursa:** önce logu oku, kök nedeni bul, düzelt. Testi silerek/atlayarak "yeşile çevirme".
 8. **Her faz sonunda** `README.md` ve `docs/` güncellenir.
+9. **Sıfır Ödeme Politikası (v1.8).** Hiçbir servise ödeme yöntemi (kart) ekletme, hiçbir servisi ücretli plana geçirme, ücretli alan adı/sertifika/izleme/analitik servisi ekleme. Bir servis kart veya fatura hesabı isterse **dur ve kullanıcıya sor**. Yeni bir servis eklemeden önce ücretsiz planının güncel limitlerini resmi sayfadan doğrula ve `docs/cost.md`'ye yaz. Limit dolunca davranış **ücretsiz ve zarif** olmalı (klasik aramaya düşme, önbellekten sunma); asla fatura çıkarabilecek bir yola düşmemeli.
 
 ---
 
@@ -63,7 +65,7 @@ Film/dizi izletme (streaming), **herkese açık yorum/tartışma, mesajlaşma (D
 | Katman | Seçim | Neden |
 |--------|-------|-------|
 | Backend | **Django 5 + Django REST Framework** | Olgun, güvenli varsayılanlar, admin paneli, PostgreSQL ile mükemmel uyum, ORM/migration |
-| Veritabanı | **PostgreSQL 16** (+ `pgvector` opsiyonel) | İlişkisel veri + ileride anlamsal arama |
+| Veritabanı | **PostgreSQL 16** — barındırma: **Neon ücretsiz plan** (kart gerekmez; 1 GB/proje, 100 CU-saat/ay, 5 dk kullanılmazsa uyur) | İlişkisel veri. Serverless'a uygun bağlantı için Neon'un **pooled** bağlantı adresi kullanılır. Yerelde Docker PostgreSQL |
 | Film & dizi verisi | **TMDB API** | Kapsamlı film, dizi, oyuncu ve anahtar kelime verisi (`/movie` ve `/tv` endpointleri) |
 | Doğal dil anlama | **Sağlayıcı-bağımsız LLM katmanı (`LLMProvider` arayüzü)** — başlangıç: **Gemini ücretsiz katman (Flash-Lite)**; yedek/yükseltme: **Claude Haiku 5.5** | Kullanıcı cümlesini yapılandırılmış filtreye çevirir. Sağlayıcı `.env`'den seçilir; kodda sabit değildir (§3.10) |
 | Web frontend | **Vue 3 + Vite + TypeScript + Pinia + Vue Router** | İstenen; hızlı ve modern |
@@ -72,12 +74,13 @@ Film/dizi izletme (streaming), **herkese açık yorum/tartışma, mesajlaşma (D
 | SEO / render | **SSR veya prerender (Nuxt 3 *ya da* Vite SSG/prerender — ajan ADR ile seçsin)** | Kullanıcıların çoğu arama motorundan gelir; koleksiyon, oyuncu, detay ve yakında çıkacaklar sayfalarının arama motoruna HTML olarak sunulması gerekir. Saf SPA bu açıdan zayıf |
 | Gelir | **Şimdilik yok (ücretsiz ürün)** | TMDB'nin ücretsiz API'si ticari olmayan projeler içindir; gelir modeli ileride, TMDB lisansıyla birlikte değerlendirilir (§3.9, Faz 10 — ertelendi) |
 | LLM modeli | **Gemini Flash-Lite (ücretsiz katman) → gerekirse Claude Haiku 5.5** | Ücretsiz katmanda maliyet $0 ama hız sınırlı, garantisiz ve istekler Google tarafından ürün geliştirmede kullanılabilir. Haiku 5.5 ücretli ama arama başına ≈ $0,0006 (§3.10). Model kimlikleri env'den okunur |
-| Cache | **Redis** (önce basit DB/locmem, gerekirse Redis) | TMDB & LLM çağrılarını azaltır |
-| Deploy | **DigitalOcean** (App Platform veya Droplet + Managed PostgreSQL) | İstenen |
+| Cache & sayaçlar | **Django veritabanı önbelleği + veritabanı sayaç tabloları** (Redis **yok**; ileride gerekirse isteğe bağlı) | Serverless fonksiyonlar arasında bellek paylaşılmaz; önbellek, kota ve bütçe sayaçları veritabanında tutulur. Ücretsiz ve ek servis gerektirmez. Redis'in ücretsiz planı (ör. aylık 500.000 komut) sayaçlar için yetmeyebilir |
+| Deploy (web + API) | **Vercel Hobby** — Vue arayüzü ve Django (Vercel'in Python çalışma zamanı, WSGI) tek projede | Ücretsiz, kart gerekmez, uyku/soğuk başlangıç dakikalar değil saniyeler mertebesinde (**spike ile ölçülecek**). Hobby ticari olmayan kullanım içindir (bkz. TMDB notu); ek kullanım satın alınamaz → fatura çıkmaz |
+| Yedek deploy planı | **Render ücretsiz web servisi** (15 dk sonra uyur, ~1 dk soğuk başlangıç) veya **Google Cloud Run** (ücretsiz kota ama fatura hesabı gerekir → **yalnızca kullanıcı onayıyla**) | Vercel denemesi kötü çıkarsa. Kod değişmez: `Dockerfile` korunur (taşınabilirlik) |
 | CI/CD | **GitHub Actions** | Test + deploy otomasyonu |
 | Test | pytest, Vitest, Playwright | Her katman için |
 
-> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** projeler için ücretsizdir ve **atıf (TMDB logosu + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB API kullanım şartları, **reklam dahil gelir elde eden** bir sitede TMDB verisi kullanmayı, ücret alınan erişimi ve TMDB verisiyle AI/ML eğitimini açıkça **ticari kullanım** sayar; bunun için TMDB ile **yazılı ticari anlaşma** gerekir (ücret içerebilir). Şartlar ayrıca TMDB verisinin **en fazla 6 ay** önbellekte/depoda tutulmasına izin verir (Faz 2 ve Faz 7B'deki 6 ay kuralı). **Karar (v1.4): proje şimdilik ücretsiz ve ticari olmayan olarak yürür.** Ajan: (1) Faz 2'de atıfı footer/Hakkında bölümüne koysun, (2) **reklam, abonelik, affiliate, bağış butonu gibi gelir getiren hiçbir öğe eklemesin** (gelir getiren her şey TMDB'ye sorulmadan eklenmez), (3) gelir modeline geçilecekse önce kullanıcıdan TMDB ticari lisansını/yazılı onayını istesin.
+> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** projeler için ücretsizdir ve **atıf (TMDB logosu + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB, ana amacı sahibine gelir sağlamak olan projeyi "ticari" sayar; reklamlı/abonelikli bir sitenin hangi tarafa düştüğü SSS'te net değildir, **kesinleştirmek için TMDB satış ekibiyle yazışılmalıdır**. **Karar (v1.4): proje şimdilik ücretsiz ve ticari olmayan olarak yürür.** Ajan: (1) Faz 2'de atıfı footer/Hakkında bölümüne koysun, (2) **reklam, abonelik, affiliate, bağış butonu gibi gelir getiren hiçbir öğe eklemesin** (gelir getiren her şey TMDB'ye sorulmadan eklenmez), (3) gelir modeline geçilecekse önce kullanıcıdan TMDB ticari lisansını/yazılı onayını istesin.
 
 ---
 
@@ -94,7 +97,7 @@ Film/dizi izletme (streaming), **herkese açık yorum/tartışma, mesajlaşma (D
       │  (/api/v1/...)   │──► TMDB API (film & dizi verisi)
       └───────┬──────────┘
               ▼
-      PostgreSQL (+ Redis cache)
+      PostgreSQL (Neon; önbellek ve kota sayaçları da burada)
 ```
 
 ### 3.1 Doğal Dil Arama Akışı (KRİTİK)
@@ -212,7 +215,7 @@ Faz 4'teki "en iyi" sıralamasına **ek olarak** tam filmografi görünümü:
 
 **Hatırlatıcı (Reminder)**
 - Model: `Reminder` (`user`, `media_type`, `tmdb_id`, `remind_on` (`release_day` | `one_day_before` | `one_week_before`), `channels` (`email`, `push`, `in_app`), `status` (`pending`/`sent`/`cancelled`), `last_known_release_date`).
-- Zamanlayıcı: günlük çalışan job (Django management command + cron / DO scheduled job / Celery beat — **ajan gerekçesiyle seçsin, ADR yazsın**; basitlik için cron + management command önerilir).
+- Zamanlayıcı: günlük çalışan job. Serverless'ta sürekli çalışan işçi (Celery) yok. Seçenek 1: **Vercel Cron** ile korumalı bir endpoint (`CRON_SECRET`) günde bir tetiklenir (ücretsiz planda izinli cron sıklığı ve sayısını **ajan resmi dokümandan doğrulasın**; günde bir yeterli). Seçenek 2 (yedek): **GitHub Actions zamanlanmış workflow** aynı korumalı endpoint'i çağırır (kota ücretsiz limit içinde kalmalı). İş **idempotent** ve kısa süreli olmalı (fonksiyon süre sınırı); büyük işler küçük gruplara bölünür. Ajan seçimi **ADR** ile kaydeder.
 - Kanallar (öncelik sırasıyla): **uygulama içi bildirim** → **e-posta** → **web push** (VAPID, opsiyonel). Mobil push yok (native uygulama kapsam dışı).
 - **Giriş zorunluluğu:** Hatırlatıcı hesaba bağlıdır (Faz 7'ye bağımlı). Misafir kullanıcı "Hatırlat"a basarsa giriş/kayıt'a yönlendirilir; seçim giriş sonrası otomatik tamamlanır.
 - Kullanıcı hatırlatıcıları listeleyebilir/iptal edebilir. Aynı yapım için mükerrer hatırlatıcı engellenir (unique: `user + media_type + tmdb_id`).
@@ -239,7 +242,7 @@ Faz 4'teki "en iyi" sıralamasına **ek olarak** tam filmografi görünümü:
 **Film Defterim — Veri Modeli**
 Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Puan + Not ayrı tablolar olmaz):
 
-`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir, TMDB şartları gereği **hiçbir snapshot 6 aydan eski kalmaz**).
+`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir).
 - Diziler için: `progress_season`, `progress_episode` (Faz 7'deki ilerleme takibi bu modelde birleşir). Bölüm bazlı puan v1'de yok.
 - Notlar **varsayılan özeldir**; yalnızca sahibinin bilinçli olarak oluşturduğu paylaşım bağlantısında ve ayrı bir "notları dahil et" seçimiyle başkasına görünebilir (§3.11, Faz 7C). Not metni **düz metin** olarak render edilir (XSS koruması), LLM'e **asla** gönderilmez.
 
@@ -290,13 +293,13 @@ Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Pua
 
 **LLM Sağlayıcı Stratejisi (v1.5)**
 - **Arayüz:** `LLMProvider` (örn. `parse_query(text, lang) → SearchFilters JSON`, `explain(results, lang) → metinler`). Uygulamalar: `GeminiProvider`, `AnthropicProvider`, `ClassicProvider` (LLM'siz klasik arama). Tüm çağrılar bu arayüzden geçer; iş mantığı hiçbir sağlayıcıya doğrudan bağlı olmaz.
-- **Zincir (`LLM_PROVIDER_CHAIN`, env):** varsayılan `gemini,classic`. Sağlayıcı hata/zaman aşımı/429 (hız sınırı)/geçersiz JSON (1 yeniden deneme sonrası) verirse **bir sonrakine düşülür**; kısa süreli **devre kesici (circuit breaker)** aynı sağlayıcıyı bir süre denemez (boşuna bekleme yok). Haiku 5.5'e geçmek için `LLM_PROVIDER_CHAIN=anthropic,classic` (veya `gemini,anthropic,classic`) yazmak yeterlidir; **kod değişmez**.
+- **Zincir (`LLM_PROVIDER_CHAIN`, env):** varsayılan `gemini,classic`. Sağlayıcı hata/zaman aşımı/429 (hız sınırı)/geçersiz JSON (1 yeniden deneme sonrası) verirse **bir sonrakine düşülür**; kısa süreli **devre kesici (circuit breaker)** aynı sağlayıcıyı bir süre denemez (boşuna bekleme yok); devre kesici durumu serverless'ta bellekte kalmaz, **veritabanında/önbellek tablosunda** tutulur. Haiku 5.5'e geçmek için `LLM_PROVIDER_CHAIN=anthropic,classic` (veya `gemini,anthropic,classic`) yazmak yeterlidir; **kod değişmez**.
 - **Başlangıç modeli:** Gemini Flash-Lite (en ucuz/ücretsiz katman; model kimliği `GEMINI_MODEL`, ajan güncel kimliği resmi dokümandan doğrular). Ücretsiz katmanın **sayısal hız sınırları** resmi "rate limits" sayfasından okunur ve `docs/cost.md`'ye yazılır; günlük toplam arama kotası (misafir + üye) bu sınırı aşmayacak şekilde ayarlanır.
 - **Geçiş kriteri (kalite kapısı):** Faz 3'te hazırlanan **değerlendirme seti** (9 zorunlu senaryo + en az 20 gerçek Türkçe/İngilizce sorgu) seçili sağlayıcıyla çalıştırılır. Aşağıdakiler sağlanıyorsa Gemini ücretsiz ile devam; sağlanmıyorsa kullanıcıya rapor edilir ve `anthropic`'e geçiş önerilir: (1) geçerli JSON oranı ≥ %95 (yeniden denemesiz ≥ %90), (2) `media_type` doğru ≥ %90, (3) `genres_exclude` ("korku içermesin") ihlali = 0 senaryoda, (4) prompt injection senaryosu geçiyor, (5) ortalama yanıt süresi hedef içinde. Sonuçlar `docs/llm-eval.md`'de tarihli raporlanır; **sağlayıcı değişikliğinden sonra set yeniden çalıştırılır**.
 - **Gizlilik (ücretsiz katman):** Sağlayıcının ücretsiz katmanında istekler ürün geliştirmede kullanılabilir (ücretli katmanda kullanılmaz). Bu yüzden: (1) LLM'e **yalnızca arama sorgusu metni** ve gerekli film/dizi meta verisi gider; kullanıcı kimliği, e-posta, IP, **Film Defterim notları/puanları asla gitmez** (testle kanıtlı), (2) arama kutusunda küçük bir not: "Aramalar yapay zekâ sağlayıcısına gönderilir; kişisel bilgi yazmayın", (3) Gizlilik Politikası/KVKK aydınlatma metninde LLM sağlayıcısı ve bu durum açıkça yazılır (Faz 11), (4) "Zevkime göre öner" (opsiyonel kişiselleştirme) ücretsiz katmanla **etkinleştirilmez**; yalnızca ücretli/eğitimde kullanılmayan sağlayıcıyla açılabilir.
 - **Ücretsiz katmanın doğası:** Garanti (SLA) yok, limitler ve model adları değişebilir. Bu nedenle sistem her zaman `classic` yedeğiyle çalışır; sağlayıcı çökse bile site açık kalır.
 
-**Hangi çağrı para harcar?** TMDB ücretsiz API'si arama başına para istemez. Para yalnızca **ücretli LLM API** çağrılarından gider. **Başlangıçta Gemini ücretsiz katmanı kullanıldığı için fiilî LLM maliyeti $0'dır**; ücretli sağlayıcıya (Claude Haiku 5.5 vb.) geçilirse kullanıma göre faturalanır (API faturalaması, claude.ai Pro/Max aboneliğinden ayrıdır). Sunucu + veritabanı + domain gibi **sabit altyapı maliyeti** ayrıca vardır (Faz 9'da kesin rakam çıkarılır).
+**Hangi çağrı para harcar?** TMDB ücretsiz API'si arama başına para istemez. Para yalnızca **ücretli LLM API** çağrılarından gider. **Başlangıçta Gemini ücretsiz katmanı kullanıldığı için fiilî LLM maliyeti $0'dır**; ücretli sağlayıcıya (Claude Haiku 5.5 vb.) geçilirse kullanıma göre faturalanır (API faturalaması, claude.ai Pro/Max aboneliğinden ayrıdır). **Altyapı hedefi $0'dır** (Vercel Hobby + Neon ücretsiz + ücretsiz alt alan adı); ücretsiz limitler ve dolunca davranış `docs/cost.md`'de belgelenir. Özel alan adı ücretlidir; kullanıcı istemedikçe alınmaz.
 
 > **Not (v1.5):** Aşağıdaki tablo **ücretli** seçeneklerin maliyetidir. Varsayılan başlangıçta Gemini ücretsiz katmanı kullanıldığı için fiilî LLM maliyeti **$0**'dır; tablo, ücretsiz katman yetmezse veya kalite kapısı geçilmezse neyle karşılaşılacağını gösterir.
 
@@ -317,7 +320,7 @@ Varsayım (önbelleğe takılmayan bir "doğal dil arama"): 2 LLM çağrısı �
 2. **Ücretsiz/ucuz model:** ayrıştırma ve açıklama varsayılan olarak **Gemini ücretsiz katmanı** ($0). Kalite kapısı (yukarıda) geçilemezse **Claude Haiku 5.5**'e geçilir (tablodaki maliyetler geçerli olur). Model kimlikleri `.env`'den okunur.
 3. **Açıklamayı ucuzlat:** "Neden önerildi?" metni varsayılan olarak **şablonla** üretilir (eşleşen tür, anahtar kelime, puan/oy bilgisinden; LLM yok). LLM açıklaması yalnızca ilk 3–5 sonuç için veya kullanıcı "Neden?" düğmesine basınca (lazy) üretilir ve önbelleğe alınır.
 4. **Kota:** misafir günlük `GUEST_DAILY_AI_SEARCHES`, üye `USER_DAILY_AI_SEARCHES` (IP/oturum bazlı hız sınırı ayrıca). Çıktı uzunluğu `max_tokens` ile sınırlanır; sorgu uzunluğu üst sınırı (örn. 300 karakter).
-5. **Günlük bütçe tavanı (`LLM_DAILY_BUDGET_USD`):** harcama sayacı (Redis) her çağrıda token kullanımından hesaplanır. Tavan dolunca **site kapanmaz**: AI'sız **klasik arama** (tür + anahtar kelime + oyuncu adı + koleksiyonlar) açık kalır, arayüzde nazik bir not gösterilir ("AI arama bugünlük doldu, yarın yenilenir").
+5. **Günlük bütçe tavanı (`LLM_DAILY_BUDGET_USD`):** harcama sayacı (veritabanı tablosu; serverless'ta bellek paylaşılmaz) her çağrıda token kullanımından hesaplanır. Tavan dolunca **site kapanmaz**: AI'sız **klasik arama** (tür + anahtar kelime + oyuncu adı + koleksiyonlar) açık kalır, arayüzde nazik bir not gösterilir ("AI arama bugünlük doldu, yarın yenilenir").
 6. **Yedek (fallback) arama:** LLM hatası, kota veya bütçe aşımı → mevcut anahtar kelime/tür eşleştirme (zaten Faz 3 gereksinimi). Böylece kullanıcı her zaman bir sonuç görür.
 7. **Kötüye kullanım koruması:** IP başına hız sınırı, bot koruması (ör. CAPTCHA/Turnstile benzeri, kullanıcıyla netleştirilir), anormal hacimde otomatik uyarı. Anthropic Console'da hesap/çalışma alanı düzeyinde **harcama limiti/uyarısı** varsa kurulur (Console ayarlarından doğrulanır).
 8. **Toplu işlerde indirim:** gecelik koleksiyon doğrulaması gibi acil olmayan işler **Batch API** ile (yaklaşık %50 indirim) çalıştırılır.
@@ -457,7 +460,7 @@ docs(readme): add local setup steps
 - `.gitignore` (Python, Node, `.env`, IDE)
 - PR şablonu `.github/pull_request_template.md`
 - Branch protection: PR + geçen CI zorunlu
-- Secrets: GitHub → Settings → Secrets (DO token, TMDB key, Anthropic key)
+- Secrets: GitHub → Settings → Secrets ve Vercel → Environment Variables (TMDB key, Gemini key, `DATABASE_URL`, `CRON_SECRET`; Anthropic key yalnızca Haiku'ya geçilirse). Hiçbiri repoya girmez
 
 ---
 
@@ -471,15 +474,22 @@ docs(readme): add local setup steps
 **Görevler**
 - [ ] GitHub reposu, `main` + `develop`, branch protection
 - [ ] Klasör yapısı (bkz. §4), `.gitignore`, `.env.example`, `README.md` iskeleti
-- [ ] `docker-compose.yml`: `postgres`, `backend` (ve ileride `redis`)
+- [ ] `docker-compose.yml`: `postgres`, `backend` (Redis eklenmez, bkz. v1.8)
 - [ ] Lint/format: `ruff` + `black` (Python), `eslint` + `prettier` (Vue)
 - [ ] `pre-commit` hook'ları
 - [ ] PR şablonu, `docs/adr/0001-tech-stack.md` (bu dosyadaki kararların kaydı)
+- [ ] **(v1.8) Barındırma denemesi (spike) — kodlamadan önce karar kapısı:**
+  1. **Kullanıcıdan** şunları iste (kendisi açar, **kart eklemeden**): Vercel Hobby hesabı (GitHub ile giriş) ve Neon ücretsiz hesabı. Ajan bu hesapları kendisi açmaz, anahtarları sohbete yazdırmaz; kullanıcı değerleri yalnızca Vercel/Neon panelindeki ortam değişkenlerine girer.
+  2. En küçük Django projesini (`/health/` + bir tablo okuma) **Vercel Python fonksiyonu** olarak, **Neon pooled bağlantısıyla** yayına al.
+  3. Ölç ve `docs/deploy-spike.md`'ye yaz: (a) 10+ dk boşta kaldıktan sonraki **ilk istek süresi** (Vercel soğuk başlangıcı + Neon uyanması), (b) sıcak istek süresi (≥ 20 istek ortalaması/p95), (c) veritabanı bağlantı hataları, (d) Hobby limitleri (fonksiyon süre sınırı, paket boyutu) bu uygulamaya yeter mi.
+  4. **Karar kapısı:** ilk istek ≲ 5 sn ve sıcak istek ≲ 800 ms ise Vercel + Neon ile devam (ADR `0002-hosting.md`). Değilse **kullanıcıya rapor ver** ve yedek planı öner (Render ücretsiz = ücretsiz ama ~1 dk soğuk başlangıç; Cloud Run = fatura hesabı gerektirir, **ancak kullanıcı onayıyla**). Eşikler başlangıç değeridir, ajan kullanıcıyla birlikte ayarlayabilir.
+- [ ] `docs/cost.md` iskeleti: kullanılan her servisin ücretsiz limitleri, tarih ve resmi kaynak linki, limit dolunca davranış
 
 **Kabul Kriterleri**
 - `docker compose up` PostgreSQL'i sorunsuz ayağa kaldırır
 - `pre-commit run --all-files` hatasız
 - İlk commit'ler Conventional Commits formatında
+- **(v1.8)** Spike raporu (`docs/deploy-spike.md`) var ve hosting kararı kullanıcıyla onaylanmış; hiçbir serviste ödeme yöntemi tanımlı değil
 
 **Commit örnekleri:** `chore: initialize monorepo structure`, `chore(ci): add pre-commit config`
 
@@ -492,9 +502,11 @@ docs(readme): add local setup steps
 - [ ] `GET /api/v1/health/` endpoint'i (DB kontrolü dahil)
 - [ ] Global hata formatı (tutarlı JSON hata yapısı)
 - [ ] Rate limiting (DRF throttling)
-- [ ] Dockerfile (multi-stage, non-root kullanıcı)
+- [ ] Dockerfile (multi-stage, non-root kullanıcı) — **taşınabilirlik için korunur** (Vercel bu dosyayı kullanmaz; yedek barındırma planı için)
+- [ ] **(v1.8) Serverless uyumluluğu:** (a) uygulama **durumsuz**: yerel dosyaya yazma yok, süreç belleğine güvenen sayaç/önbellek/oturum yok; (b) önbellek `DatabaseCache`, sayaçlar `DailyCounter` tablosu; (c) veritabanı bağlantısı Neon **pooled** adresiyle, kısa ömürlü (`CONN_MAX_AGE` serverless'a göre ayarlı, bağlantı sızıntısı yok); (d) Django statik dosyaları (admin) **WhiteNoise** ile; (e) `ALLOWED_HOSTS` ve `CSRF_TRUSTED_ORIGINS` `*.vercel.app` ile uyumlu; (f) `vercel.json`/`pyproject.toml` giriş noktası (`application`), gereksiz dosyalar paket dışı (500 MB sınırının çok altında); (g) soğuk başlangıcı azaltmak için ağır içe aktarmalar (ör. LLM SDK'ları) tembel (lazy) yüklenir
+- [ ] **(v1.8)** Yerel geliştirme `docker compose up` ile PostgreSQL; **Redis zorunlu değil** (`docker-compose.yml`'de yok veya yorum satırı)
 
-**Testler:** health endpoint testi, settings yükleme testi
+**Testler:** health endpoint testi, settings yükleme testi; **(v1.8)** önbelleğin/sayaçların iki ayrı süreçte tutarlı çalıştığı test (aynı veritabanı), `DailyCounter` atomik artırma testi
 
 **Kabul Kriterleri**
 - `/api/v1/health/` → 200 ve `{"status":"ok","db":"ok"}`
@@ -511,7 +523,6 @@ docs(readme): add local setup steps
 - [ ] Modeller: `Title` (`media_type`, `tmdb_id` birlikte **unique**; çünkü film ve dizi ID'leri çakışabilir), `Genre`, `Person`, `TVDetails` (sezon sayısı, bölüm sayısı, durum, bölüm süresi, yayıncı/network, ilk/son yayın tarihi), `Season` (opsiyonel)
 - [ ] **Önemli:** TMDB'de film ve dizinin `id` değeri aynı olabilir. Tüm tablolar, cache anahtarları ve URL'ler `media_type + id` ikilisiyle çalışmalı.
 - [ ] Cache stratejisi (film/dizi detayı: 24 saat; **devam eden dizi detayı: 6 saat**, çünkü yeni bölüm/sezon bilgisi değişir; discover: 1 saat)
-- [ ] **(v1.3) TMDB 6 ay kuralı:** DB'de saklanan TMDB verisi (`Title`, `Person`, `TVDetails` vb.) için `updated_at` takibi + günlük/haftalık `purge_stale_tmdb_data` komutu: 6 aydan eski kayıtlar yenilenir, yenilenemeyenler silinir (testle kanıtlı)
 - [ ] Görsel URL yardımcıları (poster/backdrop boyutları)
 - [ ] Footer için TMDB atıf metni hazırla; kullanıcıya lisans uyarısı ver
 - [ ] **(v1.2) Dil desteği:** `TMDBClient` tüm çağrılarda `lang` (`tr-TR`/`en-US`) alır; boş TR alanlarda EN fallback; cache anahtarına `lang` eklenir
@@ -543,7 +554,7 @@ docs(readme): add local setup steps
 - [ ] Türkçe ve İngilizce sorgu desteği; "neden önerildi?" metni `lang` parametresine göre üretilir, cache anahtarında `lang` bulunur
 - [ ] **(v1.4) Maliyet koruması (§3.10):** sorgu normalizasyonu + sonuç önbelleği; model kimlikleri env'den (`GEMINI_MODEL`, `ANTHROPIC_MODEL_PARSER/EXPLAIN`); `max_tokens` ve sorgu uzunluğu sınırı
 - [ ] **(v1.4)** "Neden önerildi?" için **şablon tabanlı (LLM'siz) açıklama** + isteğe bağlı/lazy LLM açıklaması (ilk 3–5 sonuç veya "Neden?" tıklaması, önbellekli)
-- [ ] **(v1.4)** `LLMUsageLog` (çağrı türü, model, token, tahmini maliyet, cache hit/miss; kişisel veri yok) + Redis günlük harcama sayacı + `LLM_DAILY_BUDGET_USD` tavanı
+- [ ] **(v1.4)** `LLMUsageLog` (çağrı türü, model, token, tahmini maliyet, cache hit/miss; kişisel veri yok) + veritabanında günlük harcama/kota sayacı (`DailyCounter`; atomik artırma, `Europe/Istanbul` günü) + `LLM_DAILY_BUDGET_USD` tavanı
 - [ ] **(v1.4)** Kota ve degrade: misafir/üye günlük kotası, bütçe/kota dolunca **AI'sız klasik aramaya otomatik geçiş** (500/blok yok), arayüze iletilecek `ai_status` alanı (`ok` | `quota_exceeded` | `budget_exceeded` | `fallback`)
 - [ ] **(v1.4)** Django admin'de günlük/aylık LLM maliyet görünümü
 
@@ -656,7 +667,7 @@ docs(readme): add local setup steps
 - [ ] **(v1.2) i18n:** `vue-i18n`, `/tr` ve `/en` URL önekleri, `hreflang`, dil seçimi kalıcı, tüm API çağrılarına `lang`, TR içerik boşsa EN fallback göstergesi, tarih/sayı `Intl`
 - [ ] **(v1.2) Koleksiyon deneyimi:** ana sayfada 6 koleksiyon kartı (ikon + ad + kısa açıklama), her kart `Koleksiyon Detay`'a gider; "Bu koleksiyondan şansımı dene" butonu (Şans Globu ile bağlantı Faz 6'da)
 - [ ] **(v1.2) Yakında Çıkacaklar sayfası:** aylık/haftalık gruplama, Film/Dizi/Hepsi filtresi, "Hatırlat" butonu (misafir ise giriş istemi; gerçek hatırlatma Faz 7'de bağlanır)
-- [ ] **(v1.3) SSR/prerender:** koleksiyon, oyuncu, detay, yakında çıkacaklar ve ana sayfa arama motoruna HTML olarak sunulur (Nuxt 3 veya Vite SSG/prerender — ajan gerekçesiyle seçsin, **ADR**). Defter/hesap sayfaları `noindex`.
+- [ ] **(v1.3) SSR/prerender:** koleksiyon, oyuncu, detay, yakında çıkacaklar ve ana sayfa arama motoruna HTML olarak sunulur (Nuxt 3 veya Vite SSG/prerender — ajan gerekçesiyle seçsin, **ADR**). Defter/hesap sayfaları `noindex`. **(v1.8)** Vercel Hobby fonksiyon kotasını (ayda 1 milyon çağrı, 4 saat aktif işlemci) korumak için sayfalar mümkün olduğunca **statik/prerender (+ yenileme)** ile sunulur; SSR yalnızca gerçekten gereken yerlerde kullanılır. Statik sayfa çıktısı `Cache-Control` ile CDN'de önbelleklenir.
 - [ ] **(v1.3) Giriş yapmadan kullanım:** tüm keşif sayfaları misafire açık; Navbar'da "Giriş yap" ikincil bir eylem (zorlayıcı modal/duvar yok)
 - [ ] **(v1.3) Defter UI (Faz 7B ile bağlanır):** `StatusPicker` (izlenecek/izleniyor/izledim/bıraktım), `StarRating` (0,5 adım, klavye ile erişilebilir), `NoteDrawer` (özel not), `WatchedBadge` (kartlarda "İzledin ✓ · 4,5★"), `AuthSoftGateModal` (misafir için "ücretsiz hesap aç")
 - [ ] **(v1.4) Yapay zeka durum bildirimi:** `ai_status` değerine göre arama sonuçlarında nazik bilgi şeridi ("AI arama bugünlük doldu, klasik arama açık" vb.); reklam alanı/`AdSlot` **eklenmez** (Faz 10 ertelendi)
@@ -740,7 +751,7 @@ docs(readme): add local setup steps
 - [ ] Doğrulama: puan yalnızca 1–10 tamsayı (`null` serbest), durum enum, not uzunluğu, etiket sayısı/uzunluğu; geçersizse 400
 - [ ] Endpointler (§3.8): liste (filtre/sıralama/sayfalama/arama), tek kayıt GET/PUT/PATCH/DELETE, **toplu `lookup`**, `stats`, `export` (CSV/JSON)
 - [ ] `stats` hesapları: toplam izlenen, toplam süre (`title_snapshot` süresinden), ortalama puan, puan dağılımı, tür dağılımı, aylık/yıllık sayılar, en yüksek puanlılar — N+1'siz, tek/az sorgu
-- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır; **6 ayı aşan snapshot'lar yenilenir, yenilenemiyorsa TMDB'den gelen alanlar temizlenir** — kullanıcının kendi verisi (durum, puan, not) korunur)
+- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır)
 - [ ] Web arayüzü: Defterim sayfası (sekmeler, filtre, arama), İstatistik sayfası, kartlarda/detayda hızlı eylemler, `AuthSoftGateModal` akışı (bekleyen işlem giriş sonrası tamamlanır)
 - [ ] Entegrasyon: sonuç kartlarında `lookup` ile "İzledin ✓ · puanın"; arama/koleksiyon/globe'da **"izlediklerimi hariç tut"** filtresi (sunucu tarafı, `exclude_watched=true`)
 - [ ] Şans Globu kaynağı: "İzlenecek listem"
@@ -835,10 +846,10 @@ docs(readme): add local setup steps
 - [ ] Güvenlik: `bandit`, `pip-audit`, `npm audit`; CSP (Faz 10'da reklam/CMP alan adları **yalnızca bayrak açıkken** whitelist'e eklenir), HSTS, güvenli cookie, CORS whitelist
 - [ ] **(v1.3)** Kişisel veri: defter notları loglarda, Sentry olaylarında ve LLM isteklerinde yok (testle kanıtlı); not/puan alanları için hız sınırı ve boyut sınırı
 - [ ] Django `check --deploy` temiz
-- [ ] Yük testi (k6/locust) — arama endpoint'i için temel senaryo
+- [ ] Yük testi (k6/locust) — arama endpoint'i için temel senaryo. **(v1.8) Yalnızca yerelde veya çok küçük hacimle**; canlı Vercel/Neon/Gemini üzerinde yoğun yük testi **yapılmaz** (ücretsiz kotayı tüketir, servis şartlarına aykırı olabilir)
 - [ ] N+1 sorgu kontrolü, gerekli DB indexleri
 - [ ] LLM maliyet koruması: **temeli Faz 3'te atıldı (§3.10)**; burada yük testi altında kota/bütçe davranışı, cache hit oranı raporu, anormal hacim uyarısı doğrulanır
-- [ ] Sentry (hata takibi) entegrasyonu
+- [ ] Hata takibi: **ücretsiz seçenek** (Vercel'in kendi çalışma zamanı logları + yapılandırılmış hata kaydı). Sentry gibi harici servis yalnızca **ücretsiz planı doğrulanır ve kullanıcı onaylarsa** eklenir; aksi halde eklenmez
 - [ ] Yapısal loglama (kişisel veri sızdırmadan)
 
 **Kabul Kriterleri**
@@ -847,31 +858,38 @@ docs(readme): add local setup steps
 
 ---
 
-### 🟦 FAZ 9 — CI/CD & DigitalOcean Deploy
-**Altyapı (öneri, maliyet/basitlik dengesi)**
-- **Backend:** DigitalOcean App Platform (Docker) *veya* Droplet + Docker Compose + Nginx + Certbot
-- **Veritabanı:** DigitalOcean **Managed PostgreSQL** (otomatik yedek, VPC içi bağlantı)
-- **Web:** Faz 5 ADR'sinde **prerender/SSG** seçildiyse App Platform Static Site (veya Spaces + CDN); **SSR (Node)** seçildiyse App Platform'da ayrı bir Node web servisi (maliyet ve ölçekleme etkisi kullanıcıya bildirilir). Dinamik sayfalar (koleksiyon, yakında çıkacaklar) için prerender yenileme sıklığı/ISR benzeri strateji belirlenir
-- **Domain/SSL:** Let's Encrypt / DO yönetimli sertifika
+### 🟦 FAZ 9 — CI/CD & Ücretsiz Deploy (Vercel Hobby + Neon) (v1.8)
+> DigitalOcean planı bırakıldı (yönetilen PostgreSQL en az ≈ $15/ay + App Platform ≈ $5/ay; hedef $0). **Hedef: aylık $0.** Bu faz, Faz 0'daki spike sonucuna ve ADR `0002-hosting.md` kararına bağlıdır.
+
+**Altyapı ($0)**
+- **Web + API:** Vercel Hobby (Vue arayüzü ve Django, Python fonksiyonu). Git bağlantısı: `main` → production, `develop` ve PR'lar → önizleme (preview) dağıtımı (Vercel'in Git entegrasyonu; ajan ayarı doğrular).
+- **Veritabanı:** Neon ücretsiz PostgreSQL. **Üretim ve test için ayrı Neon projeleri** (ayrı DB, ayrı anahtarlar); ücretsiz plan proje sayısı ve toplam depolama sınırı `docs/cost.md`'de.
+- **Alan adı / SSL:** Vercel'in ücretsiz `*.vercel.app` adresi ve otomatik SSL. **Özel alan adı ücretlidir; kullanıcı istemedikçe alınmaz.**
+- **Zamanlayıcı:** Vercel Cron veya GitHub Actions zamanlanmış workflow (bkz. §3.7).
+- **Yedek barındırma (spike kötü çıkarsa):** Render ücretsiz web servisi (uykulu) veya Cloud Run (fatura hesabı → yalnızca kullanıcı onayıyla). `Dockerfile` bunun için korunur.
 
 **Görevler**
-- [ ] GitHub Actions:
+- [ ] GitHub Actions (yalnızca ücretsiz dakika kotası içinde):
   - `ci-backend.yml` → ruff, pytest (Postgres servisiyle), bandit
   - `ci-web.yml` → lint, type-check, vitest, build
-  - `deploy.yml` → `main`'e merge + tag'de deploy
-- [ ] Ortamlar: `staging` ve `production` (ayrı DB, ayrı anahtarlar)
-- [ ] Migration'lar deploy sırasında otomatik ama **güvenli** (geri alma planı)
-- [ ] Health check + otomatik yeniden başlatma
-- [ ] Veritabanı yedek/restore prosedürü **test edilip** `docs/runbook.md`'ye yazılsın
-- [ ] Ortam değişkenleri dokümantasyonu
-- [ ] Gözlem: uptime izleme (UptimeRobot vb.), log toplama
+  - (deploy Vercel'in Git entegrasyonuyla yapılır; ayrı `deploy.yml` gerekirse yalnızca zamanlanmış görev tetikleyici için)
+- [ ] Migration'lar: yayına çıkmadan önce **güvenli ve geri alınabilir**; Neon'a uygulama adımı ve geri alma prosedürü `docs/runbook.md`'de (serverless fonksiyonlar çoklu çalıştığı için migration deploy içinde değil, **kontrollü ayrı adım**)
+- [ ] Sağlık kontrolü: `/api/v1/health/`; DB uyku/uyanma durumu hata değil "uyanıyor" olarak ele alınır
+- [ ] **Soğuk başlangıç UX'i:** ilk istek yavaşsa arayüzde anlaşılır yükleme durumu; sayfa açılışında arka planda hafif bir "ısıtma" isteği (`/health/`); statik sayfalar backend uyanmadan açılır
+- [ ] **Yedekleme:** Neon ücretsiz planın yedek/geri yükleme olanaklarını **ajan resmi dokümandan doğrulasın**; her halükârda `pg_dump` ile dışa aktarma prosedürü (manuel veya zamanlanmış) ve **bir kez denenmiş geri yükleme** `docs/runbook.md`'de
+- [ ] Ortam değişkenleri dokümantasyonu (Vercel panelinden girilir; sohbete/depoya yazılmaz)
+- [ ] Gözlem: Vercel çalışma zamanı logları; ücretli izleme servisi **yok** (ücretsiz uptime servisi yalnızca planı doğrulanıp kullanıcı onaylarsa)
+- [ ] `docs/cost.md` güncel: Vercel Hobby, Neon, Gemini, GitHub Actions limitleri + her birinde limit dolunca ne olacağı + **hiçbir serviste ödeme yöntemi tanımlı olmadığının** onayı
+- [ ] **Limit izleme:** Vercel kullanımı (çağrı, aktif işlemci), Neon CU-saat ve depolama, Gemini kotası haftalık kontrol listesi; %80'de kullanıcıya haber verilir (arayüzde veya `docs/cost.md` kontrol listesinde)
 
 **Kabul Kriterleri**
-- `develop` → staging'e otomatik, `main` → prod'a onaylı deploy
-- Bir yedekten geri yükleme başarıyla denenmiş
-- Deploy'da kesinti yok veya çok kısa; rollback adımları yazılı
+- `main`'e birleşince Vercel production'a çıkıyor; PR'lar önizleme alıyor
+- Yayındaki sistemde hiçbir servis ücretli plana veya kart tanımına bağlı değil (kullanıcı panellerde doğruladı)
+- Bir `pg_dump` yedeğinden geri yükleme başarıyla denenmiş; migration geri alma adımları yazılı
+- Soğuk başlangıç ölçümü (`docs/deploy-spike.md`) yayındaki ortamda tekrarlanmış ve kabul eşiği içinde
+- Limit dolduğunda sistem kapanmak yerine zarifçe düşüyor (klasik arama, önbellekten sunum), fatura riski yok
 
-> **Ajan notu:** DigitalOcean token, DB şifresi gibi bilgiler için kullanıcıdan iste; kod/commit içine ASLA yazma.
+> **Ajan notu:** Vercel, Neon ve Google (Gemini) hesaplarını kullanıcı kendisi açar; ajan hiçbir anahtarı/şifreyi kod, commit veya sohbete **yazmaz**. Bir panel kart veya ücretli plan önerirse **kabul etme**, kullanıcıya sor.
 
 ---
 
@@ -918,7 +936,7 @@ docs(readme): add local setup steps
 ### 🟦 FAZ 11 — Lansman & Sonrası
 - [ ] Gizlilik politikası, KVKK aydınlatma metni, çerez tercihleri; **kullanılan LLM sağlayıcısı ve ücretsiz katmanda sorguların sağlayıcı tarafından ürün geliştirmede kullanılabileceği açıkça yazılır** (sağlayıcı değişirse metin güncellenir)
 - [ ] **(v1.6) Kullanıcı içeriği hukuki hazırlık:** Kullanım Koşulları, Topluluk Kuralları, şikâyet/kaldırma süreci, 18+ yaş beyanı, iletişim bilgisi: §3.11 "Varsayılan Politika Kararları" ile uygulanmış ve yayında olduğu doğrulanır; `docs/legal-notes.md`'de "halka açılmadan önce bir kez gözden geçirme" önerisi bulunur (geliştirmeyi engellemez)
-- [ ] Analitik (gizlilik dostu: Plausible/PostHog)
+- [ ] Analitik: **ücretsiz ve gizlilik dostu** seçenek (ör. Vercel Web Analytics — Hobby'de ayda 50.000 olay; ajan limiti doğrular) veya analitik yok. Ücretli analitik servisi eklenmez (Sıfır Ödeme Politikası)
 - [ ] Search Console/sitemap gönderimi, indekslenme takibi (trafik reklam gelirinin ön koşulu)
 - [ ] Geri bildirim butonu ("bu öneri iyi miydi?" 👍/👎 → ranking iyileştirme verisi)
 - [ ] Sürüm notları, `CHANGELOG.md`, `v1.0.0` tag'i
@@ -953,6 +971,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:5173
 
 # Database
 DATABASE_URL=postgres://cineglobe:cineglobe@localhost:5432/cineglobe
+# Üretimde: Neon'un "pooled" bağlantı adresi (sslmode=require). Yalnızca Vercel panelinden girilir, depoya/sohbete yazılmaz.
 
 # External APIs
 TMDB_API_KEY=
@@ -967,8 +986,12 @@ LLM_DAILY_BUDGET_USD=5       # tavan dolunca AI'sız klasik arama devreye girer 
 LLM_MAX_OUTPUT_TOKENS=700
 SEARCH_QUERY_MAX_CHARS=300
 
-# Cache
-REDIS_URL=redis://localhost:6379/0
+# Cache & sayaçlar (v1.8): varsayılan veritabanı önbelleği; Redis YOK
+CACHE_BACKEND=db            # db | locmem (testlerde). Redis eklenirse ayrıca belgelenir ve kullanıcı onayı gerekir
+# REDIS_URL=                # kullanılmıyor (isteğe bağlı, şimdilik kapalı)
+
+# Cron (v1.8): zamanlanmış görev endpoint'ini korur
+CRON_SECRET=                # GİZLİ — yalnızca Vercel/GitHub secrets'ta
 
 # i18n
 DEFAULT_LANGUAGE=tr
@@ -1008,7 +1031,7 @@ PAYMENT_PROVIDER=           # yalnızca Premium onaylanırsa
 PAYMENT_SECRET_KEY=         # GİZLİ — yalnızca env/secret manager
 PAYMENT_WEBHOOK_SECRET=
 
-# Monitoring
+# Monitoring (opsiyonel; ücretsiz planı doğrulanmadan ve kullanıcı onaylamadan doldurulmaz)
 SENTRY_DSN=
 ```
 

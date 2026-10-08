@@ -14,6 +14,9 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 - 🌐 **Şans Globu:** Butona bas, dünya dönsün, sürpriz bir film/dizi çıksın (favorilerden veya bir koleksiyondan)
 - 🔓 **Giriş isteğe bağlı:** Hesap açmadan arayabilir, keşfedebilir, Şans Globu'nu kullanabilirsiniz
 - 📓 **Film Defterim (üyelere):** İzlediklerinizi işaretleyin, puan verin, özel notlar yazın, kendi istatistiklerinizi görün
+- 👤 **Profil & kişisel listeler:** Kendi sıralamalarınızı ("En sevdiğim 10 gerilim") oluşturun, sürükleyip sıralayın; her şey varsayılan **özel**, paylaşım sizin kararınız
+- 🔗 **Defter paylaşımı:** Defterinizi salt-okunur, iptal edilebilir bir bağlantıyla birine gönderin (notlar ancak siz seçerseniz)
+- 🤝 **Birlikte Seç *(opsiyonel)*:** İki kişi izlenecek listelerini birleştirir, ortak filmleri görür, Şans Globu ortak havuzdan seçer
 - ❤️ **Favoriler & izleme listesi**
 - 🌐 **Yalnızca web** (telefon ve tablet tarayıcılarında tam uyumlu; native mobil uygulama yok)
 
@@ -25,12 +28,13 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 
 - **Backend:** Python 3.10+, Django 5, Django REST Framework, drf-spectacular (OpenAPI/Swagger)
 - **Veritabanı:** PostgreSQL 16 (İlişkisel veri + `(media_type, tmdb_id)` tekil anahtar yapısı)
-- **Önbellek (Cache):** Redis 7
-- **Doğal Dil Anlama (NLU):** Sağlayıcıdan bağımsız LLM zinciri: Google Gemini Flash-Lite (ücretsiz katman) → isteğe bağlı Claude Haiku 5.5 → AI'sız klasik arama; Pydantic veri doğrulama ([ADR-0003](docs/adr/0003-llm-provider-chain.md), maliyet: [docs/cost.md](docs/cost.md))
+- **Önbellek (Cache) & sayaçlar:** Django veritabanı önbelleği (serverless'a uygun; Redis kullanılmıyor)
+- **Doğal Dil Anlama (NLU):** Sağlayıcı-bağımsız LLM katmanı — başlangıçta Gemini ücretsiz katman, gerekirse Claude Haiku 5.5; LLM erişilemezse AI'sız klasik arama + Pydantic veri doğrulama
 - **Veri Kaynağı:** TMDB API (Film & Dizi verileri)
 - **Web Frontend:** Vue 3, Vite, TypeScript, Pinia, Tailwind CSS, GSAP, three.js / globe.gl (arama motoru dostu olması için SSR/prerender — Nuxt 3 veya Vite SSG, ADR ile seçilir)
-- **Gelir:** Reklam (onay yönetimli), affiliate bağlantılar, opsiyonel Premium — TMDB ticari lisansı alınmadan açılmaz
-- **Konteynerizasyon & Dağıtım:** Docker, Docker Compose, GitHub Actions, DigitalOcean
+- **Gelir:** Şimdilik yok — ürün ücretsiz ve reklamsızdır. Reklam/abonelik ileride, TMDB ticari lisansıyla birlikte değerlendirilir
+- **LLM maliyet koruması:** Sonuç önbelleği, ücretsiz katman öncelikli sağlayıcı zinciri, günlük kota ve bütçe tavanı; kota/bütçe dolunca AI'sız klasik arama açık kalır
+- **Dağıtım (aylık $0 hedefi):** Vercel Hobby (arayüz + Django) + Neon ücretsiz PostgreSQL + Gemini ücretsiz katman; GitHub Actions. Yerelde Docker Compose. Taşınabilirlik için `Dockerfile` korunur. Sıfır Ödeme Politikası: hiçbir servise kart eklenmez, ücretli plana geçilmez
 
 ---
 
@@ -39,7 +43,7 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 ```text
 cineglobe/
 ├── backend/            # Django REST API
-│   ├── apps/           # Django uygulamaları (catalog, search, people, collections, upcoming, reminders, notebook, monetization, accounts)
+│   ├── apps/           # Django uygulamaları (catalog, search, people, collections, upcoming, reminders, notebook, social, accounts)
 │   ├── config/         # Django ayarları (base, dev, prod)
 │   ├── requirements/   # Bağımlılıklar (base.txt, dev.txt, prod.txt)
 │   ├── tests/          # pytest test paketi
@@ -49,7 +53,7 @@ cineglobe/
 │   └── adr/            # Mimari Karar Kayıtları (ADR)
 ├── .github/            # GitHub Actions CI/CD ve PR şablonu
 │   └── workflows/
-├── docker-compose.yml  # PostgreSQL, Redis ve Backend servisleri
+├── docker-compose.yml  # Yerel geliştirme: PostgreSQL ve Backend
 ├── .env.example        # Çevre değişkenleri örnek şablonu
 ├── CINEGLOBE_PLAN.md   # Ana geliştirme planı
 └── README.md
@@ -69,9 +73,9 @@ cp .env.example .env
 ```
 
 ### 2. Docker Servislerini Başlatma
-PostgreSQL ve Redis servislerini Docker ile ayağa kaldırın:
+Yerel PostgreSQL'i Docker ile ayağa kaldırın:
 ```bash
-docker compose up -d postgres redis
+docker compose up -d postgres
 ```
 
 Servis durumunu kontrol edin:
@@ -100,14 +104,14 @@ python backend/manage.py runserver
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
-- **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; AI için `GEMINI_API_KEY` gerekir, yoksa AI'sız klasik aramayla çalışır)*
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
-- **Oyuncunun En İyi Yapımları:** `POST http://localhost:8000/api/v1/people/top-titles/` — gövde: `{"name": "RDJ", "media_type": "both"}` *(Faz 4)*
-- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest|rating|popularity&media_type=both&lang=tr` *(Faz 4)*
-- **Oyuncu Detayı:** `http://localhost:8000/api/v1/people/{tmdb_id}/?lang=tr` *(Faz 4; Türkçe biyografi yoksa İngilizce)*
+- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
 - **Film Defterim (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/?status=watched&sort=-rating` *(Faz 7B)*
 - **Defter İstatistikleri (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/stats/` *(Faz 7B)*
+- **Herkese açık profil:** `http://localhost:8000/api/v1/users/{username}/` *(Faz 7C; yalnızca sahibinin açtığı kısım)*
+- **Liste:** `http://localhost:8000/api/v1/lists/{slug_or_id}/` *(Faz 7C; görünürlük kuralına göre)*
+- **Paylaşılan defter:** `http://localhost:8000/api/v1/shared/{token}/` *(Faz 7C)*
 - **Swagger UI:** [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
 - **ReDoc:** [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
 
@@ -120,13 +124,7 @@ pytest
 pytest --cov=backend --cov-report=term-missing
 ```
 
-### 6. LLM Kalite Kapısı (canlı anahtar gerekir, isteğe bağlı)
-```bash
-python backend/manage.py run_llm_eval --provider gemini --report docs/llm-eval.md
-```
-Gemini'nin arama sorgularını yeterince iyi anlayıp anlamadığını 30 sorguluk setle ölçer (bkz. [docs/llm-eval.md](docs/llm-eval.md)).
-
-### 7. Kod Standartları ve Pre-commit
+### 6. Kod Standartları ve Pre-commit
 ```bash
 pre-commit install
 pre-commit run --all-files
@@ -147,4 +145,4 @@ pre-commit run --all-files
 
 Bu ürün film ve dizi verilerini sağlamak için TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.
 
-> **Önemli Lisans Notu:** TMDB ücretsiz API kullanımı ticari olmayan projeler içindir ve platform arayüzünde (footer / Hakkında bölümünde) **TMDB logosu ve atıf metni zorunludur**. TMDB, ana amacı gelir elde etmek olan projeleri ticari sayar; **reklam, affiliate veya Premium açılmadan önce TMDB'den ticari lisans/yazılı onay alınmalıdır** (bkz. `CINEGLOBE_PLAN.md` §2 ve Faz 10).
+> **Önemli Lisans Notu:** TMDB ücretsiz API kullanımı ticari olmayan projeler içindir ve platform arayüzünde (footer / Hakkında bölümünde) **TMDB logosu ve atıf metni zorunludur**. TMDB, ana amacı gelir elde etmek olan projeleri ticari sayar; **şimdilik proje ücretsiz ve reklamsızdır**; reklam, abonelik, affiliate veya bağış gibi gelir getiren bir öğe eklenmeden önce TMDB'den ticari lisans/yazılı onay alınmalıdır (bkz. `CINEGLOBE_PLAN.md` §2, §3.9 ve Faz 10 — ertelendi).
