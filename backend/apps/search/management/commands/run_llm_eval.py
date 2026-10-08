@@ -40,6 +40,12 @@ class Command(BaseCommand):
         parser.add_argument("--provider", choices=sorted(PROVIDERS), default="gemini")
         parser.add_argument("--queries", default=str(QUERIES_PATH))
         parser.add_argument(
+            "--rpm",
+            type=float,
+            default=12,
+            help="Max requests per minute (Gemini free tier allows 15; 0 = no pacing)",
+        )
+        parser.add_argument(
             "--report",
             help="Markdown file to append the dated result to (e.g. docs/llm-eval.md)",
         )
@@ -53,7 +59,10 @@ class Command(BaseCommand):
         setting = MODEL_SETTING.get(provider.name)
         model = getattr(settings, setting) if setting else "rules"
 
-        report = run_eval(provider, load_queries(Path(options["queries"])), model)
+        queries = load_queries(Path(options["queries"]))
+        # Classic makes no API calls, so it is never paced.
+        rpm = options["rpm"] if provider.uses_ai else 0
+        report = run_eval(provider, queries, model, requests_per_minute=rpm or None)
         markdown = report.to_markdown(local_today().isoformat())
         self.stdout.write(_console_safe(markdown))
 

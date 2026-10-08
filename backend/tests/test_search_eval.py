@@ -136,3 +136,35 @@ def test_command_warns_when_gate_fails(tmp_path, monkeypatch):
 
 def test_classic_provider_passes_gate_on_shipped_set():
     assert run_eval(ClassicProvider(), load_queries(), "rules").passed
+
+
+def test_run_eval_paces_requests_to_stay_under_rate_limit():
+    waits = []
+    llm = FakeProvider(
+        "gemini",
+        SearchFilters(media_type="tv"),
+        parse_errors=[ProviderOutputError("json")],
+    )
+    run_eval(llm, QUERIES[:2], "m", requests_per_minute=12, sleep=waits.append)
+    # 3 calls (one retry) → 2 waits of up to 5 s each (60 / 12)
+    assert len(waits) == 2
+    assert all(0 < w <= 5.0 for w in waits)
+
+
+def test_long_errors_are_truncated_in_report():
+    broken = FakeProvider("gemini", parse_errors=[ProviderUnavailableError("x" * 1000)])
+    md = run_eval(broken, QUERIES[:1], "m").to_markdown("2026-10-08")
+    assert "x" * 300 not in md and "x" * 150 in md
+
+
+def test_latency_excludes_pacing_waits():
+    def slow_sleep(seconds):  # a real sleep would be counted if timing were wrong
+        import time
+
+        time.sleep(0.05)
+
+    llm = FakeProvider("gemini", SearchFilters(media_type="tv"))
+    report = run_eval(
+        llm, QUERIES[:1] * 3, "m", requests_per_minute=6000, sleep=slow_sleep
+    )
+    assert report.avg_seconds < 0.02

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from apps.search.schemas import SearchFilters
 
 QUERIES_PATH = Path(__file__).parent / "eval" / "queries.json"
 MAX_AVG_SECONDS = 6.0
+MAX_REASON_CHARS = 200
 
 
 def load_queries(path: Path = QUERIES_PATH) -> list[dict[str, Any]]:
@@ -187,24 +189,49 @@ class EvalReport:
         if failed:
             lines += ["<details><summary>Başarısız sorgular</summary>", ""]
             for c in failed:
-                reason = c.error or "; ".join(c.failures)
+                reason = (c.error or "; ".join(c.failures))[:MAX_REASON_CHARS]
                 lines.append(f"- `{c.id}` “{c.query}” → {reason}")
             lines += ["", "</details>", ""]
         return "\n".join(lines)
 
 
 def run_eval(
-    provider: LLMProvider, queries: list[dict[str, Any]], model: str
+    provider: LLMProvider,
+    queries: list[dict[str, Any]],
+    model: str,
+    requests_per_minute: float | None = None,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> EvalReport:
+    """Score the provider; `requests_per_minute` paces calls under free-tier limits.
+
+    Without pacing, a free tier (e.g. 15 requests/minute) answers 429 and the
+    report measures the rate limit instead of the model's quality.
+    """
+    interval = 60.0 / requests_per_minute if requests_per_minute else 0.0
+    last_call: float | None = None
+    api_seconds = 0.0  # time spent inside the provider; pacing waits excluded
+
+    def paced_parse(query: str) -> SearchFilters:
+        nonlocal last_call, api_seconds
+        if interval and last_call is not None:
+            wait = interval - (time.monotonic() - last_call)
+            if wait > 0:
+                sleep(wait)
+        last_call = time.monotonic()
+        try:
+            return provider.parse_query(query).value
+        finally:
+            api_seconds += time.monotonic() - last_call
+
     cases: list[CaseResult] = []
     for item in queries:
-        started = time.monotonic()
+        api_seconds = 0.0
         filters: SearchFilters | None = None
         first_try = True
         error = ""
         for _ in range(2):  # one retry after invalid output, as in production
             try:
-                filters = provider.parse_query(item["query"]).value
+                filters = paced_parse(item["query"])
                 break
             except ProviderOutputError as exc:
                 first_try = False
@@ -213,7 +240,7 @@ def run_eval(
                 first_try = False
                 error = f"provider error: {exc}"
                 break
-        seconds = time.monotonic() - started
+        seconds = api_seconds
         expect = item.get("expect", {})
         if filters is None:
             cases.append(
