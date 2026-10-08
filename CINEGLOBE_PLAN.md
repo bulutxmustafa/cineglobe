@@ -5,6 +5,9 @@
 > **Sürüm notu (v1.1):** Platform artık **film + dizi** destekler. Kodda "movie" yerine genel `Title` kavramı kullanılır (`media_type`: `movie` | `tv`).
 > **Sürüm notu (v1.2):** Eklenenler: (a) **TR/EN çift dil** (arayüz + içerik + LLM çıktısı), (b) **Hazır Koleksiyonlar** (Sıkılmam Diyeceğiniz Filmler, Sürükleyici, Çerezlik, Kafanızı Dağıtacak, Başladığı Gibi Bitecek, Tersköşe…), (c) **Oyuncu filmografisi** (kronolojik + en güncel sıralama), (d) **Yakında Çıkacaklar** + **hatırlatıcı**. Yeni bölümler: §3.4–§3.7, Faz 4B, Faz 4C; Faz 2/5/7/10 güncellendi.
 > **Sürüm notu (v1.3):** (a) **Yalnızca web:** Flutter/mobil uygulama kapsamdan çıkarıldı (mobil tarayıcıda responsive deneyim korunur). (b) **İsteğe bağlı giriş:** Arama, koleksiyonlar, oyuncu sayfaları ve Şans Globu hesapsız kullanılır; giriş yapanlar **Film Defterim** kazanır (izlediklerim, puanım, özel notlarım, istatistikler) → §3.8, **Faz 7B**. (c) **Gelir modeli:** reklam + affiliate + opsiyonel Premium → §3.9, **Faz 10**. Eski "Mobil Uygulama" fazı (Faz 10) kaldırıldı; Faz 10 artık Gelir Modeli'dir.
+> **Sürüm notu (v1.4):** **Ürün şimdilik tamamen ücretsiz ve reklamsız/aboneliksiz** çalışır (TMDB'nin ücretsiz, ticari olmayan API kullanımına uymak için). **Faz 10 (Gelir Modeli) ERTELENDİ**; uygulama tutarsa yeniden değerlendirilir. Buna karşılık **LLM maliyet koruması** (önbellek, ucuz model, kota, günlük bütçe tavanı, ücretsiz yedek arama) artık **Faz 3'ün zorunlu parçasıdır** → §3.10.
+> **Sürüm notu (v1.5):** **LLM katmanı sağlayıcı-bağımsızdır.** Başlangıç sağlayıcısı **Google Gemini ücretsiz katmanı** (Flash-Lite); sonuç kalitesi geçiş kriterini sağlamazsa **Claude Haiku 5.5**'e (ücretli, çok ucuz) tek ayarla geçilir. Zincir: `gemini → classic` (varsayılan); LLM erişilemezse veya kota dolarsa AI'sız **klasik arama**. Ücretsiz katmanda istekler sağlayıcı tarafından ürün geliştirmede kullanılabildiği için **gizlilik metninde belirtilir** ve LLM'e kişisel veri gönderilmez → §3.10.
+> **Sürüm notu (v1.6):** **Sosyal katman eklendi (gizlilik-öncelikli):** herkese açık **profil** (isteğe bağlı), **kişisel listeler/sıralamalar** (örn. "Top 10 Nolan"), **defter paylaşımı** (salt-okunur, iptal edilebilir bağlantı), ve **"Birlikte Seç"** (iki kişinin izlenecek listesinden ortak film seçimi + Şans Globu). Her şey **varsayılan özel**dir; yorum, mesajlaşma ve fotoğraf yükleme **yoktur** (moderasyon yükü ve hukuki risk nedeniyle). Yeni bölüm: §3.11; yeni fazlar: **Faz 7C**, **Faz 7D (opsiyonel)**.
 
 ---
 
@@ -44,10 +47,14 @@ Kullanıcı siteye girer, premium ve modern bir arayüzle karşılaşır. Doğal
 | F10 | **Yakında Çıkacaklar & Hatırlatıcı** | Vizyona/yayına girecek film ve diziler listesi; "Hatırlat" ile bildirim/e-posta |
 | F11 | **İsteğe bağlı giriş (misafir + üye)** | Giriş zorunlu değil: herkes hesapsız arar, keşfeder, Şans Globu'nu kullanır. Giriş yapan ek özellikler kazanır |
 | F12 | **Film Defterim (kişisel not defteri)** | Giriş yapan kullanıcı film/diziyi *izlenecek / izleniyor / izledim / bıraktım* olarak işaretler, puan verir, özel not yazar, kendi istatistiklerini görür |
-| F13 | **Gelir modeli** | Reklam (onay yönetimiyle), affiliate "nerede izlenir" bağlantıları, opsiyonel Premium (reklamsız + yüksek kota) |
+| F13 | **Gelir modeli — ⏸️ ERTELENDİ** | Şimdilik reklam, abonelik, affiliate veya bağış **yok**; ürün ücretsiz. Uygulama büyürse Faz 10 + TMDB ticari lisansı ile yeniden ele alınır |
+| F14 | **Maliyet koruması (AI arama)** | Önbellek + ucuz model + kota + günlük bütçe tavanı; bütçe dolunca AI'sız klasik arama açık kalır (§3.10) |
+| F15 | **Profil & kişisel listeler** | Üye kendine ait sayfa açar (`/u/kullanici`), kendi sıralamalarını ("En sevdiğim 10 gerilim") oluşturur, sürükle-bırak sıralar; görünürlük: özel / bağlantıyla / herkese açık |
+| F16 | **Defter paylaşımı & topluluk puanı** | Defterini salt-okunur bağlantıyla birine gönderir (notlar ayrıca ve bilinçli seçilirse); yapım sayfasında anonim topluluk ortalaması + (herkese açık seçenlerin) puanları |
+| F17 | **Birlikte Seç (opsiyonel, Faz 7D)** | İki kişi "izlenecek" listelerini birleştirir, ortak filmleri görür, Şans Globu ortak havuzdan seçer; "zevk uyumu" gösterilir |
 
 ### 1.3 Kapsam Dışı (v1)
-Film/dizi izletme (streaming), sosyal ağ özellikleri (defter paylaşımı, takip, yorum), **native mobil uygulama**. Ödeme sistemi v1'de yok; yalnızca Faz 10'da kullanıcı onaylarsa **opsiyonel Premium** için eklenir. (Şimdilik yok.)
+Film/dizi izletme (streaming), **herkese açık yorum/tartışma, mesajlaşma (DM), fotoğraf/avatar yükleme, kullanıcı içeriğinin otomatik "trend" keşfi** (moderasyon hazır olana kadar), **native mobil uygulama**. (Profil, liste, paylaşım ve isteğe bağlı takip kapsam **içindedir**, bkz. §3.11.) **Reklam, abonelik, affiliate, bağış ve ödeme sistemi v1'de yoktur** (ürün ücretsizdir; Faz 10 ertelendi). (Şimdilik yok.)
 
 ---
 
@@ -58,18 +65,19 @@ Film/dizi izletme (streaming), sosyal ağ özellikleri (defter paylaşımı, tak
 | Backend | **Django 5 + Django REST Framework** | Olgun, güvenli varsayılanlar, admin paneli, PostgreSQL ile mükemmel uyum, ORM/migration |
 | Veritabanı | **PostgreSQL 16** (+ `pgvector` opsiyonel) | İlişkisel veri + ileride anlamsal arama |
 | Film & dizi verisi | **TMDB API** | Kapsamlı film, dizi, oyuncu ve anahtar kelime verisi (`/movie` ve `/tv` endpointleri) |
-| Doğal dil anlama | **Claude API (Anthropic)** | Kullanıcı cümlesini yapılandırılmış filtreye çevirir |
+| Doğal dil anlama | **Sağlayıcı-bağımsız LLM katmanı (`LLMProvider` arayüzü)** — başlangıç: **Gemini ücretsiz katman (Flash-Lite)**; yedek/yükseltme: **Claude Haiku 5.5** | Kullanıcı cümlesini yapılandırılmış filtreye çevirir. Sağlayıcı `.env`'den seçilir; kodda sabit değildir (§3.10) |
 | Web frontend | **Vue 3 + Vite + TypeScript + Pinia + Vue Router** | İstenen; hızlı ve modern |
 | Stil | **Tailwind CSS** + özel tasarım tokenları | Premium görünüm için tutarlı sistem |
 | Animasyon | **GSAP** (UI) + **three.js / globe.gl** (küre) | Şans Globu için |
-| SEO / render | **SSR veya prerender (Nuxt 3 *ya da* Vite SSG/prerender — ajan ADR ile seçsin)** | Reklam geliri organik trafiğe bağlı; koleksiyon, oyuncu, detay ve yakında çıkacaklar sayfalarının arama motoruna HTML olarak sunulması gerekir. Saf SPA bu açıdan zayıf |
-| Gelir | **Reklam (CMP onaylı) + affiliate + opsiyonel Premium** | Bkz. §3.9; TMDB ticari lisansı şartı |
+| SEO / render | **SSR veya prerender (Nuxt 3 *ya da* Vite SSG/prerender — ajan ADR ile seçsin)** | Kullanıcıların çoğu arama motorundan gelir; koleksiyon, oyuncu, detay ve yakında çıkacaklar sayfalarının arama motoruna HTML olarak sunulması gerekir. Saf SPA bu açıdan zayıf |
+| Gelir | **Şimdilik yok (ücretsiz ürün)** | TMDB'nin ücretsiz API'si ticari olmayan projeler içindir; gelir modeli ileride, TMDB lisansıyla birlikte değerlendirilir (§3.9, Faz 10 — ertelendi) |
+| LLM modeli | **Gemini Flash-Lite (ücretsiz katman) → gerekirse Claude Haiku 5.5** | Ücretsiz katmanda maliyet $0 ama hız sınırlı, garantisiz ve istekler Google tarafından ürün geliştirmede kullanılabilir. Haiku 5.5 ücretli ama arama başına ≈ $0,0006 (§3.10). Model kimlikleri env'den okunur |
 | Cache | **Redis** (önce basit DB/locmem, gerekirse Redis) | TMDB & LLM çağrılarını azaltır |
 | Deploy | **DigitalOcean** (App Platform veya Droplet + Managed PostgreSQL) | İstenen |
 | CI/CD | **GitHub Actions** | Test + deploy otomasyonu |
 | Test | pytest, Vitest, Playwright | Her katman için |
 
-> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** kullanım için ücretsizdir ve **atıf (TMDB logosu — kendi markamızdan daha az belirgin — + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB API kullanım şartları, **reklam dahil gelir elde eden** bir sitede/uygulamada TMDB verisi kullanmayı, ücret alınan erişimi ve TMDB verisiyle AI/ML eğitimini açıkça **ticari kullanım** sayar; bunun için TMDB ile **yazılı ticari anlaşma** gerekir (ücret içerebilir). Şartlar ayrıca TMDB verisinin **en fazla 6 ay** önbellekte/depoda tutulmasına izin verir. Ajan: (1) Faz 5'te atıfı footer/Hakkında bölümüne koysun, (2) **Faz 10'da reklam/affiliate/Premium açmadan önce TMDB'den yazılı ticari anlaşma alınmasını kullanıcıdan istesin**; anlaşma yoksa gelir özelliklerini açma, (3) TMDB'den gelen ve DB'de saklanan her veri 6 aydan eski olmayacak şekilde yenilensin veya silinsin.
+> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** projeler için ücretsizdir ve **atıf (TMDB logosu + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB, ana amacı sahibine gelir sağlamak olan projeyi "ticari" sayar; reklamlı/abonelikli bir sitenin hangi tarafa düştüğü SSS'te net değildir, **kesinleştirmek için TMDB satış ekibiyle yazışılmalıdır**. **Karar (v1.4): proje şimdilik ücretsiz ve ticari olmayan olarak yürür.** Ajan: (1) Faz 2'de atıfı footer/Hakkında bölümüne koysun, (2) **reklam, abonelik, affiliate, bağış butonu gibi gelir getiren hiçbir öğe eklemesin** (gelir getiren her şey TMDB'ye sorulmadan eklenmez), (3) gelir modeline geçilecekse önce kullanıcıdan TMDB ticari lisansını/yazılı onayını istesin.
 
 ---
 
@@ -82,7 +90,7 @@ Film/dizi izletme (streaming), sosyal ağ özellikleri (defter paylaşımı, tak
    └──────────────┬───────────────┘
                   ▼
       ┌──────────────────┐
-      │ Django REST API  │──► Claude API (sorgu → filtre)
+      │ Django REST API  │──► LLM sağlayıcısı: Gemini (ücretsiz) / Haiku 5.5
       │  (/api/v1/...)   │──► TMDB API (film & dizi verisi)
       └───────┬──────────┘
               ▼
@@ -92,7 +100,7 @@ Film/dizi izletme (streaming), sosyal ağ özellikleri (defter paylaşımı, tak
 ### 3.1 Doğal Dil Arama Akışı (KRİTİK)
 
 1. Kullanıcı yazar: *"Silahlı çatışma olsun ama istihbarat da olsun"*
-2. Backend, Claude'a sistem prompt'uyla gönderir; Claude **yalnızca JSON** döner:
+2. Backend, seçili LLM sağlayıcısına (§3.10) sistem prompt'uyla gönderir; LLM **yalnızca JSON** döner (sağlayıcının yapılandırılmış çıktı/response schema özelliği kullanılır, yine de Pydantic ile doğrulanır):
 ```json
 {
   "intent": "discover",
@@ -176,7 +184,7 @@ Kullanıcı yazmadan, tek tıkla keşfetsin diye hazır "ruh hali / izleme niyet
 - Model: `Collection` (`slug`, `name_tr`, `name_en`, `description_tr/en`, `icon`, `cover_title` (opsiyonel), `media_type` (`movie`/`tv`/`both`), `recipe` JSON, `is_active`, `sort_order`, `editor_pins`, `editor_blocklist`).
 - `recipe` şeması **Pydantic ile doğrulanır** (türler, hariç türler, keyword'ler, `runtime_min/max`, `min_rating`, `min_votes`, `vote_count_max`, `sort_by`, `year_range`, `episode_runtime_max`, `status`).
 - Üretim: `recipe` → TMDB discover → `Ranker` → cache (6–24 saat). Editör **sabitleme (pin)** ile bazı yapımları öne çıkarabilir, **blocklist** ile uygunsuzları çıkarabilir (Django admin üzerinden).
-- Subjektif koleksiyonlar (Tersköşe, Sürükleyici…) için **LLM doğrulama adımı (opsiyonel, toplu & cache'li):** aday listesi Claude'a verilir, "bu yapım koleksiyon temasına uyuyor mu?" 0–1 skor + tek cümle gerekçe döner. Maliyet için günde bir kez ön-hesaplanır (cron/management command), istek anında LLM çağrılmaz.
+- Subjektif koleksiyonlar (Tersköşe, Sürükleyici…) için **LLM doğrulama adımı (opsiyonel, toplu & cache'li):** aday listesi LLM'e verilir, "bu yapım koleksiyon temasına uyuyor mu?" 0–1 skor + tek cümle gerekçe döner. Maliyet için günde bir kez ön-hesaplanır (cron/management command), istek anında LLM çağrılmaz.
 - **Spoiler kuralı:** "Tersköşe" gerekçeleri asla sürprizi açık etmez ("beklenmedik bir final sunar" gibi).
 - Koleksiyon sonuçları sayfalanır; Şans Globu "bu koleksiyondan rastgele seç" modunu da destekler.
 - Endpointler: `GET /api/v1/collections/` (liste), `GET /api/v1/collections/{slug}/?media_type=&page=&lang=`.
@@ -224,16 +232,16 @@ Faz 4'teki "en iyi" sıralamasına **ek olarak** tam filmografi görünümü:
 | Hatırlatıcılar (Yakında Çıkacaklar) | ❌ (giriş yönlendirmesi) | ✅ |
 | Şans Globu kaynağı: "İzlenecek listem" | ❌ | ✅ |
 | "İzlediklerimi hariç tut" filtresi (arama, koleksiyon, globe) | ❌ | ✅ |
-| Reklam | Gösterilir (Faz 10) | Gösterilir; **Defterim/hesap sayfalarında reklam yok** (öneri) |
+| Reklam | Yok (ürün ücretsiz ve reklamsız; Faz 10 ertelendi) | Yok |
 
 **Yumuşak kapı (soft gate):** Misafir "puan ver", "not ekle" veya "izledim" dediğinde sayfa kaybolmaz; küçük bir modal "Defterin için ücretsiz hesap aç" gösterir. Giriş/kayıt sonrası **bekleyen işlem otomatik tamamlanır** (hatırlatıcıdaki mantıkla aynı).
 
 **Film Defterim — Veri Modeli**
 Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Puan + Not ayrı tablolar olmaz):
 
-`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir, TMDB şartları gereği **hiçbir snapshot 6 aydan eski kalmaz**).
+`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir).
 - Diziler için: `progress_season`, `progress_episode` (Faz 7'deki ilerleme takibi bu modelde birleşir). Bölüm bazlı puan v1'de yok.
-- Notlar **varsayılan özel** ve v1'de paylaşılamaz. Not metni **düz metin** olarak render edilir (XSS koruması), LLM'e **asla** gönderilmez.
+- Notlar **varsayılan özeldir**; yalnızca sahibinin bilinçli olarak oluşturduğu paylaşım bağlantısında ve ayrı bir "notları dahil et" seçimiyle başkasına görünebilir (§3.11, Faz 7C). Not metni **düz metin** olarak render edilir (XSS koruması), LLM'e **asla** gönderilmez.
 
 **Defter Ekranları**
 - **Liste:** sekmeler *İzlenecekler / İzleniyor / İzlediklerim / Bıraktıklarım / Favoriler*; sıralama (son eklenen, puanım, izleme tarihi, yapım yılı); filtre (film/dizi, tür, puan aralığı, etiket); defter içi arama.
@@ -249,11 +257,15 @@ Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Pua
 - `GET /api/v1/me/notebook/stats/`
 - `GET /api/v1/me/notebook/export/?format=csv|json`
 
-### 3.9 Gelir Modeli (Para Kazanma)
+### 3.9 Gelir Modeli (Para Kazanma) — ⏸️ ERTELENDİ
+> **DURUM (v1.4): Bu bölüm şimdilik UYGULANMAZ.** Ürün ücretsiz ve reklamsızdır. Bölüm, ileride karar verilirse hazır bir yol haritası olarak saklanır. Ajan bu bölümdeki hiçbir maddeyi kullanıcı açıkça "gelir modeline geçelim" demeden uygulamaz.
+>
+> **Geçiş kontrol listesi (ileride):** (1) TMDB ticari lisansı/yazılı onay, (2) aylık ziyaretçi ve AI arama hacmi + gerçek LLM maliyeti ölçülmüş olmalı (§3.10 metrikleri), (3) SEO/trafik temeli oluşmuş olmalı, (4) karar: reklam mı, Premium mu, ikisi mi, (5) KVKK/CMP hazırlığı.
+
 **Kısa değerlendirme:** Reklam mantıklı bir başlangıçtır ama tek başına yeterli olmayabilir; çünkü geliri **trafik** belirler, trafiği de **SEO** belirler, ve her AI aramasının bir **LLM maliyeti** vardır. Bu yüzden plan üç katmanlıdır; sırayla açılır, her biri bir "özellik bayrağı" (feature flag) arkasındadır.
 
 **Önkoşullar (bunlar sağlanmadan reklam açılmaz)**
-1. **TMDB yazılı ticari anlaşması** (bkz. §2 lisans notu; şartlar reklamlı siteyi açıkça ticari sayar). Bu bir *engeldir*, ayrıntı değil.
+1. **TMDB ticari lisans / yazılı onay** (bkz. §2 lisans notu). Bu bir *engeldir*, ayrıntı değil.
 2. **Çerez/izin yönetimi (CMP):** reklam ve analitik scriptleri **kullanıcı onayından önce yüklenmez**; KVKK ve (AB/UK ziyaretçileri için) GDPR uyumu. Reklam ağının zorunlu kıldığı sertifikalı CMP gerekiyorsa o kullanılır.
 3. **SEO hazırlığı:** SSR/prerender (bkz. §2), `sitemap.xml`, canonical, `hreflang` (TR/EN), yapılandırılmış veri (`Movie`/`TVSeries`/`Person` schema.org), hızlı sayfalar. Reklam ağları ve arama motorları için sayfada **özgün değer** (kürasyon, gerekçeler, koleksiyon metinleri) olmalı; yalnızca TMDB verisini listeleyen "ince" sayfalar hem onay hem sıralama riski taşır.
 
@@ -274,6 +286,109 @@ Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Pua
 
 **Ölçüm:** arama başına LLM maliyeti, cache hit oranı, misafir→üye dönüşümü, sayfa başı reklam geliri (RPM), Premium dönüşümü. Hedef: **ziyaretçi başına gelir > ziyaretçi başına (LLM + altyapı) maliyeti**. Bu eşik tutmuyorsa kota sıkılaştırılır veya AI araması üyeye/Premium'a kaydırılır.
 
+### 3.10 Maliyet Modeli & LLM Maliyet Koruması (ücretsiz dönem için ZORUNLU)
+
+**LLM Sağlayıcı Stratejisi (v1.5)**
+- **Arayüz:** `LLMProvider` (örn. `parse_query(text, lang) → SearchFilters JSON`, `explain(results, lang) → metinler`). Uygulamalar: `GeminiProvider`, `AnthropicProvider`, `ClassicProvider` (LLM'siz klasik arama). Tüm çağrılar bu arayüzden geçer; iş mantığı hiçbir sağlayıcıya doğrudan bağlı olmaz.
+- **Zincir (`LLM_PROVIDER_CHAIN`, env):** varsayılan `gemini,classic`. Sağlayıcı hata/zaman aşımı/429 (hız sınırı)/geçersiz JSON (1 yeniden deneme sonrası) verirse **bir sonrakine düşülür**; kısa süreli **devre kesici (circuit breaker)** aynı sağlayıcıyı bir süre denemez (boşuna bekleme yok). Haiku 5.5'e geçmek için `LLM_PROVIDER_CHAIN=anthropic,classic` (veya `gemini,anthropic,classic`) yazmak yeterlidir; **kod değişmez**.
+- **Başlangıç modeli:** Gemini Flash-Lite (en ucuz/ücretsiz katman; model kimliği `GEMINI_MODEL`, ajan güncel kimliği resmi dokümandan doğrular). Ücretsiz katmanın **sayısal hız sınırları** resmi "rate limits" sayfasından okunur ve `docs/cost.md`'ye yazılır; günlük toplam arama kotası (misafir + üye) bu sınırı aşmayacak şekilde ayarlanır.
+- **Geçiş kriteri (kalite kapısı):** Faz 3'te hazırlanan **değerlendirme seti** (9 zorunlu senaryo + en az 20 gerçek Türkçe/İngilizce sorgu) seçili sağlayıcıyla çalıştırılır. Aşağıdakiler sağlanıyorsa Gemini ücretsiz ile devam; sağlanmıyorsa kullanıcıya rapor edilir ve `anthropic`'e geçiş önerilir: (1) geçerli JSON oranı ≥ %95 (yeniden denemesiz ≥ %90), (2) `media_type` doğru ≥ %90, (3) `genres_exclude` ("korku içermesin") ihlali = 0 senaryoda, (4) prompt injection senaryosu geçiyor, (5) ortalama yanıt süresi hedef içinde. Sonuçlar `docs/llm-eval.md`'de tarihli raporlanır; **sağlayıcı değişikliğinden sonra set yeniden çalıştırılır**.
+- **Gizlilik (ücretsiz katman):** Sağlayıcının ücretsiz katmanında istekler ürün geliştirmede kullanılabilir (ücretli katmanda kullanılmaz). Bu yüzden: (1) LLM'e **yalnızca arama sorgusu metni** ve gerekli film/dizi meta verisi gider; kullanıcı kimliği, e-posta, IP, **Film Defterim notları/puanları asla gitmez** (testle kanıtlı), (2) arama kutusunda küçük bir not: "Aramalar yapay zekâ sağlayıcısına gönderilir; kişisel bilgi yazmayın", (3) Gizlilik Politikası/KVKK aydınlatma metninde LLM sağlayıcısı ve bu durum açıkça yazılır (Faz 11), (4) "Zevkime göre öner" (opsiyonel kişiselleştirme) ücretsiz katmanla **etkinleştirilmez**; yalnızca ücretli/eğitimde kullanılmayan sağlayıcıyla açılabilir.
+- **Ücretsiz katmanın doğası:** Garanti (SLA) yok, limitler ve model adları değişebilir. Bu nedenle sistem her zaman `classic` yedeğiyle çalışır; sağlayıcı çökse bile site açık kalır.
+
+**Hangi çağrı para harcar?** TMDB ücretsiz API'si arama başına para istemez. Para yalnızca **ücretli LLM API** çağrılarından gider. **Başlangıçta Gemini ücretsiz katmanı kullanıldığı için fiilî LLM maliyeti $0'dır**; ücretli sağlayıcıya (Claude Haiku 5.5 vb.) geçilirse kullanıma göre faturalanır (API faturalaması, claude.ai Pro/Max aboneliğinden ayrıdır). Sunucu + veritabanı + domain gibi **sabit altyapı maliyeti** ayrıca vardır (Faz 9'da kesin rakam çıkarılır).
+
+> **Not (v1.5):** Aşağıdaki tablo **ücretli** seçeneklerin maliyetidir. Varsayılan başlangıçta Gemini ücretsiz katmanı kullanıldığı için fiilî LLM maliyeti **$0**'dır; tablo, ücretsiz katman yetmezse veya kalite kapısı geçilmezse neyle karşılaşılacağını gösterir.
+
+**Arama başına tahmini maliyet** (fiyatlar: Claude Haiku 5.5 → giriş $0,10 / çıkış $0,50; Claude Sonnet 5.5 → giriş $2 / çıkış $10, her ikisi 1 milyon token başına; **Ajan göstermeden önce güncel fiyatı resmi dokümandan yeniden doğrulasın**)
+
+Varsayım (önbelleğe takılmayan bir "doğal dil arama"): 2 LLM çağrısı → (1) sorguyu filtreye çevirme ≈ 900 giriş + 200 çıkış token, (2) 10 sonuç için toplu "neden önerildi?" ≈ 1.500 giriş + 500 çıkış token. Toplam ≈ **2.400 giriş + 700 çıkış token**. Türkçe daha fazla token tüketir; gerçek değer **ölçülmeli**, aşağıdaki rakamlar tahmindir (gerçek maliyeti 1×–2× aralığında düşünün).
+
+| Senaryo | 1 arama | 1.000 arama | 10.000 arama/ay | 100.000 arama/ay |
+|---------|--------:|------------:|----------------:|-----------------:|
+| Haiku 5.5, 2 çağrı (ayrıştırma + açıklama) | ≈ $0,0006 | ≈ $0,6 | ≈ $6 | ≈ $59 |
+| Haiku 5.5, yalnızca ayrıştırma (açıklama şablonla) | ≈ $0,0002 | ≈ $0,2 | ≈ $2 | ≈ $19 |
+| Sonnet 5.5, 2 çağrı | ≈ $0,012 | ≈ $12 | ≈ $117 | ≈ $1.170 |
+
+Önbellekten dönen arama **0 LLM maliyetlidir**. Günlük $5'lık bütçe tavanıyla: Haiku 5.5'te günde ≈ 8.500, Sonnet 5.5'te ≈ 430 aramaya yeter.
+
+**Maliyet kontrol merdiveni (hepsi Faz 3'te kurulur)**
+1. **Sonuç önbelleği:** sorgu normalize edilir (küçük harf, noktalama/boşluk temizliği, `lang` + `media_type` anahtarda) → aynı sorgu LLM'e gitmez. Hazır sorgu çipleri ve koleksiyonlar ön-ısıtılır (cache warm). Koleksiyon sayfaları **LLM'siz** çalışır.
+2. **Ücretsiz/ucuz model:** ayrıştırma ve açıklama varsayılan olarak **Gemini ücretsiz katmanı** ($0). Kalite kapısı (yukarıda) geçilemezse **Claude Haiku 5.5**'e geçilir (tablodaki maliyetler geçerli olur). Model kimlikleri `.env`'den okunur.
+3. **Açıklamayı ucuzlat:** "Neden önerildi?" metni varsayılan olarak **şablonla** üretilir (eşleşen tür, anahtar kelime, puan/oy bilgisinden; LLM yok). LLM açıklaması yalnızca ilk 3–5 sonuç için veya kullanıcı "Neden?" düğmesine basınca (lazy) üretilir ve önbelleğe alınır.
+4. **Kota:** misafir günlük `GUEST_DAILY_AI_SEARCHES`, üye `USER_DAILY_AI_SEARCHES` (IP/oturum bazlı hız sınırı ayrıca). Çıktı uzunluğu `max_tokens` ile sınırlanır; sorgu uzunluğu üst sınırı (örn. 300 karakter).
+5. **Günlük bütçe tavanı (`LLM_DAILY_BUDGET_USD`):** harcama sayacı (Redis) her çağrıda token kullanımından hesaplanır. Tavan dolunca **site kapanmaz**: AI'sız **klasik arama** (tür + anahtar kelime + oyuncu adı + koleksiyonlar) açık kalır, arayüzde nazik bir not gösterilir ("AI arama bugünlük doldu, yarın yenilenir").
+6. **Yedek (fallback) arama:** LLM hatası, kota veya bütçe aşımı → mevcut anahtar kelime/tür eşleştirme (zaten Faz 3 gereksinimi). Böylece kullanıcı her zaman bir sonuç görür.
+7. **Kötüye kullanım koruması:** IP başına hız sınırı, bot koruması (ör. CAPTCHA/Turnstile benzeri, kullanıcıyla netleştirilir), anormal hacimde otomatik uyarı. Anthropic Console'da hesap/çalışma alanı düzeyinde **harcama limiti/uyarısı** varsa kurulur (Console ayarlarından doğrulanır).
+8. **Toplu işlerde indirim:** gecelik koleksiyon doğrulaması gibi acil olmayan işler **Batch API** ile (yaklaşık %50 indirim) çalıştırılır.
+
+**Ölçüm (her LLM çağrısı loglanır, kişisel veri olmadan):** çağrı türü, model, giriş/çıkış token, tahmini maliyet, cache hit/miss, kota/bütçe nedeniyle fallback sayısı. Günlük ve aylık toplam maliyet bir yönetici görünümünde (Django admin) izlenir. Bu veriler ileride gelir modeli kararının girdisidir.
+
+### 3.11 Sosyal Katman: Profil, Listeler, Paylaşım, Birlikte Seç (v1.6)
+**Konum:** Film Defterim'in (§3.8) üstüne kurulur. Amaç, Letterboxd benzeri bir "sosyal ağ" olmak değil; insanların zevklerini **tek bağlantıyla paylaşabildiği**, yapay zekâlı keşifle bütünleşen hafif bir katmandır. Fark yaratan kısım: doğal dil arama + Şans Globu + koleksiyonlar + **Birlikte Seç**.
+
+**Gizlilik ilkeleri (pazarlık konusu değil)**
+1. **Her şey varsayılan özel.** Profil, liste, puan ve defter başkasına ancak sahibinin bilinçli seçimiyle görünür.
+2. Görünürlük 3 kademe: `private` (yalnızca ben) · `unlisted` (bağlantıyı bilen) · `public` (herkes; profil sayfasında listelenir).
+3. **Notlar hiçbir koşulda otomatik görünmez.** Yalnızca defter paylaşım bağlantısında "notları dahil et" ayrıca işaretlenirse ve kayıt "kilitli not" değilse görünür.
+4. Her paylaşım **iptal edilebilir** ve **süre sınırı** koyulabilir. Hesap silinince tüm herkese açık içerik ve paylaşım bağlantıları kalıcı silinir.
+5. Kullanıcı yalnızca kullanıcı adının **tam eşleşmesiyle** aranır (toplu tarama/liste çıkarma yok); kullanıcı listesi dışa verilmez.
+6. Herkese açık kullanıcı içeriği (liste, profil) başlangıçta arama motorlarına `noindex` verilir (moderasyon hazır olana kadar). Bu yalnızca **Google'da çıkmasını** engeller; bağlantıyı/kullanıcı adını bilen herkes görebilir.
+7. **Görüntülemek için hesap gerekmez (v1.7).** Herkese açık profiller, herkese açık/bağlantılı listeler, paylaşılan defterler ve topluluk puanları **girişsiz** görüntülenir. Hesap yalnızca **oluşturmak/kaydetmek/paylaşmak** için gereklidir. Hiçbir okuma ekranı "giriş yap" duvarıyla kapatılmaz.
+
+**Profil** (`/u/{username}`)
+- `username`: 3–20 karakter, küçük harf/rakam/`_`, büyük-küçük harf duyarsız benzersiz; **yasaklı/rezerve kelime listesi** (`admin`, `api`, `cineglobe`, küfür vb.); değiştirme sınırlı (örn. 30 günde bir).
+- `display_name` (≤ 40), `bio` (≤ 200; **bağlantı/URL temizlenir**), avatar: **yükleme yok**; baş harf veya kullanıcının seçtiği **favori yapım afişi** (TMDB görseli).
+- Profil görünürlüğü: varsayılan `private`. Açıldığında sayfada yalnızca **sahibinin herkese açık seçtikleri** gösterilir: favoriler, herkese açık listeler, son puanlananlar (kayıt bazında `visibility=public`), isteğe bağlı özet istatistik (toplam izlenen, ortalama puan; `show_stats`).
+
+**Kişisel Listeler / Sıralamalar** ("kendi sırasını oluşturma")
+- `UserList`: `title` (≤ 80), `description` (≤ 500), `is_ranked` (numaralı sıralama mı, sırasız liste mi), `visibility`, `slug`, `created_at/updated_at`.
+- `UserListItem`: `list`, `media_type` + `tmdb_id`, `position` (listede **benzersiz**), `comment` (opsiyonel, ≤ 280; düz metin).
+- Sınırlar: kullanıcı başına en çok 50 liste, liste başına en çok 200 öğe; günlük liste oluşturma hız sınırı.
+- Sürükle-bırak sıralama (**klavye ile de** erişilebilir), toplu sıralama endpoint'i; listeyi **kopyala ("kendi hesabıma ekle")**; liste Şans Globu kaynağı olabilir ("bu listeden şans").
+- Başlık/açıklama/yorum **düz metin** render edilir (XSS yok), URL'ler temizlenir.
+
+**Defter Paylaşımı** (`/s/{token}`)
+- `NotebookShare`: `user`, `token_hash` (**en az 128 bit rastgele; yalnızca hash saklanır**, bağlantı tek seferde gösterilir), `scope` (`ratings` = durum + puan; `ratings_notes` = + notlar), `statuses` (hangi durumlar dahil), `expires_at`, `revoked_at`, `view_count`.
+- Salt-okunur; alıcıya hesap gerekmez. Bağlantıyı alan kişi içeriği görür ama arama motoru görmez (`noindex`, `X-Robots-Tag`). Sahibi istediği an iptal eder (anında geçersiz).
+- Notlar için açık uyarı: "Bu bağlantıyı alan herkes notlarını okuyabilir."
+
+**Topluluk Puanı & "Kimler beğendi"** (yapım detay sayfasında)
+- **Anonim topluluk ortalaması:** o yapımı puanlayan üyelerin ortalaması; **en az 5 oy** olmadan gösterilmez (tek kişiyi ifşa etmemek için). KVKK metninde "puanlar anonim toplulaştırılarak kullanılır" yazılır.
+- **Herkese açık puanlar:** yalnızca profili ve ilgili kaydı `public` olan kullanıcılar, "Bu yapımı puanlayanlar" bölümünde (son 10, sayfalanır) görünür. Özel kayıtlar asla listelenmez.
+
+**Takip (opsiyonel, Faz 7D):** `Follow` (tek yönlü, `public` profillerde). **Akış (feed) yalnızca yapılandırılmış olaylardan** oluşur ("X, Y filmini 4,5★ verdi", "X yeni liste oluşturdu"); **serbest metin/yorum akışa girmez**. Kullanıcı engelleyebilir (`Block`); engellenen kişi profili/listeleri göremez ve takip edemez.
+
+**Birlikte Seç (opsiyonel, Faz 7D)** — "arkadaşla ne izleyeceğiz?" sorununa çözüm
+1. Üye **oturum** başlatır, davet bağlantısı gönderir (varsayılan 24 saat geçerli, kullanıcı başına eş zamanlı sınırlı sayıda oturum).
+2. Katılan kişi (hesap gerekir) hangi listesini (örn. "İzlenecek") **bilinçli onayla** ekler; kimse diğerinin tüm defterini görmez, yalnızca onaylanan havuzu.
+3. Sistem **ortak filmleri** (kesişim) gösterir; yoksa birleşimden önerir; isteğe bağlı olarak sorgu ("ikimiz de korku sevmiyoruz, komedi olsun") ile filtrelenir.
+4. **Şans Globu ortak havuzdan** döner ve sonucu iki tarafa gösterir.
+5. **Zevk uyumu:** iki tarafın **ortak puanladığı** (en az 5) yapımlar üzerinden basit bir uyum yüzdesi ve "ikinizin de en sevdiği 3 film". Yetersiz ortak veri varsa gösterilmez.
+6. Oturum bitince/süresi dolunca birleşik havuz **silinir**; kalıcı sosyal bağ oluşmaz.
+
+**Kötüye kullanım, moderasyon ve hukuki çerçeve** (ücretsiz/tek kişilik bir proje için kritik)
+- **Kullanıcı metni alanları** (kullanıcı adı, bio, liste başlığı/açıklaması/yorumu) tek riskli yüzeydir. Önlemler: uzunluk sınırları, TR+EN **yasaklı kelime filtresi**, URL temizleme, hız sınırları, **Raporla** düğmesi (profil/liste/yorum), Django admin'de **şikâyet kuyruğu**, N şikâyette içeriği **otomatik gizleme** + admin incelemesi, kullanıcıyı **engelleme**, kalıcı yasaklama.
+- **Yok (bilinçli karar):** herkese açık yorum/tartışma, DM, görsel yükleme. Gerekirse sonra, moderasyon kapasitesiyle birlikte eklenir.
+- Kullanıcı içeriği barındırmak yasal sorumluluk doğurabilir (ör. Türkiye'de içerik/yer sağlayıcı yükümlülükleri, KVKK, yaş sınırı). Kullanıcı bu konuda **"genel geçer, standart kararlar olsun"** dedi (v1.7): ajan aşağıdaki **Varsayılan Politika Kararları**'nı uygular ve metinleri **genel şablon** olarak yazar. Şablonlar hukuki danışmanlık yerine geçmez; geliştirmeyi **engellemez**, ancak site halka açılmadan önce bir kez gözden geçirilmesi `docs/legal-notes.md`'de önerilir.
+
+**Varsayılan Politika Kararları (v1.7)**
+- **Yaş:** Hesap açmak için **18+ beyanı** (onay kutusu; doğum tarihi **toplanmaz**). Hesapsız gezinme ve görüntüleme her yaşa açıktır. (Hukuki gözden geçirmede 18 aşağı çekilebilir; tek bir ayar: `MIN_ACCOUNT_AGE`.)
+- **Topluluk Kuralları (kısa ve genel):** hakaret/küfür/nefret söylemi yok · taciz yok · spam/reklam/dış bağlantı yok · başkasının kimliğine bürünme yok · kişisel bilgi (telefon, adres, e-posta, kimlik no) paylaşma yok · yasa dışı içerik yok.
+- **Raporla menüsü nedenleri:** *Küfür/hakaret/nefret* · *Spam/reklam* · *Taklit/sahte hesap* · *Kişisel bilgi paylaşımı* · *Diğer* (≤ 200 karakter, düz metin).
+- **Süreç:** (1) kullanıcı raporlar → (2) **3 farklı** hesaptan rapor gelirse içerik **otomatik gizlenir** (aynı kişinin tekrarı sayılmaz; 24 saatten genç hesapların raporu sayılmaz; kötü niyetli toplu rapora karşı rapor hız sınırı) → (3) içerik sahibine uygulama içi/e-posta bildirim: "içeriğin gizlendi, itiraz için `SUPPORT_EMAIL`" → (4) yönetici Django admin'den **geri açar / siler / uyarır / hesabı askıya alır**. Hedef: raporlara **7 gün içinde** bakmak (hukuki taahhüt değil, iç hedef; `REPORT_REVIEW_TARGET_DAYS`).
+- **Kaldırma/KVKK talepleri:** `SUPPORT_EMAIL` üzerinden alınır; hesap ve veri silme zaten self-servistir (Faz 7).
+- **Uygunsuz yapımlar:** TMDB çağrılarında `include_adult=false`; yetişkin içerik arama, koleksiyon, liste ekleme ve globe'dan **çıkarılır**.
+- **Metinler:** Kullanım Koşulları, Topluluk Kuralları, Gizlilik/KVKK Aydınlatma, Çerez bildirimi — sade Türkçe + İngilizce **şablonlar** (`web/src/content/legal/`); iletişim e-postası ve veri sorumlusu bilgisi kullanıcıdan alınan yer tutuculara yazılır.
+
+**Endpointler** (özet; ayrıntı Faz 7C/7D)
+- Profil: `GET /api/v1/users/{username}/` (yalnızca public kısım), `GET|PATCH /api/v1/me/profile/`
+- Listeler: `GET|POST /api/v1/me/lists/`, `GET|PATCH|DELETE /api/v1/me/lists/{id}/`, `PUT /api/v1/me/lists/{id}/items/` (toplu sıralı güncelleme), `POST /api/v1/lists/{id}/clone/`, `GET /api/v1/lists/{slug_or_id}/` (görünürlük kuralına göre)
+- Paylaşım: `POST|GET|DELETE /api/v1/me/shares/`, `GET /api/v1/shared/{token}/`
+- Topluluk: `GET /api/v1/titles/{media_type}/{tmdb_id}/community/`
+- Moderasyon: `POST /api/v1/reports/`, `POST|DELETE /api/v1/me/blocks/`
+- (7D) Takip/akış: `POST|DELETE /api/v1/me/follow/{username}/`, `GET /api/v1/me/feed/`; Birlikte Seç: `POST /api/v1/together/`, `POST /api/v1/together/{id}/join/`, `GET /api/v1/together/{id}/`, `POST /api/v1/together/{id}/spin/`
+
 ---
 
 ## 4. REPO YAPISI
@@ -290,7 +405,8 @@ cineglobe/
 │   │   ├── upcoming/   # yakında çıkacaklar
 │   │   ├── reminders/  # hatırlatıcılar, bildirim kanalları, günlük job
 │   │   ├── notebook/   # Film Defterim: NotebookEntry, istatistik, dışa aktarma
-│   │   ├── monetization/ # reklam bayrakları, affiliate, (opsiyonel) Premium/abonelik
+│   │   ├── social/     # profil, kişisel listeler, defter paylaşımı, topluluk puanı, şikâyet/engel, (7D) takip + Birlikte Seç
+│   │   ├── (monetization/)  # ERTELENDİ — Faz 10 başlayana kadar oluşturulmaz
 │   │   └── accounts/   # kullanıcı, oturum, tercihler
 │   ├── tests/
 │   ├── requirements/ (base.txt, dev.txt, prod.txt)
@@ -395,13 +511,13 @@ docs(readme): add local setup steps
 - [ ] Modeller: `Title` (`media_type`, `tmdb_id` birlikte **unique**; çünkü film ve dizi ID'leri çakışabilir), `Genre`, `Person`, `TVDetails` (sezon sayısı, bölüm sayısı, durum, bölüm süresi, yayıncı/network, ilk/son yayın tarihi), `Season` (opsiyonel)
 - [ ] **Önemli:** TMDB'de film ve dizinin `id` değeri aynı olabilir. Tüm tablolar, cache anahtarları ve URL'ler `media_type + id` ikilisiyle çalışmalı.
 - [ ] Cache stratejisi (film/dizi detayı: 24 saat; **devam eden dizi detayı: 6 saat**, çünkü yeni bölüm/sezon bilgisi değişir; discover: 1 saat)
-- [ ] **(v1.3) TMDB 6 ay kuralı:** DB'de saklanan TMDB verisi (`Title`, `Person`, `TVDetails` vb.) için `updated_at` takibi + günlük/haftalık `purge_stale_tmdb_data` komutu: 6 aydan eski kayıtlar yenilenir, yenilenemeyenler silinir (testle kanıtlı)
 - [ ] Görsel URL yardımcıları (poster/backdrop boyutları)
 - [ ] Footer için TMDB atıf metni hazırla; kullanıcıya lisans uyarısı ver
 - [ ] **(v1.2) Dil desteği:** `TMDBClient` tüm çağrılarda `lang` (`tr-TR`/`en-US`) alır; boş TR alanlarda EN fallback; cache anahtarına `lang` eklenir
 - [ ] **(v1.2)** Ek endpoint'ler: `person/{id}` detayı, `movie/upcoming`, `discover` için tarih/süre/oy aralığı parametreleri (koleksiyon ve yakında çıkacaklar için gerekli), `tv/on_the_air`
+- [ ] **(v1.7)** Tüm `discover`/`search` çağrılarında `include_adult=false`; yetişkin işaretli yapımlar yanıtlardan ve detaydan ayıklanır
 
-**Testler:** TMDB yanıtları **mock'lanır** (gerçek API'ye test çağrısı yok), hata/timeout senaryoları; TR boş → EN fallback testi
+**Testler:** TMDB yanıtları **mock'lanır** (gerçek API'ye test çağrısı yok), hata/timeout senaryoları; TR boş → EN fallback testi; `include_adult=false` her çağrıda
 
 **Kabul Kriterleri**
 - `GET /api/v1/titles/{media_type}/{tmdb_id}/` (`movie` veya `tv`) çalışıyor ve cache'liyor
@@ -413,7 +529,9 @@ docs(readme): add local setup steps
 
 ### 🟦 FAZ 3 — Doğal Dil Film & Dizi Arama (Projenin Kalbi)
 **Görevler**
-- [ ] `QueryParser` servisi: Claude API çağrısı + sistem prompt'u (bkz. §3.1)
+- [ ] **(v1.5) `LLMProvider` arayüzü + `GeminiProvider`, `AnthropicProvider`, `ClassicProvider`** ve `LLM_PROVIDER_CHAIN` ile zincir/devre kesici (§3.10). Varsayılan zincir `gemini,classic`; `AnthropicProvider` kodda hazır ama anahtar yoksa devre dışı
+- [ ] **(v1.5) Değerlendirme seti + `docs/llm-eval.md`:** 9 zorunlu senaryo + en az 20 gerçek Türkçe/İngilizce sorgu; komutla çalıştırılan betik (canlı API anahtarı gerektirir, **CI'da değil**, elle çalışır); geçiş kriteri sonuçları raporlanır. **Faz sonunda kullanıcıya sonucu sun: Gemini ücretsiz katman yeterli mi, Haiku 5.5'e geçmeli mi?**
+- [ ] `QueryParser` servisi: sağlayıcı arayüzü üzerinden çağrı + sistem prompt'u (bkz. §3.1)
 - [ ] Pydantic şemaları: `SearchFilters` (doğrulama, güvenli varsayılanlar)
 - [ ] Fallback: LLM başarısızsa basit tür/anahtar kelime eşleştirme
 - [ ] `Retriever`: filtreden TMDB adayları üretme (discover + keyword); `media_type`'a göre film, dizi veya ikisi paralel
@@ -422,6 +540,11 @@ docs(readme): add local setup steps
 - [ ] `POST /api/v1/search/` → `{ "query": "...", "media_type": "both" }` → yapımlar (her birinde `media_type`) + açıklamalar + uygulanan filtreler
 - [ ] Sorgu cache'i + kullanıcı/IP başına rate limit
 - [ ] Türkçe ve İngilizce sorgu desteği; "neden önerildi?" metni `lang` parametresine göre üretilir, cache anahtarında `lang` bulunur
+- [ ] **(v1.4) Maliyet koruması (§3.10):** sorgu normalizasyonu + sonuç önbelleği; model kimlikleri env'den (`GEMINI_MODEL`, `ANTHROPIC_MODEL_PARSER/EXPLAIN`); `max_tokens` ve sorgu uzunluğu sınırı
+- [ ] **(v1.4)** "Neden önerildi?" için **şablon tabanlı (LLM'siz) açıklama** + isteğe bağlı/lazy LLM açıklaması (ilk 3–5 sonuç veya "Neden?" tıklaması, önbellekli)
+- [ ] **(v1.4)** `LLMUsageLog` (çağrı türü, model, token, tahmini maliyet, cache hit/miss; kişisel veri yok) + Redis günlük harcama sayacı + `LLM_DAILY_BUDGET_USD` tavanı
+- [ ] **(v1.4)** Kota ve degrade: misafir/üye günlük kotası, bütçe/kota dolunca **AI'sız klasik aramaya otomatik geçiş** (500/blok yok), arayüze iletilecek `ai_status` alanı (`ok` | `quota_exceeded` | `budget_exceeded` | `fallback`)
+- [ ] **(v1.4)** Django admin'de günlük/aylık LLM maliyet görünümü
 
 **Test senaryoları (zorunlu — ajan bunları birebir yazsın)**
 1. "silahlı çatışma ama istihbarat da olsun" → Action/Thriller + spy/espionage anahtar kelimeleri
@@ -433,11 +556,21 @@ docs(readme): add local setup steps
 7. "casusluk temalı bir dizi, çok uzun olmasın" → `media_type=tv`, spy/espionage, `max_seasons` düşük
 8. "bu akşam bir şey izleyeceğim, gerilim olsun" (tür belirtilmemiş) → `media_type=both`, sonuçlarda film ve dizi karışık
 9. Aynı `tmdb_id`'ye sahip film ve dizi sonuç listesinde birbirini silmiyor
+10. **(v1.4)** Aynı sorgu (büyük/küçük harf, noktalama farkıyla) ikinci kez geldiğinde LLM **çağrılmaz** (mock çağrı sayısı = 0), sonuç aynı
+11. **(v1.4)** Günlük bütçe tavanı dolduğunda arama **200 + `ai_status=budget_exceeded`** ile klasik aramadan sonuç döner; LLM mock'u çağrılmaz
+12. **(v1.4)** Misafir kota aşımında nazik yanıt + klasik arama; üye kotası ayrı sayılır; kota gece yarısı (`Europe/Istanbul`) sıfırlanır
+13. **(v1.4)** Her LLM çağrısı `LLMUsageLog`'a token/maliyetle yazılır; sayaç kayıtlarla tutarlı
+14. **(v1.4)** Çok uzun sorgu (> sınır) reddedilir/kısaltılır; `max_tokens` aşılmaz
+15. **(v1.5)** Zincir: birinci sağlayıcı 429/zaman aşımı/5xx verirse ikinciye düşer; ikinci de yoksa `classic` ile 200 döner; devre kesici açıkken aynı sağlayıcıya istek atılmaz (mock çağrı sayısı)
+16. **(v1.5)** Sağlayıcı değiştirme yalnızca env ile yapılır (`gemini,classic` ↔ `anthropic,classic`); iş mantığı testleri sağlayıcıdan bağımsız geçer
+17. **(v1.5)** LLM'e giden istek gövdesinde kullanıcı kimliği, e-posta, IP ve defter notu/puanı **bulunmaz** (mock yakalama ile kanıtlı)
 
 **Kabul Kriterleri**
 - Yukarıdaki 5 senaryo geçiyor (LLM mock'lu birim testler + 1 opsiyonel canlı smoke test)
 - Ortalama yanıt süresi hedefi: cache'siz < 6 sn, cache'li < 300 ms
 - Kullanıcıya dönen her sonuçta gerekçe ve doğru `media_type` var
+- **(v1.4)** Arama başına ortalama LLM maliyeti ölçülüyor ve `docs/cost.md`'de raporlanıyor (hedef: Haiku 5.5 ile cache'siz arama başına ≲ $0,001)
+- **(v1.4)** Bütçe/kota dolsa bile kullanıcı hiçbir zaman boş ekran veya hata görmüyor (klasik arama devrede)
 
 ---
 
@@ -517,7 +650,7 @@ docs(readme): add local setup steps
 **Görevler**
 - [ ] Vite + Vue 3 + TS + Pinia + Router + Tailwind kurulumu
 - [ ] Tasarım tokenları (`tokens.css`): renk, boşluk, radius, gölge, motion süreleri
-- [ ] Sayfalar: **Ana Sayfa (Hero+Arama + koleksiyon şeridi)**, **Sonuçlar**, **Detay (film ve dizi için ortak şablon; dizide sezon/bölüm bilgisi paneli)**, **Oyuncu Sonuçları (Filmler / Diziler sekmeleri)**, **Oyuncu Sayfası (filmografi: Kronolojik / En Güncel / En İyi sıralama anahtarı)**, **Koleksiyonlar (liste) + Koleksiyon Detay**, **Yakında Çıkacaklar**, **Favoriler**, **404**
+- [ ] Sayfalar: **Ana Sayfa (Hero+Arama + koleksiyon şeridi)**, **Sonuçlar**, **Detay (film ve dizi için ortak şablon; dizide sezon/bölüm bilgisi paneli)**, **Oyuncu Sonuçları (Filmler / Diziler sekmeleri)**, **Oyuncu Sayfası (filmografi: Kronolojik / En Güncel / En İyi sıralama anahtarı)**, **Koleksiyonlar (liste) + Koleksiyon Detay**, **Yakında Çıkacaklar**, **Favoriler**, **Profil (`/u/kullanici`)**, **Listeler (detay + düzenleme)**, **Paylaşılan Defter (`/s/…`)** *(Faz 7C ile bağlanır)*, **404**
 - [ ] Bileşenler: `SearchBox`, `TitleCard` (film/dizi rozeti ile), `TitleGrid`, `MediaTypeToggle`, `SeasonInfo`, `ReasonBadge`, `SkeletonCard`, `Navbar`, `Footer` (TMDB atıf), **`LanguageSwitcher` (TR | EN)**, **`CollectionCard` / `CollectionRail` (yatay kaydırmalı koleksiyon şeridi)**, **`FilmographyList` + `SortToggle` (en güncel / kronolojik / en iyi)**, **`UpcomingList` (tarih gruplu) + `RemindButton`**
 - [ ] **(v1.2) i18n:** `vue-i18n`, `/tr` ve `/en` URL önekleri, `hreflang`, dil seçimi kalıcı, tüm API çağrılarına `lang`, TR içerik boşsa EN fallback göstergesi, tarih/sayı `Intl`
 - [ ] **(v1.2) Koleksiyon deneyimi:** ana sayfada 6 koleksiyon kartı (ikon + ad + kısa açıklama), her kart `Koleksiyon Detay`'a gider; "Bu koleksiyondan şansımı dene" butonu (Şans Globu ile bağlantı Faz 6'da)
@@ -525,7 +658,7 @@ docs(readme): add local setup steps
 - [ ] **(v1.3) SSR/prerender:** koleksiyon, oyuncu, detay, yakında çıkacaklar ve ana sayfa arama motoruna HTML olarak sunulur (Nuxt 3 veya Vite SSG/prerender — ajan gerekçesiyle seçsin, **ADR**). Defter/hesap sayfaları `noindex`.
 - [ ] **(v1.3) Giriş yapmadan kullanım:** tüm keşif sayfaları misafire açık; Navbar'da "Giriş yap" ikincil bir eylem (zorlayıcı modal/duvar yok)
 - [ ] **(v1.3) Defter UI (Faz 7B ile bağlanır):** `StatusPicker` (izlenecek/izleniyor/izledim/bıraktım), `StarRating` (0,5 adım, klavye ile erişilebilir), `NoteDrawer` (özel not), `WatchedBadge` (kartlarda "İzledin ✓ · 4,5★"), `AuthSoftGateModal` (misafir için "ücretsiz hesap aç")
-- [ ] **(v1.3) Reklam hazırlığı:** `AdSlot.vue` yer tutucusu (varsayılan boş, `ADS_ENABLED=false`), boyutları önceden ayrılmış; reklam scripti bu fazda **eklenmez** (Faz 10)
+- [ ] **(v1.4) Yapay zeka durum bildirimi:** `ai_status` değerine göre arama sonuçlarında nazik bilgi şeridi ("AI arama bugünlük doldu, klasik arama açık" vb.); reklam alanı/`AdSlot` **eklenmez** (Faz 10 ertelendi)
 - [ ] API katmanı (tipli, hata yönetimi, iptal edilebilir istekler)
 - [ ] Erişilebilirlik: klavye gezinme, odak halkaları, alt metinler, kontrast AA
 - [ ] Responsive: 360px → 1920px (**tek istemci olduğu için mobil tarayıcı birinci sınıf**: dokunma hedefleri ≥ 44px, alt navigasyon seçeneği)
@@ -606,7 +739,7 @@ docs(readme): add local setup steps
 - [ ] Doğrulama: puan yalnızca 1–10 tamsayı (`null` serbest), durum enum, not uzunluğu, etiket sayısı/uzunluğu; geçersizse 400
 - [ ] Endpointler (§3.8): liste (filtre/sıralama/sayfalama/arama), tek kayıt GET/PUT/PATCH/DELETE, **toplu `lookup`**, `stats`, `export` (CSV/JSON)
 - [ ] `stats` hesapları: toplam izlenen, toplam süre (`title_snapshot` süresinden), ortalama puan, puan dağılımı, tür dağılımı, aylık/yıllık sayılar, en yüksek puanlılar — N+1'siz, tek/az sorgu
-- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır; **6 ayı aşan snapshot'lar yenilenir, yenilenemiyorsa TMDB'den gelen alanlar temizlenir** — kullanıcının kendi verisi (durum, puan, not) korunur)
+- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır)
 - [ ] Web arayüzü: Defterim sayfası (sekmeler, filtre, arama), İstatistik sayfası, kartlarda/detayda hızlı eylemler, `AuthSoftGateModal` akışı (bekleyen işlem giriş sonrası tamamlanır)
 - [ ] Entegrasyon: sonuç kartlarında `lookup` ile "İzledin ✓ · puanın"; arama/koleksiyon/globe'da **"izlediklerimi hariç tut"** filtresi (sunucu tarafı, `exclude_watched=true`)
 - [ ] Şans Globu kaynağı: "İzlenecek listem"
@@ -633,16 +766,77 @@ docs(readme): add local setup steps
 
 ---
 
+### 🟦 FAZ 7C — Profil, Listeler, Paylaşım & Moderasyon Temeli (v1.6)
+**Amaç:** Üyeler zevklerini kontrollü biçimde paylaşabilsin (bkz. §3.11). **Önce gizlilik ve moderasyon, sonra özellik.**
+
+**Kararlar (v1.7):** Kullanıcı yaş sınırı, metinler, şikâyet süreci ve `noindex` için **genel geçer standart kararları** onayladı → §3.11 "Varsayılan Politika Kararları" uygulanır; ajan bu başlıklarda ayrıca soru sormaz. Yalnızca **`SUPPORT_EMAIL`** (iletişim adresi) ve veri sorumlusu adı/ünvanı kullanıcıdan istenir.
+
+**Görevler**
+- [ ] `social` uygulaması; `Profile` (`username` büyük-küçük harf duyarsız unique, `display_name`, `bio`, `avatar_kind`, `profile_visibility`, `show_stats`), rezerve/yasaklı kullanıcı adı listesi, değiştirme sınırı
+- [ ] `NotebookEntry`'ye `visibility` (`private` varsayılan | `public`) ve `note_locked` alanları (migration; **mevcut kayıtlar `private` kalır**)
+- [ ] `UserList` + `UserListItem` (`position` listede unique), sınırlar (50 liste / 200 öğe), toplu sıralama endpoint'i, kopyalama, görünürlük kuralı tek yerde (**merkezi izin fonksiyonu**: tüm okuma yolları buradan geçer)
+- [ ] `NotebookShare` (token hash, scope, statuses, expires_at, revoked_at, view_count), oluşturma/iptal/listeleme, `GET /api/v1/shared/{token}/`; `X-Robots-Tag: noindex`
+- [ ] Topluluk puanı: `community` endpoint'i (en az 5 oy eşiği), "bu yapımı puanlayanlar" (yalnızca profil + kayıt `public`)
+- [ ] Moderasyon: `Report`, `Block`, yasaklı kelime filtresi (TR+EN), URL temizleme, hız sınırları, N şikâyette otomatik gizleme, Django admin şikâyet kuyruğu, kullanıcı askıya alma
+- [ ] Web arayüzü: Profil sayfası, Profil/Gizlilik ayarları, Liste oluşturma/düzenleme (sürükle-bırak + **klavye ile sıralama**), Liste detay, "Defterimi paylaş" akışı (kapsam seçimi + not uyarısı + süre + iptal), Paylaşılan defter görünümü, Raporla/Engelle menüsü, topluluk puanı bileşeni
+- [ ] Şans Globu kaynağı: "Bir listemden" ve "Herkese açık/bağlantılı bir listeden"
+- [ ] Sayfalar `noindex` (kullanıcı içeriği); Kullanım Koşulları, Topluluk Kuralları, Şikâyet/Kaldırma sayfaları (kullanıcıyla netleşen metinlerle)
+- [ ] Hesap silme: profil, listeler, paylaşımlar, şikâyet geçmişi (kişisel veri kısmı), engeller kalıcı silinir
+
+**Testler (kritik: gizlilik sızıntısı)**
+- **Görünürlük matrisi:** `private` içerik hiçbir yoldan sızmaz — profil sayfası, liste detayı, liste öğeleri, "bu yapımı puanlayanlar", topluluk ortalaması (eşik), arama sonuçları, paylaşılan defter, Şans Globu kaynakları, `sitemap.xml`, dışa aktarma (yalnızca sahibine), hata mesajları (varlık ifşası yok: 404 ile 403 ayırt edilemez)
+- `unlisted` yalnızca bağlantıyla, `public` yalnızca profil açıksa profilde listelenir; profili `private` olan kullanıcının `public` kayıtları profil dışında da listelenmez
+- Paylaşım: iptal edilen/süresi dolan token 404; yanlış token timing farkı yok (sabit-süre karşılaştırma); `ratings` kapsamında **not alanı yanıtta yok**; `note_locked` kayıt `ratings_notes` ile bile notsuz döner
+- IDOR: başkasının listesini/öğesini/paylaşımını okuma, sıralama, silme, kopyalama (görünmeyen listeyi kopyalayamaz)
+- Liste: `position` benzersizliği, toplu sıralama atomik (yarım sıralama yok), limitler (51. liste, 201. öğe reddedilir), aynı yapım iki kez eklenemez, aynı `tmdb_id`'li film+dizi ayrı öğe
+- Kullanıcı adı: büyük-küçük harf çakışması, rezerve kelime, Unicode benzer karakter hilesi, değiştirme sınırı
+- Metin alanları: `<script>`/HTML düz metin kalır, URL temizlenir, yasaklı kelime reddedilir, uzunluk sınırı
+- Moderasyon: N şikâyette içerik otomatik gizlenir, admin geri açabilir; engellenen kullanıcı profili/listeyi göremez
+- Hesap silme sonrası hiçbir herkese açık iz kalmaz (profil URL'si 404, paylaşım tokenları geçersiz)
+- Topluluk ortalaması 4 oyda gösterilmez, 5 oyda gösterilir; ortalama özel puanları da içerir ama kimliği ifşa etmez
+- **Girişsiz görüntüleme (v1.7):** oturumsuz istemci `public` profili, `public`/`unlisted` listeyi, paylaşılan defteri ve topluluk puanını **200 ile** görür; aynı istemci `private` olanı göremez, oluşturma/düzenleme/rapor uçlarında 401 alır
+- Raporlama: aynı kullanıcının tekrar raporu sayılmaz; 24 saatten genç hesap raporu eşiğe sayılmaz; 3 farklı geçerli rapor → otomatik gizleme + sahibe bildirim; yönetici geri açınca görünür olur
+- `include_adult=false` her TMDB çağrısında (mock ile kanıtlı); yetişkin içerik listeye eklenemez
+- 18+ beyanı olmadan kayıt tamamlanmaz; doğum tarihi saklanmaz
+
+**Kabul Kriterleri**
+- Üye bir liste oluşturup sürükle-bırak (ve klavye) ile sıralayıp, `unlisted` bağlantıyla birine gönderebiliyor; alıcı hesapsız görebiliyor
+- Defter paylaşım bağlantısı iptal edilince anında çalışmıyor; notlar yalnızca bilinçli seçimle görünüyor
+- Görünürlük matrisi testleri tamamen yeşil; varsayılan her şey özel
+- Şikâyet/engel akışı çalışıyor, admin kuyruğunda görülüyor
+- Giriş yapmamış biri herkese açık profil/liste/paylaşılan defteri görüntüleyebiliyor (kayıt gerekmiyor); oluşturma için nazikçe giriş isteniyor
+- Kullanım Koşulları, Topluluk Kuralları, Gizlilik/KVKK sayfaları TR/EN şablonlarla yayında; kayıtta 18+ beyanı zorunlu
+
+---
+
+### 🟦 FAZ 7D — Takip, Akış, Zevk Uyumu & Birlikte Seç (OPSİYONEL — kullanıcı onayı gerekir) (v1.6)
+> **Ajan: Faz 7C canlıda stabil çalışmadan ve kullanıcı açıkça onaylamadan bu fazı başlatmaz.** Moderasyon kapasitesi kanıtlanmadan sosyal yüzeyi büyütmek bir riskdir.
+
+**Görevler**
+- [ ] **Birlikte Seç** (öncelikli, farkı yaratan özellik): oturum oluştur/katıl/süresi dolsun, havuz onayı, kesişim/birleşim, ortak Şans Globu, sorgu ile filtre, oturum bitince veri silme (§3.11)
+- [ ] **Zevk uyumu:** ortak puanlanan ≥ 5 yapım üzerinden uyum yüzdesi (basit, açıklanabilir yöntem; ajan seçip `docs/`'ta açıklasın), "ikinizin de en sevdiği 3 film"; yetersiz veride gösterilmez
+- [ ] **Takip + yapılandırılmış akış:** yalnızca `public` profillerde, serbest metin yok; engelleme ile uyumlu; akış sayfalı ve önbellekli
+- [ ] Kullanıcı adı ile **tam eşleşme araması**; toplu kullanıcı listeleme yok
+
+**Testler:** oturum süresi dolunca havuz silinir; katılımcı yalnızca onayladığı listeyi paylaşır, diğerinin defterini göremez; kesişimin doğruluğu (aynı `tmdb_id`'li film/dizi karışmaz); uyum yüzdesi bilinen fixture ile doğru; engellenen kullanıcı takip/oturum davet edemez; feed'de özel kayıt yok; 3. kişi oturuma sızamaz (token); oturum sayısı sınırı
+
+**Kabul Kriterleri**
+- İki üye bir bağlantıyla Birlikte Seç yapıp ortak havuzdan Şans Globu çevirebiliyor
+- Oturum bittikten sonra birleşik veri tamamen silinmiş (testle kanıtlı)
+- Feed'de yalnızca `public` ve yapılandırılmış olaylar var
+
+---
+
 ### 🟦 FAZ 8 — Kalite, Güvenlik, Performans
 **Görevler**
 - [ ] Backend kapsam ≥ %85, Web kapsam ≥ %75
-- [ ] E2E (Playwright): arama, oyuncu araması, globe, giriş, favori, **misafir akışı (girişsiz tüm keşif), defter (izledim → puan → not → istatistik)**, hesap silme
+- [ ] E2E (Playwright): arama, oyuncu araması, globe, giriş, favori, **misafir akışı (girişsiz tüm keşif), defter (izledim → puan → not → istatistik)**, hesap silme, **sosyal: liste oluştur → sırala → bağlantıyla paylaş → alıcı hesapsız görür → iptal et → artık görünmez; özel içerik hiçbir ekranda sızmaz**
 - [ ] Güvenlik: `bandit`, `pip-audit`, `npm audit`; CSP (Faz 10'da reklam/CMP alan adları **yalnızca bayrak açıkken** whitelist'e eklenir), HSTS, güvenli cookie, CORS whitelist
 - [ ] **(v1.3)** Kişisel veri: defter notları loglarda, Sentry olaylarında ve LLM isteklerinde yok (testle kanıtlı); not/puan alanları için hız sınırı ve boyut sınırı
 - [ ] Django `check --deploy` temiz
 - [ ] Yük testi (k6/locust) — arama endpoint'i için temel senaryo
 - [ ] N+1 sorgu kontrolü, gerekli DB indexleri
-- [ ] LLM maliyet koruması: günlük bütçe limiti, kullanıcı başına kota, cache hit oranı loglama
+- [ ] LLM maliyet koruması: **temeli Faz 3'te atıldı (§3.10)**; burada yük testi altında kota/bütçe davranışı, cache hit oranı raporu, anormal hacim uyarısı doğrulanır
 - [ ] Sentry (hata takibi) entegrasyonu
 - [ ] Yapısal loglama (kişisel veri sızdırmadan)
 
@@ -680,7 +874,8 @@ docs(readme): add local setup steps
 
 ---
 
-### 🟦 FAZ 10 — Gelir Modeli: Reklam, Affiliate, (Opsiyonel) Premium (v1.3)
+### 🟦 FAZ 10 — Gelir Modeli: Reklam, Affiliate, (Opsiyonel) Premium — ⏸️ ERTELENDİ (v1.4)
+> **DURUM: ERTELENDİ — AJAN BU FAZI UYGULAMAZ.** Ürün şimdilik ücretsiz ve ticari olmayandır (TMDB ücretsiz API şartı). Faz, yalnızca kullanıcı "gelir modeline geçelim" dediğinde ve §3.9'daki geçiş kontrol listesi tamamlandığında etkinleşir. Aşağıdaki içerik o gün için taslak olarak saklanır.
 > Eski "Mobil Uygulama" fazı kaldırıldı (proje yalnızca web). Bu faz §3.9'u uygular.
 
 **BAŞLAMADAN ÖNCE kullanıcıdan 4 karar al (varsayım yapma):**
@@ -720,13 +915,14 @@ docs(readme): add local setup steps
 ---
 
 ### 🟦 FAZ 11 — Lansman & Sonrası
-- [ ] Gizlilik politikası, KVKK aydınlatma metni, çerez tercihleri (Faz 10'daki CMP ile tutarlı)
+- [ ] Gizlilik politikası, KVKK aydınlatma metni, çerez tercihleri; **kullanılan LLM sağlayıcısı ve ücretsiz katmanda sorguların sağlayıcı tarafından ürün geliştirmede kullanılabileceği açıkça yazılır** (sağlayıcı değişirse metin güncellenir)
+- [ ] **(v1.6) Kullanıcı içeriği hukuki hazırlık:** Kullanım Koşulları, Topluluk Kuralları, şikâyet/kaldırma süreci, 18+ yaş beyanı, iletişim bilgisi: §3.11 "Varsayılan Politika Kararları" ile uygulanmış ve yayında olduğu doğrulanır; `docs/legal-notes.md`'de "halka açılmadan önce bir kez gözden geçirme" önerisi bulunur (geliştirmeyi engellemez)
 - [ ] Analitik (gizlilik dostu: Plausible/PostHog)
 - [ ] Search Console/sitemap gönderimi, indekslenme takibi (trafik reklam gelirinin ön koşulu)
 - [ ] Geri bildirim butonu ("bu öneri iyi miydi?" 👍/👎 → ranking iyileştirme verisi)
 - [ ] Sürüm notları, `CHANGELOG.md`, `v1.0.0` tag'i
 - [ ] Koleksiyon kalitesi için geri bildirim: koleksiyon sayfalarında da 👍/👎, düşük skorlu yapımlar editör incelemesine düşer
-- [ ] Fikir havuzu (v2): **PWA (ana ekrana eklenebilir web uygulaması)**, defter paylaşımı/herkese açık profil, kullanıcı tarafından oluşturulan/paylaşılan koleksiyonlar, anlamsal arama (pgvector), arkadaşla ortak film seçme, "ruh haline göre" hızlı modlar, izleme platformu bilgisi (TMDB watch providers, film ve dizi için), yeni bölüm bildirimleri (devam eden dizi favorileri için)
+- [ ] Fikir havuzu (v2): **PWA (ana ekrana eklenebilir web uygulaması)**, herkese açık liste keşfi/trend sayfası (moderasyon hazırsa), herkese açık yorumlar (moderasyon hazırsa), anlamsal arama (pgvector), arkadaşla ortak film seçme, "ruh haline göre" hızlı modlar, izleme platformu bilgisi (TMDB watch providers, film ve dizi için), yeni bölüm bildirimleri (devam eden dizi favorileri için)
 
 ---
 
@@ -741,7 +937,7 @@ docs(readme): add local setup steps
 | Güvenlik | bandit, pip-audit, npm audit | Bağımlılık & kod taraması |
 | Yük | k6/locust | Arama endpoint'i |
 
-**Kural:** Dış servisler (TMDB, Claude) testlerde **mock'lanır**. Canlı çağrı sadece manuel/opsiyonel smoke testlerde.
+**Kural:** Dış servisler (TMDB, LLM sağlayıcıları) testlerde **mock'lanır**. Canlı çağrı sadece manuel/opsiyonel smoke testlerde.
 
 ---
 
@@ -759,9 +955,16 @@ DATABASE_URL=postgres://cineglobe:cineglobe@localhost:5432/cineglobe
 
 # External APIs
 TMDB_API_KEY=
-ANTHROPIC_API_KEY=
-ANTHROPIC_MODEL=            # kullanılacak model kimliği (güncel dokümandan doğrula)
-LLM_DAILY_BUDGET_USD=5
+LLM_PROVIDER_CHAIN=gemini,classic          # gemini,classic | anthropic,classic | gemini,anthropic,classic
+GEMINI_API_KEY=                            # ücretsiz katman anahtarı (Google AI Studio); GİZLİ
+GEMINI_MODEL=gemini-3.1-flash-lite         # güncel model kimliğini resmi dokümandan doğrula
+ANTHROPIC_API_KEY=                         # opsiyonel; yalnızca Haiku 5.5'e geçilirse (ücretli)
+ANTHROPIC_MODEL_PARSER=claude-haiku-5-5    # sorgu → filtre
+ANTHROPIC_MODEL_EXPLAIN=claude-haiku-5-5   # "neden önerildi?" (isteğe bağlı/lazy)
+LLM_PROVIDER_COOLDOWN_SECONDS=120          # devre kesici bekleme süresi
+LLM_DAILY_BUDGET_USD=5       # tavan dolunca AI'sız klasik arama devreye girer (§3.10)
+LLM_MAX_OUTPUT_TOKENS=700
+SEARCH_QUERY_MAX_CHARS=300
 
 # Cache
 REDIS_URL=redis://localhost:6379/0
@@ -781,7 +984,20 @@ UPCOMING_REGION=TR
 GUEST_DAILY_AI_SEARCHES=10  # başlangıç değeri; maliyete göre ayarlanır
 USER_DAILY_AI_SEARCHES=40
 
-# Monetization (Faz 10) — TMDB ticari onayı olmadan prod'da false kalmalı
+# Social (Faz 7C/7D)
+MAX_LISTS_PER_USER=50
+MAX_ITEMS_PER_LIST=200
+MAX_LISTS_CREATED_PER_DAY=10
+REPORTS_AUTO_HIDE_THRESHOLD=3        # bu kadar FARKLI hesaptan şikâyette içerik otomatik gizlenir (admin inceler)
+REPORT_REVIEW_TARGET_DAYS=7          # iç hedef, hukuki taahhüt değil
+MIN_ACCOUNT_AGE=18                   # kayıtta beyan; doğum tarihi saklanmaz
+SUPPORT_EMAIL=                       # şikâyet/kaldırma/KVKK talepleri için (kullanıcıdan alınır)
+USERNAME_CHANGE_COOLDOWN_DAYS=30
+COMMUNITY_MIN_VOTES=5                # topluluk ortalaması/uyum için en az oy
+SHARE_DEFAULT_EXPIRY_DAYS=30
+TOGETHER_SESSION_TTL_HOURS=24
+
+# Monetization (Faz 10 — ERTELENDİ; şimdilik hepsi false/boş kalır, kod eklenmez)
 ADS_ENABLED=false
 AFFILIATE_ENABLED=false
 PREMIUM_ENABLED=false
@@ -811,8 +1027,8 @@ SENTRY_DSN=
 
 ## 10. AJANA İLK KOMUT
 
-> **Faz sırası (v1.3):** 0 → 1 → 2 → 3 → 4 → **4B (Koleksiyonlar)** → **4C (Yakında Çıkacaklar)** → 5 → 6 → 7 (isteğe bağlı giriş, hatırlatıcılar) → **7B (Film Defterim)** → 8 → 9 → **10 (Gelir Modeli)** → 11 (Lansman). Mobil uygulama fazı kaldırıldı.
+> **Faz sırası (v1.3):** 0 → 1 → 2 → 3 → 4 → **4B (Koleksiyonlar)** → **4C (Yakında Çıkacaklar)** → 5 → 6 → 7 (isteğe bağlı giriş, hatırlatıcılar) → **7B (Film Defterim)** → **7C (Profil, Listeler, Paylaşım, Moderasyon)** → *(opsiyonel, onayla)* **7D (Takip, Birlikte Seç)** → 8 → 9 → ~~10 (Gelir Modeli)~~ **ertelendi, atla** → 11 (Lansman). Mobil uygulama fazı kaldırıldı.
 >
-> **Hatırlatma:** Hesap isteğe bağlıdır; hiçbir keşif ekranı girişe bağlanmaz. Faz 10'da, TMDB ticari onayı olmadan reklam/Premium açılmaz.
+> **Hatırlatma:** Ürün ücretsiz ve reklamsızdır; gelir getiren hiçbir öğe eklenmez. Hesap isteğe bağlıdır; hiçbir keşif ekranı girişe bağlanmaz. LLM maliyet koruması (§3.10) Faz 3'ten itibaren zorunludur.
 >
 > "Bu dosyayı baştan sonuna oku. **Sadece Faz 0'ı** uygula. Bitince dur, yaptıklarını özetle, çalıştırma komutlarını ver ve Faz 1 için onay iste. Belirsiz bir nokta olursa varsayım yapmadan bana sor."
