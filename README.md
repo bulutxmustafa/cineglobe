@@ -99,6 +99,7 @@ python backend/manage.py runserver
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
+- **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; `ANTHROPIC_API_KEY` yoksa kural tabanlı ayrıştırıcıyla çalışır)*
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
 - **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*

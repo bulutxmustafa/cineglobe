@@ -83,6 +83,95 @@ Belirtilen film (`movie`) veya dizi (`tv`) detaylarını getirir. Veri ilk çağ
 
 ---
 
+## 🔎 Doğal Dil Arama (Search)
+
+### `POST /api/v1/search/`
+Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") film/dizi önerilerine çevirir. Her sonuç, seçili dilde tek cümlelik bir **"Neden önerildi?"** gerekçesi taşır.
+
+* **Yetkilendirme:** Açık (Public)
+* **Rate Limiting:** `20 istek / dakika` (`search` scope) + genel anon/user limitleri
+* **Önbellek:** Aynı sorgu (büyük/küçük harf ve boşluk farkı gözetmeksizin) + `media_type` + `lang` üçlüsü `SEARCH_CACHE_TTL_SECONDS` (varsayılan 1 saat) boyunca önbellekten döner. `lang` anahtarın parçasıdır; TR cevabı EN kullanıcıya gitmez.
+
+#### İstek Gövdesi
+```json
+{
+  "query": "kısa bölümlü, hafif, komik bir dizi",
+  "media_type": "both",
+  "lang": "tr"
+}
+```
+| Alan | Zorunlu | Açıklama |
+|------|---------|----------|
+| `query` | evet | En fazla 300 karakter. Boş/anlamsız sorgu → `400 invalid_query` |
+| `media_type` | hayır | `movie` \| `tv` \| `both` (varsayılan). `both` dışındaki değer, sorgudan çıkarılan türü ezer (arayüzdeki Film/Dizi anahtarı) |
+| `lang` | hayır | `tr` \| `en`. Verilmezse `?lang=` ya da `Accept-Language` kullanılır |
+
+#### İşleyiş
+1. **QueryParser:** `ANTHROPIC_API_KEY` tanımlıysa Claude (`ANTHROPIC_MODEL`, varsayılan `claude-opus-5-5`) sorguyu structured outputs ile `SearchFilters` şemasına çevirir. Kullanıcı metni `<user_query>` etiketleri içinde **veri** olarak gönderilir; çıktı yalnızca şemaya uyabilir (prompt injection davranışı değiştiremez).
+2. **Fallback:** Anahtar yoksa ya da LLM hata/zaman aşımı/geçersiz JSON/ret döndürürse kural tabanlı TR/EN ayrıştırıcı devreye girer. Arama LLM yüzünden asla 500 vermez. Yanıttaki `parser` alanı hangisinin kullanıldığını gösterir.
+3. **Retriever:** Filtreler film ve dizi için ayrı TMDB `discover` parametrelerine çevrilir (tür ID'leri farklı). `both` ise iki sorgu paralel atılır. Anahtar kelime eşleşmesi çok dar kalırsa (< 5 sonuç) anahtar kelimesiz ikinci sorguyla tamamlanır.
+4. **Ranker:** Bayes ortalamalı puan (film için 1000, dizi için 300 oy güven eşiği) + anahtar kelime/tür uyumu bonusu. `genres_exclude` kesin elemedir. Tekilleştirme `(media_type, tmdb_id)` ile yapılır; aynı ID'li film ve dizi birbirini silmez.
+5. **Explainer:** Tüm sonuçlar için tek LLM çağrısıyla, spoiler içermeyen gerekçeler üretilir. LLM yoksa tür ve puandan oluşan şablon cümle kullanılır.
+
+#### Başarılı Yanıt (HTTP 200 OK)
+```json
+{
+  "query": "kısa bölümlü, hafif, komik bir dizi",
+  "lang": "tr",
+  "media_type": "tv",
+  "parser": "llm",
+  "filters": {
+    "intent": "discover",
+    "media_type": "tv",
+    "genres_include": ["Comedy"],
+    "genres_exclude": [],
+    "keywords": [],
+    "moods": ["lighthearted"],
+    "people": [],
+    "year_from": null,
+    "year_to": null,
+    "min_rating": null,
+    "runtime_max": null,
+    "episode_runtime_max": 30,
+    "max_seasons": null,
+    "status": "any",
+    "language_hint": "tr"
+  },
+  "count": 20,
+  "results": [
+    {
+      "media_type": "tv",
+      "tmdb_id": 1400,
+      "title": "Seinfeld",
+      "display_title": "Seinfeld",
+      "original_title": "Seinfeld",
+      "overview": "…",
+      "poster_url": "https://image.tmdb.org/t/p/w500/….jpg",
+      "backdrop_url": "https://image.tmdb.org/t/p/w1280/….jpg",
+      "vote_average": 8.3,
+      "vote_count": 4800,
+      "popularity": 120.5,
+      "release_date": "1989-07-05",
+      "genre_ids": [35],
+      "score": 0.8521,
+      "reason": "Yarım saatlik bölümleriyle hafif ve keyifli bir klasik komedi."
+    }
+  ],
+  "took_ms": 2140,
+  "cached": false
+}
+```
+
+#### Hata Yanıtları
+| Durum | `code` | Ne zaman |
+|-------|--------|----------|
+| 400 | `invalid_query` | Boş, 2 karakterden kısa, harf içermeyen ya da izleme tercihi içermeyen sorgu (mesajda örnek sorgu önerilir) |
+| 400 | `invalid` | Eksik `query` alanı veya geçersiz `media_type`/`lang` |
+| 429 | `throttled` | Rate limit aşıldı |
+| 503 | `service_unavailable` | TMDB erişilemiyor veya `TMDB_API_KEY` tanımlı değil |
+
+---
+
 ## 🛡️ Standart Hata Formatı
 
 Tüm hata yanıtları (400, 401, 403, 404, 429, 500, 503) öngörülebilir ve tutarlı bir JSON formatında döner:
