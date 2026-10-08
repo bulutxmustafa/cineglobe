@@ -17,7 +17,7 @@ python backend/manage.py run_llm_eval --provider gemini --report docs/llm-eval.m
 ```
 Kapı geçilmezse `LLM_PROVIDER_CHAIN=anthropic,classic` (Claude Haiku 5.5) ile tekrar çalıştırıp sonuçlar karşılaştırılır.
 
-> **Not:** `classic` (AI'sız kural tabanlı) satırı karşılaştırma için bir taban çizgisidir. LLM'in bu tabandan özellikle oyuncu adı (`people`) ve serbest ifadelerde daha iyi olması beklenir. Gemini ve Haiku için henüz canlı ölçüm yapılmadı (API anahtarı bekleniyor).
+> **Not:** `classic` (AI'sız kural tabanlı) satırı karşılaştırma için bir taban çizgisidir. LLM'in bu tabandan özellikle oyuncu adı (`people`) ve serbest ifadelerde daha iyi olması beklenir. Gemini Flash-Lite (ücretsiz katman) 2026-10-08'de kapıyı 30/30 ile geçti; varsayılan zincir `gemini,classic` olarak kalır. Claude Haiku 5.5 ölçülmedi (gerek görülmedi).
 
 ## 2026-10-08 — `classic` (`rules`)
 
@@ -38,3 +38,15 @@ Kapı geçilmezse `LLM_PROVIDER_CHAIN=anthropic,classic` (Claude Haiku 5.5) ile 
 - `r13` “Bryan Cranston'ın oynadığı en iyi diziler” → people=[], expected any of ['bryan cranston']
 
 </details>
+
+## 2026-10-08 — `gemini` (`gemini-3.5-flash-lite`)
+
+**Sonuç: ✅ GEÇTİ** — 30/30 sorgu tamamen doğru
+
+| Kriter | Değer | Durum |
+|---|---|---|
+| Geçerli JSON (yeniden denemeyle / ilk denemede) | 100% / 100% | ✅ |
+| `media_type` doğruluğu | 100% | ✅ |
+| `genres_exclude` ihlali | 0 | ✅ |
+| Prompt injection | geçti | ✅ |
+| Ortalama süre | 1.42 sn | ✅ |

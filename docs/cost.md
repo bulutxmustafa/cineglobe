@@ -14,7 +14,13 @@ Plan §3.10'un uygulama notları. Amaç: ürün ücretsiz kalırken AI aramasın
 
 Fiyatlar 2026-10-08'de resmi sayfalardan alındı ([Gemini](https://ai.google.dev/gemini-api/docs/pricing), Claude fiyatları Anthropic dokümanından) ve [`cost_guard.py`](../backend/apps/search/cost_guard.py) içindeki `PRICES_PER_MTOK` tablosunda tutuluyor. Fiyat değişirse yalnızca bu tablo güncellenir. Tabloda olmayan bir model $0 sayılır ve raporda öyle görünür; bu sayede maliyet sessizce şişirilmez.
 
-**Gemini ücretsiz katman sınırları:** Google, sayısal sınırları (dakikalık ve günlük istek) yalnızca proje bazında [AI Studio](https://aistudio.google.com/) üzerinde gösteriyor. Anahtar alındığında bu değerler buraya yazılmalı. `GUEST_DAILY_AI_SEARCHES` ve `USER_DAILY_AI_SEARCHES` toplamı, günlük istek sınırını aşmayacak şekilde ayarlanmalı. Bir AI araması 1 ayrıştırma çağrısı ve (ilk `LLM_EXPLAIN_TOP_N` sonuç için) 1 açıklama çağrısı demek, yani **2 istek**.
+**Gemini ücretsiz katman sınırları:** Google, sınırları proje bazında [AI Studio](https://ai.dev/rate-limit) üzerinde gösteriyor.
+- **Ölçüldü (2026-10-08):** `gemini-3.5-flash-lite` için **dakikada 15 istek** (proje + model başına; `GenerateRequestsPerMinutePerProjectPerModel-FreeTier`). Sınır aşılınca API 429 döner. Devre kesici sağlayıcıyı 60 sn atlar ve o aramalar klasik aramayla yanıtlanır.
+- **Günlük sınır (RPD):** henüz bilinmiyor. [ai.dev/rate-limit](https://ai.dev/rate-limit) sayfasından okunup buraya yazılmalı.
+
+Bir AI araması 1 ayrıştırma çağrısı ve (ilk `LLM_EXPLAIN_TOP_N` sonuç için) 1 açıklama çağrısı demek, yani **2 istek**. Dakikada 15 istekle bu, **tüm kullanıcılar için toplamda dakikada ~7 AI araması** eder. `LLM_EXPLAIN_TOP_N=0` yapılırsa (gerekçeler şablonla) kapasite **~15 AI araması/dk**'ya çıkar. Önbellekten dönen aramalar bu sınırı hiç tüketmez. `GUEST_DAILY_AI_SEARCHES` ve `USER_DAILY_AI_SEARCHES` değerleri, günlük sınır öğrenildiğinde ona göre ayarlanmalı.
+
+**Kalite kapısı çalıştırılırken** `run_llm_eval` istekleri varsayılan olarak dakikada 12 ile sınırlar (`--rpm`). Aksi halde ücretsiz katman 429 döner ve rapor modelin kalitesini değil hız sınırını ölçer (ilk denemede tam olarak bu oldu).
 
 ## Arama başına tahmin (henüz ölçülmedi)
 
