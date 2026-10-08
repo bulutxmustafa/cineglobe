@@ -158,6 +158,26 @@ def test_keyword_and_popular_endpoints():
         assert len(client.get_popular_tv(1)["results"]) == 1
 
 
+def test_person_details_and_upcoming_endpoints():
+    """Verify get_person_details, get_upcoming_movies, and get_upcoming_tv."""
+    client = TMDBClient(api_key="mock_key")
+    with patch.object(client._client, "get") as mock_get:
+        mock_get.side_effect = [
+            MagicMock(status_code=200, json=lambda: {"id": 1, "name": "Actor"}),
+            MagicMock(
+                status_code=200,
+                json=lambda: {"results": [{"id": 10, "title": "Upcoming Movie"}]},
+            ),
+            MagicMock(
+                status_code=200,
+                json=lambda: {"results": [{"id": 20, "name": "Upcoming Series"}]},
+            ),
+        ]
+        assert client.get_person_details(1)["name"] == "Actor"
+        assert client.get_upcoming_movies(1)["results"][0]["title"] == "Upcoming Movie"
+        assert client.get_upcoming_tv(1)["results"][0]["name"] == "Upcoming Series"
+
+
 def test_error_handling_not_found():
     """Verify 404 raises TMDBNotFoundError."""
     client = TMDBClient(api_key="mock_key")
