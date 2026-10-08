@@ -465,3 +465,54 @@ def test_search_view_uses_scoped_throttle(settings):
     assert ScopedRateThrottle in SearchView.throttle_classes
     assert SearchView.throttle_scope == "search"
     assert "search" in settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]
+
+
+# --- Faz 4: person intent inside NL search ----------------------------------
+
+
+def test_person_intent_adds_best_titles_block(api_client, tmdb, chain):
+    tmdb.search_person.side_effect = None
+    tmdb.search_person.return_value = {
+        "results": [{"id": 3223, "name": "Robert Downey Jr.", "popularity": 11.3}]
+    }
+    tmdb.get_person_combined_credits.return_value = {
+        "cast": [
+            {
+                **tmdb_item(299534, genre_ids=[28], rating=8.2, votes=28000),
+                "media_type": "movie",
+                "order": 0,
+                "character": "Tony Stark",
+            },
+            {
+                **tmdb_item(1, votes=50),
+                "media_type": "movie",
+                "order": 0,
+                "character": "X",
+            },
+        ],
+        "crew": [],
+    }
+    chain(
+        FakeProvider(
+            "gemini",
+            SearchFilters(
+                intent="person", people=["Robert Downey Jr."], media_type="movie"
+            ),
+        )
+    )
+
+    body = post(api_client, query="RDJ'nin en iyi filmleri").json()
+
+    person = body["person"]
+    assert (person["status"], person["person"]["name"]) == (
+        "found",
+        "Robert Downey Jr.",
+    )
+    assert [m["tmdb_id"] for m in person["sections"]["movies"]] == [
+        299534
+    ]  # vote floor
+    assert "series" not in person["sections"]
+
+
+def test_non_person_query_has_no_person_block(api_client, tmdb, chain):
+    assert post(api_client, query="gerilim olsun").json()["person"] is None

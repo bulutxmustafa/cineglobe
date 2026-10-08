@@ -143,7 +143,8 @@ def test_build_params_maps_genres_per_media_type():
     assert movie["without_genres"] == "27"
     assert movie["with_keywords"] == "101|102"
     assert movie["include_adult"] == "false"
-    assert tv["with_genres"] == "10759"  # TV has no Thriller genre
+    # TV has no Thriller genre: Mystery|Crime stand in, alternatives joined with OR
+    assert tv["with_genres"] == "10759|9648|80"
     assert "without_genres" not in tv  # TV has no Horror genre
 
 
@@ -390,3 +391,48 @@ def test_fallback_series_status_and_not_a_series():
     assert parse_query_fallback("bitmiş bir polisiye dizi").status == "ended"
     assert parse_query_fallback("devam eden bir dram dizisi").status == "ongoing"
     assert parse_query_fallback("something funny, not a series").media_type == "movie"
+
+
+# ---------------------------------------------------------------------------
+# Genre stand-ins (live-data bug: "gerilim" returned a sitcom on TV)
+# ---------------------------------------------------------------------------
+
+
+def test_thriller_on_tv_uses_mystery_or_crime():
+    params = Retriever.build_params(
+        "tv", SearchFilters(genres_include=["Thriller"]), [], []
+    )
+    assert params["with_genres"] == "9648|80"
+
+
+def test_exclusions_never_use_stand_ins():
+    # "no horror" must not exclude every Mystery series on TV.
+    params = Retriever.build_params(
+        "tv", SearchFilters(genres_exclude=["Horror"]), [], []
+    )
+    assert "without_genres" not in params
+
+
+def test_media_type_without_any_matching_genre_is_skipped():
+    tmdb = fake_tmdb(
+        movies=[tmdb_item(1, genre_ids=[10770])], shows=[tmdb_item(2, tv=True)]
+    )
+    results = Retriever(tmdb).fetch(SearchFilters(genres_include=["TV Movie"]), "tr")
+    assert [(r["media_type"], r["tmdb_id"]) for r in results] == [("movie", 1)]
+    tmdb.discover_tv.assert_not_called()
+
+
+def test_tv_only_genres_use_movie_stand_ins():
+    params = Retriever.build_params(
+        "movie", SearchFilters(genres_include=["Kids"]), [], []
+    )
+    assert params["with_genres"] == "10751"
+
+
+def test_ranker_genre_bonus_counts_stand_ins():
+    mystery = {**_formatted(1, media_type="tv", genre_ids=[9648])}
+    comedy = {**_formatted(2, media_type="tv", genre_ids=[35])}
+    ranked = Ranker().rank(
+        [comedy, mystery], SearchFilters(genres_include=["Thriller"])
+    )
+    assert ranked[0]["tmdb_id"] == 1
