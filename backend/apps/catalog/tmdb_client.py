@@ -215,36 +215,13 @@ class TMDBClient:
             ttl=TTL_DISCOVER,
         )
 
-    def get_upcoming_movies(
-        self, page: int = 1, language: str = "tr-TR"
-    ) -> dict[str, Any]:
-        """Fetch upcoming movie releases. Cached 6 hours."""
-        lang = normalize_language(language)
-        cache_key = self._key("upcoming_movies", page, lang)
+    def get_movie_release_dates(self, tmdb_id: int) -> dict[str, Any]:
+        """Per-country release dates and types for one movie. Cached 24 hours."""
         return self._cached_get(
-            "/movie/upcoming",
-            params={"page": page, "language": lang},
-            cache_key=cache_key,
-            ttl=TTL_DETAIL_ONGOING_TV,
-        )
-
-    def get_upcoming_tv(self, page: int = 1, language: str = "tr-TR") -> dict[str, Any]:
-        """Fetch upcoming TV shows airing in the future. Cached 6 hours."""
-        from datetime import date
-
-        today = date.today().isoformat()
-        lang = normalize_language(language)
-        cache_key = self._key("upcoming_tv", page, lang, today)
-        return self._cached_get(
-            "/discover/tv",
-            params={
-                "page": page,
-                "language": lang,
-                "first_air_date.gte": today,
-                "sort_by": "first_air_date.asc",
-            },
-            cache_key=cache_key,
-            ttl=TTL_DETAIL_ONGOING_TV,
+            f"/movie/{tmdb_id}/release_dates",
+            params={},
+            cache_key=self._key("movie", tmdb_id, "release_dates"),
+            ttl=TTL_DETAIL,
         )
 
     # ------------------------------------------------------------------
