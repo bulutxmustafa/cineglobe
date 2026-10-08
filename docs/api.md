@@ -304,6 +304,60 @@ Biyografi, doğum yılı, fotoğraf ve en çok oylanan 4 başrol (`known_for`). 
 
 ---
 
+## 👤 Hesaplar (isteğe bağlı) — Faz 7
+
+Keşif özelliklerinin hepsi (arama, koleksiyonlar, oyuncular, yakında çıkacaklar, Şans Globu) **hesapsız** çalışır. Hesap şunları ekler:
+- hatırlatıcılar,
+- arama geçmişi,
+- daha yüksek günlük AI arama kotası,
+- Film Defterim (Faz 7B).
+
+Kimlik doğrulama **oturum çerezi + CSRF** ile yapılır ([ADR-0005](adr/0005-auth-session-cookie.md)). Yazma isteklerinde `X-CSRFToken` başlığı gerekir: değer, `GET /api/v1/auth/csrf/` çağrısının bıraktığı `csrftoken` çerezinden okunur. Giriş yapılmadan kişisel bir uca istek gelirse `403` döner.
+
+| Uç nokta | Açıklama |
+|---|---|
+| `GET /api/v1/auth/csrf/` | CSRF çerezini ayarlar |
+| `POST /api/v1/auth/register/` | `{email, password, preferred_language, age_confirmed: true}` → hesap açar ve giriş yapar (`201`). 18+ beyanı zorunludur; doğum tarihi toplanmaz |
+| `POST /api/v1/auth/login/` | `{email, password}`. Yanlış şifre ile kayıtlı olmayan e-posta aynı hatayı alır |
+| `POST /api/v1/auth/logout/` | Çıkış (`204`) |
+| `POST /api/v1/auth/password/change/` | `{current_password, new_password}`. Bu oturum açık kalır |
+| `POST /api/v1/auth/password/reset/` | `{email}` → her zaman `200`; hesap varsa e-postayla bağlantı gider |
+| `POST /api/v1/auth/password/reset/confirm/` | `{uid, token, new_password}`. Bağlantı bir kez kullanılabilir |
+| `GET /api/v1/auth/unsubscribe/?token=` | E-postadaki tek tıkla abonelikten çıkma bağlantısı |
+| `GET` / `PATCH /api/v1/me/` | Profil; değiştirilebilir alanlar `preferred_language` ve `email_notifications` |
+| `DELETE /api/v1/me/` | `{password}` → hesabı ve **tüm verileri** kalıcı siler |
+| `GET /api/v1/me/export/` | Tüm verilerim, JSON dosyası olarak (KVKK/GDPR) |
+| `GET` / `DELETE /api/v1/me/search-history/` | Kendi arama geçmişim (son 100); tek tek silmek için `/{id}/` |
+| `GET` / `POST /api/v1/me/notifications/` | Uygulama içi bildirimler; `POST` hepsini okundu işaretler |
+
+**Hız sınırı:** kayıt, giriş ve şifre sıfırlama dakikada 10 istek.
+
+**Arama yanıtındaki kota bilgisi:** `quota` alanı `{signed_in, limit, remaining, suggest_signup}` içerir. Misafirin kotası dolduğunda `suggest_signup: true` döner ve arayüz "ücretsiz hesap aç" önerir.
+
+## ⏰ Hatırlatıcılar — Faz 7
+
+| Uç nokta | Açıklama |
+|---|---|
+| `GET /api/v1/reminders/` | İptal edilmemiş hatırlatıcılarım (`due_date` dahil) |
+| `POST /api/v1/reminders/` | `{media_type, tmdb_id, remind_on, channels}` → yeni kayıtta `201`; aynı yapım için ikinci istekte mevcut kayıt güncellenir (`200`). Hatalar: `already_released` (400), `no_upcoming_season` (400), `title_not_found` (404) |
+| `POST /api/v1/reminders/bulk/` | `{items: [...]}`: misafirken tarayıcıda biriken "Hatırlat" tıklamaları girişten sonra bir kerede aktarılır (`created` / `skipped`) |
+| `DELETE /api/v1/reminders/{id}/` | İptal. Başka bir kullanıcının kaydı için `404` döner |
+
+**Günlük iş** (`/api/v1/cron/daily/`, Vercel Cron, her gün 05:00 UTC ≈ 08:00 İstanbul; elle çalıştırmak için `python backend/manage.py run_daily_jobs`):
+1. Bekleyen hatırlatıcıların çıkış tarihini TMDB'den tazeler. Ertelenen yapım eski tarihte bildirilmez; tarih değiştiyse kullanıcıya kendi dilinde bildirim gider.
+2. Zamanı gelenleri gönderir. Durum "bekliyor"dan "gönderildi"ye tek bir koşullu `UPDATE` ile geçer; cron iki kez çalışsa bile çift bildirim olmaz.
+3. **Kanallar:**
+   - uygulama içi bildirim;
+   - e-posta: yalnızca bir e-posta sağlayıcısı tanımlıysa (`EMAIL_URL`) ve kullanıcı izin veriyorsa gider. Her e-postada abonelikten çıkma bağlantısı bulunur. E-posta kapalıyken "yalnızca e-posta" seçilmiş hatırlatıcılar uygulama içi bildirime düşer.
+4. **Temizlik:**
+   - 35 günden eski günlük sayaçlar,
+   - 90 günden eski okunmuş bildirimler,
+   - **6 aydan eski TMDB verisi** (TMDB şartı; ihtiyaç olunca yeniden çekilir).
+
+Uç nokta `Authorization: Bearer <CRON_SECRET>` ister. Gizli anahtar tanımlı değilse veya yanlışsa `404` döner.
+
+---
+
 ## 🛡️ Standart Hata Formatı
 
 Tüm hata yanıtları (400, 401, 403, 404, 429, 500, 503) öngörülebilir ve tutarlı bir JSON formatında döner:
