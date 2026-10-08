@@ -1,4 +1,4 @@
-"""Catalog API views: Title detail, Curated Categories, and Upcoming releases with multi-language support."""
+"""Catalog API views: title detail and upcoming releases with multi-language support."""
 
 import logging
 from datetime import date, datetime
@@ -9,7 +9,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.catalog.categories import get_all_curated_categories, get_curated_category
 from apps.catalog.formatting import format_tmdb_item
 from apps.catalog.models import Title
 from apps.catalog.params import get_language, get_page
@@ -150,110 +149,6 @@ class TitleDetailView(APIView):
 
         serializer = TitleSerializer(title, context={"language": lang})
         return Response(serializer.data)
-
-
-class CuratedCategoryListView(APIView):
-    """List all curated and mood-based categories."""
-
-    @extend_schema(
-        summary="List all curated / mood categories",
-        parameters=[
-            OpenApiParameter(
-                "lang",
-                location=OpenApiParameter.QUERY,
-                description="Language: 'tr' or 'en'",
-            ),
-        ],
-        tags=["Categories"],
-    )
-    def get(self, request):
-        lang = get_language(request)
-        categories = get_all_curated_categories(language=lang)
-        return Response({"categories": categories, "count": len(categories)})
-
-
-class CuratedCategoryDetailView(APIView):
-    """Get titles belonging to a specific curated mood category."""
-
-    @extend_schema(
-        summary="Get titles for a curated category",
-        parameters=[
-            OpenApiParameter(
-                "slug", location=OpenApiParameter.PATH, description="Category slug"
-            ),
-            OpenApiParameter(
-                "page", location=OpenApiParameter.QUERY, type=int, default=1
-            ),
-            OpenApiParameter(
-                "lang",
-                location=OpenApiParameter.QUERY,
-                description="Language: 'tr' or 'en'",
-            ),
-        ],
-        tags=["Categories"],
-    )
-    def get(self, request, slug: str):
-        category = get_curated_category(slug)
-        if not category:
-            return Response(
-                {
-                    "error": {
-                        "code": "category_not_found",
-                        "message": f"Kategori '{slug}' bulunamadı.",
-                        "status_code": 404,
-                        "details": None,
-                    }
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        lang = get_language(request)
-        page = get_page(request)
-        client = TMDBClient()
-
-        results: list[dict[str, Any]] = []
-
-        try:
-            if category.media_type in ("movie", "both") and category.tmdb_params_movie:
-                movie_params = {"page": page, **category.tmdb_params_movie}
-                movie_res = client.discover_movies(movie_params, language=lang)
-                for item in movie_res.get("results", []):
-                    results.append(format_tmdb_item(item, default_media_type="movie"))
-
-            if category.media_type in ("tv", "both") and category.tmdb_params_tv:
-                tv_params = {"page": page, **category.tmdb_params_tv}
-                tv_res = client.discover_tv(tv_params, language=lang)
-                for item in tv_res.get("results", []):
-                    results.append(format_tmdb_item(item, default_media_type="tv"))
-
-        except TMDBServiceUnavailableError as exc:
-            logger.error("TMDB error in category fetch: %s", exc)
-            return Response(
-                {
-                    "error": {
-                        "code": "service_unavailable",
-                        "message": "Film veritabanı geçici olarak erişilemiyor.",
-                        "status_code": 503,
-                        "details": None,
-                    }
-                },
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-
-        # Sort combined results by popularity or vote average
-        results.sort(
-            key=lambda x: (x.get("vote_average", 0), x.get("popularity", 0)),
-            reverse=True,
-        )
-
-        return Response(
-            {
-                "category": category.to_dict(language=lang),
-                "page": page,
-                "count": len(results),
-                "results": results,
-            }
-        )
 
 
 class UpcomingTitlesView(APIView):
