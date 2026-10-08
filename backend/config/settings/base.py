@@ -22,6 +22,7 @@ env = environ.Env(
     DATABASE_URL=(str, "postgres://cineglobe:cineglobe@localhost:5432/cineglobe"),
     CACHE_BACKEND=(str, "db"),
     CACHE_MAX_ENTRIES=(int, 5000),
+    COLLECTION_CACHE_TTL_SECONDS=(int, 6 * 3600),
     DB_CONN_MAX_AGE=(int, 0),
     CSRF_TRUSTED_ORIGINS=(list, []),
     TRUSTED_PROXY_COUNT=(int, 0),
@@ -79,6 +80,7 @@ LOCAL_APPS = [
     "apps.search",
     "apps.people",
     "apps.accounts",
+    "apps.collections",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -263,4 +265,5 @@ PERSON_LEAD_MAX_ORDER = env("PERSON_LEAD_MAX_ORDER")
 LLM_DAILY_BUDGET_USD = env("LLM_DAILY_BUDGET_USD")
 LLM_TIMEOUT_SECONDS = env("LLM_TIMEOUT_SECONDS")
 SEARCH_CACHE_TTL_SECONDS = env("SEARCH_CACHE_TTL_SECONDS")
+COLLECTION_CACHE_TTL_SECONDS = env("COLLECTION_CACHE_TTL_SECONDS")
 SENTRY_DSN = env("SENTRY_DSN")
