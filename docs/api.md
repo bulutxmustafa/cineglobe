@@ -174,6 +174,36 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
 
 ---
 
+## 🗂️ Hazır Koleksiyonlar (Collections) — Faz 4B
+
+Her koleksiyon bir **tarif (recipe)** ile üretilir: TMDB'den aday filmler toplanır, hariç tutulan türler kesin olarak elenir, oy güvenine göre sıralanır, en fazla 100 yapım tutulur. Editör Django admin'den **kod değiştirmeden** koleksiyon ekleyebilir veya düzenleyebilir:
+- **sabitleme** (`editor_pins`): listede en başta gösterilir,
+- **engelleme** (`editor_blocklist`): listede hiç gösterilmez.
+
+Kaydedilen değişiklik bir sonraki istekte görünür: önbellek anahtarı, düzenlenebilir alanların özetini içeriyor.
+
+**Başlangıç koleksiyonları** (2026-10-08'de onaylandı; gerçek TMDB verisiyle her biri ≥ 20 sonuç): `never-boring`, `immersive`, `snack-watch`, `switch-off`, `start-to-finish`, `curveball`.
+
+> **Not (Tersköşe):** TMDB'de "plot twist" gibi anahtar kelimeler çok az filme etiketli; örneğin Shutter Island'da hiç yok. Bu yüzden `curveball`, anahtar kelime havuzuna ek olarak bilinen tersköşe filmleri kimlikleriyle sabitler. Gerekçe metni sürprizi asla açık etmez (plan §3.5 spoiler kuralı).
+
+### `GET /api/v1/collections/?lang=tr`
+Aktif koleksiyonlar (`slug`, `name`, `description`, `icon`, `media_type`), `sort_order` sırasıyla.
+
+### `GET /api/v1/collections/{slug}/?media_type=both&page=1&lang=tr`
+Sayfa başına 20 yapım. Her yapımda editörün yazdığı spoiler içermeyen `reason` ve `pinned` alanları bulunur.
+- Önbellek süresi: `COLLECTION_CACHE_TTL_SECONDS` (6 saat).
+- Bilinmeyen veya pasif koleksiyon → `404`. TMDB erişilemezse → `503`.
+
+### `GET /api/v1/collections/{slug}/random/?exclude=movie:550,tv:1396&lang=tr`
+Şans Globu için koleksiyondan rastgele bir yapım. `exclude` ile son seçimler tekrar gelmez; hepsi hariçse yine bir yapım döner. Her çevirme taze olduğu için CDN'de önbelleğe alınmaz.
+
+### CDN önbelleği (plan v1.8)
+Liste ve detay yanıtları, `lang` parametresi URL'de açıkça varsa `Cache-Control: public, s-maxage=3600` ile döner. Böylece Vercel CDN'i tekrar eden istekleri Django'ya ve Neon'a uğramadan karşılar.
+- Dil yalnızca `Accept-Language` başlığından geliyorsa yanıt `private` olur, çünkü CDN önbelleği URL'ye göre tutar ve farklı dil başlıklarını ayırt edemez.
+- Bu uçlar kimlik doğrulama yapmaz. Böylece yanıtta `Vary: Cookie` oluşmaz ve CDN yanıtı herkesle paylaşabilir.
+
+---
+
 ## 🎭 Oyuncular (People) — Faz 4
 
 Tüm uçlar `?lang=tr|en` (veya `Accept-Language`) kabul eder. TMDB erişilemezse `503 service_unavailable` döner.
