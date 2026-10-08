@@ -1,18 +1,17 @@
-"""Unit tests for the NL search pipeline: schema, fallback parser, LLM parser,
-retriever, ranker and explainer. All external services are faked."""
+"""Unit tests for the NL search pipeline: schema, fallback parser, retriever,
+ranker and template explanations. All external services are faked."""
 
-import anthropic
-import httpx2
+from unittest.mock import MagicMock, patch
+
 import pytest
-from apps.search.explainer import Explainer, template_reason
+from apps.catalog.tmdb_client import TMDBClient
+from apps.search.explainer import brief, template_reason
 from apps.search.fallback import parse_query_fallback
-from apps.search.llm import get_llm_client
-from apps.search.query_parser import SYSTEM_PROMPT, QueryParser
 from apps.search.ranker import Ranker, bayesian_rating
 from apps.search.retriever import Retriever
-from apps.search.schemas import SearchFilters
+from apps.search.schemas import ReasonList, SearchFilters
 from pydantic import ValidationError
-from search_fakes import FakeLLM, fake_tmdb, tmdb_item
+from search_fakes import fake_tmdb, tmdb_item
 
 # ---------------------------------------------------------------------------
 # SearchFilters schema
@@ -51,8 +50,20 @@ def test_movie_only_filters_drop_tv_fields():
     assert (f.episode_runtime_max, f.max_seasons, f.status) == (None, None, "any")
 
 
+def test_reason_list_mapping_drops_blank_reasons_and_collapses_whitespace():
+    reasons = ReasonList.model_validate(
+        {
+            "reasons": [
+                {"key": "movie:1", "reason": "  Tense \n and smart. "},
+                {"key": "tv:2", "reason": "  "},
+            ]
+        }
+    )
+    assert reasons.as_mapping() == {"movie:1": "Tense and smart."}
+
+
 # ---------------------------------------------------------------------------
-# Fallback parser — plan Faz 3 scenarios
+# Fallback (classic) parser — plan Faz 3 scenarios
 # ---------------------------------------------------------------------------
 
 
@@ -119,80 +130,6 @@ def test_fallback_handles_turkish_capital_i():
 
 
 # ---------------------------------------------------------------------------
-# QueryParser (LLM + fallback)
-# ---------------------------------------------------------------------------
-
-
-def test_parser_uses_fallback_without_api_key(settings):
-    settings.ANTHROPIC_API_KEY = ""
-    assert get_llm_client() is None
-    result = QueryParser().parse("komik bir dizi")
-    assert result.source == "fallback"
-    assert result.filters.media_type == "tv"
-
-
-def test_llm_client_built_from_settings(settings):
-    settings.ANTHROPIC_API_KEY = "sk-test"
-    settings.LLM_TIMEOUT_SECONDS = 7.0
-    client = get_llm_client()
-    assert isinstance(client, anthropic.Anthropic)
-    assert client.max_retries == 1
-
-
-def test_parser_returns_llm_filters_and_wraps_query_as_data(settings):
-    settings.ANTHROPIC_MODEL = "claude-opus-5-5"
-    expected = SearchFilters(
-        genres_include=["Action", "Thriller"], keywords=["espionage"]
-    )
-    llm = FakeLLM(filters=expected)
-
-    result = QueryParser(client=llm).parse("silahlı çatışma ama istihbarat da olsun")
-
-    assert result.source == "llm"
-    assert result.filters == expected
-    call = llm.calls[0]
-    assert call["model"] == "claude-opus-5-5"
-    assert call["system"] == SYSTEM_PROMPT
-    assert call["output_format"] is SearchFilters
-    assert call["messages"][0]["content"] == (
-        "<user_query>\nsilahlı çatışma ama istihbarat da olsun\n</user_query>"
-    )
-
-
-_REQUEST = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
-
-
-@pytest.mark.parametrize(
-    "error",
-    [
-        anthropic.APIConnectionError(request=_REQUEST),
-        anthropic.APITimeoutError(request=_REQUEST),
-        ValidationError.from_exception_data("SearchFilters", []),
-        ValueError("Could not parse JSON"),
-    ],
-    ids=["connection", "timeout", "invalid-json-schema", "invalid-json"],
-)
-def test_parser_falls_back_on_llm_errors(error):
-    result = QueryParser(client=FakeLLM(parse_error=error)).parse(
-        "gerilim, korku olmasın"
-    )
-    assert result.source == "fallback"
-    assert result.filters.genres_exclude == ["Horror"]
-
-
-@pytest.mark.parametrize("stop_reason", ["max_tokens", "refusal"])
-def test_parser_falls_back_on_unusable_stop_reason(stop_reason):
-    llm = FakeLLM(filters=SearchFilters(), stop_reason=stop_reason)
-    assert QueryParser(client=llm).parse("komedi").source == "fallback"
-
-
-def test_parser_falls_back_when_parsed_output_missing():
-    assert (
-        QueryParser(client=FakeLLM(filters=None)).parse("komedi").source == "fallback"
-    )
-
-
-# ---------------------------------------------------------------------------
 # Retriever
 # ---------------------------------------------------------------------------
 
@@ -205,6 +142,7 @@ def test_build_params_maps_genres_per_media_type():
     assert movie["with_genres"] == "28,53"
     assert movie["without_genres"] == "27"
     assert movie["with_keywords"] == "101|102"
+    assert movie["include_adult"] == "false"
     assert tv["with_genres"] == "10759"  # TV has no Thriller genre
     assert "without_genres" not in tv  # TV has no Horror genre
 
@@ -245,6 +183,25 @@ def test_retriever_queries_movie_and_tv_for_both():
         ("movie", 1),
         ("tv", 2),
     }
+
+
+def test_retriever_drops_adult_titles():
+    tmdb = fake_tmdb(movies=[tmdb_item(1), tmdb_item(2, adult=True)])
+    results = Retriever(tmdb).fetch(SearchFilters(media_type="movie"), "tr")
+    assert [r["tmdb_id"] for r in results] == [1]
+
+
+def test_tmdb_client_sends_include_adult_false_on_discover_and_search():
+    client = TMDBClient(api_key="k")
+    ok = MagicMock(status_code=200, json=lambda: {"results": []})
+    with patch.object(client._client, "get", return_value=ok) as get:
+        client.discover_tv({"page": 1})
+        client.search_keyword("spy")
+        client._get("/movie/550")
+    sent = [call.kwargs["params"] for call in get.call_args_list]
+    assert sent[0]["include_adult"] == "false"
+    assert sent[1]["include_adult"] == "false"
+    assert "include_adult" not in sent[2]
 
 
 def test_retriever_prefers_exact_keyword_match():
@@ -343,7 +300,7 @@ def test_ranker_respects_limit():
 
 
 # ---------------------------------------------------------------------------
-# Explainer
+# Template explanations & LLM title briefs
 # ---------------------------------------------------------------------------
 
 
@@ -353,7 +310,7 @@ def _result(tmdb_id, media_type="movie", genre_ids=(53,), matched=False):
         "tmdb_id": tmdb_id,
         "title": f"T{tmdb_id}",
         "release_date": "2010-01-01",
-        "overview": "x",
+        "overview": "x" * 500,
         "vote_average": 8.1,
         "genre_ids": list(genre_ids),
         "matched_keywords": matched,
@@ -371,24 +328,65 @@ def test_template_reason_is_localized():
     )
 
 
-def test_explainer_without_llm_uses_templates():
-    reasons = Explainer(client=None).explain([_result(1)], SearchFilters(), "q", "en")
-    assert reasons == {"movie:1": "A thriller film rated 8.1/10 on TMDB."}
+def test_brief_contains_only_public_title_metadata():
+    data = brief(_result(1)).as_dict()
+    assert set(data) == {
+        "key",
+        "media_type",
+        "title",
+        "year",
+        "genres",
+        "rating",
+        "overview",
+    }
+    assert data["key"] == "movie:1"
+    assert data["year"] == "2010"
+    assert data["genres"] == ["Thriller"]
+    assert len(data["overview"]) == 300
 
 
-def test_explainer_batches_one_llm_call_in_requested_language():
-    llm = FakeLLM(extra_keys=["movie:999"])
-    items = [_result(1), _result(1, "tv")]
-    reasons = Explainer(client=llm).explain(items, SearchFilters(), "gerilim", "en")
-
-    assert len(llm.calls) == 1
-    assert reasons == {
-        "movie:1": "[en] LLM reason for movie:1",
-        "tv:1": "[en] LLM reason for tv:1",
-    }  # invented key "movie:999" ignored
+# ---------------------------------------------------------------------------
+# Fallback fixes found by the eval set
+# ---------------------------------------------------------------------------
 
 
-def test_explainer_falls_back_to_templates_on_llm_error():
-    llm = FakeLLM(explain_error=anthropic.APIConnectionError(request=_REQUEST))
-    reasons = Explainer(client=llm).explain([_result(1)], SearchFilters(), "q", "tr")
-    assert reasons["movie:1"].startswith("TMDB'de 8.1/10 puanlı")
+@pytest.mark.parametrize(
+    "query, include, exclude",
+    [
+        (
+            "çocuklarla izlenecek animasyon, korku ve şiddet olmasın",
+            ["Animation"],
+            ["Horror"],
+        ),
+        ("gerilim olsun ve korku olmasın", ["Thriller"], ["Horror"]),
+        ("no horror and no war, a comedy please", ["Comedy"], ["Horror", "War"]),
+        ("korku ve gerilim olsun", ["Horror", "Thriller"], []),
+    ],
+)
+def test_fallback_negation_spreads_over_conjunctions_only_without_own_verb(
+    query, include, exclude
+):
+    f = parse_query_fallback(query)
+    assert sorted(f.genres_include) == sorted(include)
+    assert sorted(f.genres_exclude) == sorted(exclude)
+
+
+@pytest.mark.parametrize(
+    "query, years",
+    [
+        ("90'larda geçen romantik komedi", (1990, 1999)),
+        ("western, 70'lerden", (1970, 1979)),
+        ("war drama from the 2010s", (2010, 2019)),
+        ("2000'ler bilim kurgu", (2000, 2009)),
+        ("50 sezonluk uzun bir dizi", (None, None)),
+    ],
+)
+def test_fallback_decades(query, years):
+    f = parse_query_fallback(query)
+    assert (f.year_from, f.year_to) == years
+
+
+def test_fallback_series_status_and_not_a_series():
+    assert parse_query_fallback("bitmiş bir polisiye dizi").status == "ended"
+    assert parse_query_fallback("devam eden bir dram dizisi").status == "ongoing"
+    assert parse_query_fallback("something funny, not a series").media_type == "movie"
