@@ -104,8 +104,11 @@ python backend/manage.py runserver
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
+- **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; AI için `GEMINI_API_KEY` gerekir, yoksa AI'sız klasik aramayla çalışır)*
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
-- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
+- **Oyuncunun En İyi Yapımları:** `POST http://localhost:8000/api/v1/people/top-titles/` — gövde: `{"name": "RDJ", "media_type": "both"}` *(Faz 4)*
+- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest|rating|popularity&media_type=both&lang=tr` *(Faz 4)*
+- **Oyuncu Detayı:** `http://localhost:8000/api/v1/people/{tmdb_id}/?lang=tr` *(Faz 4; Türkçe biyografi yoksa İngilizce)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
 - **Film Defterim (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/?status=watched&sort=-rating` *(Faz 7B)*
 - **Defter İstatistikleri (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/stats/` *(Faz 7B)*
@@ -124,7 +127,13 @@ pytest
 pytest --cov=backend --cov-report=term-missing
 ```
 
-### 6. Kod Standartları ve Pre-commit
+### 6. LLM Kalite Kapısı (canlı anahtar gerekir, isteğe bağlı)
+```bash
+python backend/manage.py run_llm_eval --provider gemini --report docs/llm-eval.md
+```
+Gemini'nin arama sorgularını yeterince iyi anlayıp anlamadığını 30 sorguluk setle ölçer (istekler ücretsiz katman sınırı için dakikada 12 ile sınırlanır; bkz. [docs/llm-eval.md](docs/llm-eval.md)).
+
+### 7. Kod Standartları ve Pre-commit
 ```bash
 pre-commit install
 pre-commit run --all-files

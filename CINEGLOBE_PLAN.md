@@ -80,7 +80,7 @@ Film/dizi izletme (streaming), **herkese açık yorum/tartışma, mesajlaşma (D
 | CI/CD | **GitHub Actions** | Test + deploy otomasyonu |
 | Test | pytest, Vitest, Playwright | Her katman için |
 
-> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** projeler için ücretsizdir ve **atıf (TMDB logosu + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB, ana amacı sahibine gelir sağlamak olan projeyi "ticari" sayar; reklamlı/abonelikli bir sitenin hangi tarafa düştüğü SSS'te net değildir, **kesinleştirmek için TMDB satış ekibiyle yazışılmalıdır**. **Karar (v1.4): proje şimdilik ücretsiz ve ticari olmayan olarak yürür.** Ajan: (1) Faz 2'de atıfı footer/Hakkında bölümüne koysun, (2) **reklam, abonelik, affiliate, bağış butonu gibi gelir getiren hiçbir öğe eklemesin** (gelir getiren her şey TMDB'ye sorulmadan eklenmez), (3) gelir modeline geçilecekse önce kullanıcıdan TMDB ticari lisansını/yazılı onayını istesin.
+> **Not (lisans — v1.3'te kritik):** TMDB API'si **ticari olmayan** projeler için ücretsizdir ve **atıf (TMDB logosu + "This product uses the TMDB API but is not endorsed or certified by TMDB." metni) zorunludur**. TMDB API kullanım şartları, **reklam dahil gelir elde eden** bir sitede TMDB verisi kullanmayı, ücret alınan erişimi ve TMDB verisiyle AI/ML eğitimini açıkça **ticari kullanım** sayar; bunun için TMDB ile **yazılı ticari anlaşma** gerekir (ücret içerebilir). Şartlar ayrıca TMDB verisinin **en fazla 6 ay** önbellekte/depoda tutulmasına izin verir (Faz 2 ve Faz 7B'deki 6 ay kuralı). **Karar (v1.4): proje şimdilik ücretsiz ve ticari olmayan olarak yürür.** Ajan: (1) Faz 2'de atıfı footer/Hakkında bölümüne koysun, (2) **reklam, abonelik, affiliate, bağış butonu gibi gelir getiren hiçbir öğe eklemesin** (gelir getiren her şey TMDB'ye sorulmadan eklenmez), (3) gelir modeline geçilecekse önce kullanıcıdan TMDB ticari lisansını/yazılı onayını istesin.
 
 ---
 
@@ -242,7 +242,7 @@ Faz 4'teki "en iyi" sıralamasına **ek olarak** tam filmografi görünümü:
 **Film Defterim — Veri Modeli**
 Tek bir kayıt tipi tüm kişisel durumu taşır (Favori + İzleme listesi + Puan + Not ayrı tablolar olmaz):
 
-`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir).
+`NotebookEntry` — `user`, `media_type`, `tmdb_id` (**birlikte unique** `user + media_type + tmdb_id`), `status` (`want_to_watch` | `watching` | `watched` | `dropped` | `null`), `is_favorite` (bool), `rating_x2` (1–10 arası tamsayı; arayüzde **0,5–5 yıldız**, 0,5'lik adımlar; kayan nokta hatası olmasın diye ×2 saklanır; `null` = puanlanmadı), `note` (özel metin, en çok 5000 karakter), `tags` (kullanıcı etiketleri, en çok 10), `watched_on` (tarih, opsiyonel), `rewatch_count`, `created_at`, `updated_at`, `title_snapshot` (başlık, poster yolu, tür, süre — TMDB kapalıyken bile defter açılsın ve istatistik hesaplansın diye; periyodik yenilenir, TMDB şartları gereği **hiçbir snapshot 6 aydan eski kalmaz**).
 - Diziler için: `progress_season`, `progress_episode` (Faz 7'deki ilerleme takibi bu modelde birleşir). Bölüm bazlı puan v1'de yok.
 - Notlar **varsayılan özeldir**; yalnızca sahibinin bilinçli olarak oluşturduğu paylaşım bağlantısında ve ayrı bir "notları dahil et" seçimiyle başkasına görünebilir (§3.11, Faz 7C). Not metni **düz metin** olarak render edilir (XSS koruması), LLM'e **asla** gönderilmez.
 
@@ -523,6 +523,7 @@ docs(readme): add local setup steps
 - [ ] Modeller: `Title` (`media_type`, `tmdb_id` birlikte **unique**; çünkü film ve dizi ID'leri çakışabilir), `Genre`, `Person`, `TVDetails` (sezon sayısı, bölüm sayısı, durum, bölüm süresi, yayıncı/network, ilk/son yayın tarihi), `Season` (opsiyonel)
 - [ ] **Önemli:** TMDB'de film ve dizinin `id` değeri aynı olabilir. Tüm tablolar, cache anahtarları ve URL'ler `media_type + id` ikilisiyle çalışmalı.
 - [ ] Cache stratejisi (film/dizi detayı: 24 saat; **devam eden dizi detayı: 6 saat**, çünkü yeni bölüm/sezon bilgisi değişir; discover: 1 saat)
+- [ ] **(v1.3) TMDB 6 ay kuralı:** DB'de saklanan TMDB verisi (`Title`, `Person`, `TVDetails` vb.) için `updated_at` takibi + günlük/haftalık `purge_stale_tmdb_data` komutu: 6 aydan eski kayıtlar yenilenir, yenilenemeyenler silinir (testle kanıtlı)
 - [ ] Görsel URL yardımcıları (poster/backdrop boyutları)
 - [ ] Footer için TMDB atıf metni hazırla; kullanıcıya lisans uyarısı ver
 - [ ] **(v1.2) Dil desteği:** `TMDBClient` tüm çağrılarda `lang` (`tr-TR`/`en-US`) alır; boş TR alanlarda EN fallback; cache anahtarına `lang` eklenir
@@ -751,7 +752,7 @@ docs(readme): add local setup steps
 - [ ] Doğrulama: puan yalnızca 1–10 tamsayı (`null` serbest), durum enum, not uzunluğu, etiket sayısı/uzunluğu; geçersizse 400
 - [ ] Endpointler (§3.8): liste (filtre/sıralama/sayfalama/arama), tek kayıt GET/PUT/PATCH/DELETE, **toplu `lookup`**, `stats`, `export` (CSV/JSON)
 - [ ] `stats` hesapları: toplam izlenen, toplam süre (`title_snapshot` süresinden), ortalama puan, puan dağılımı, tür dağılımı, aylık/yıllık sayılar, en yüksek puanlılar — N+1'siz, tek/az sorgu
-- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır)
+- [ ] `title_snapshot` yenileme job'u (haftalık, yalnızca eksik/eski kayıtlar; TMDB kapalıyken defter yine açılır; **6 ayı aşan snapshot'lar yenilenir, yenilenemiyorsa TMDB'den gelen alanlar temizlenir** — kullanıcının kendi verisi (durum, puan, not) korunur)
 - [ ] Web arayüzü: Defterim sayfası (sekmeler, filtre, arama), İstatistik sayfası, kartlarda/detayda hızlı eylemler, `AuthSoftGateModal` akışı (bekleyen işlem giriş sonrası tamamlanır)
 - [ ] Entegrasyon: sonuç kartlarında `lookup` ile "İzledin ✓ · puanın"; arama/koleksiyon/globe'da **"izlediklerimi hariç tut"** filtresi (sunucu tarafı, `exclude_watched=true`)
 - [ ] Şans Globu kaynağı: "İzlenecek listem"
