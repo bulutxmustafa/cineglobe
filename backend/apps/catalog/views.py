@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.catalog.categories import get_all_curated_categories, get_curated_category
-from apps.catalog.image_utils import backdrop_url, poster_url
+from apps.catalog.formatting import format_tmdb_item
 from apps.catalog.models import Title
 from apps.catalog.params import get_language, get_page
 from apps.catalog.serializers import TitleSerializer
@@ -64,30 +64,6 @@ def _fetch_and_cache_title(
         defaults=common,
     )
     return title_obj
-
-
-def _format_raw_tmdb_title(
-    item: dict[str, Any], default_media_type: str = "movie"
-) -> dict[str, Any]:
-    """Format raw TMDB item into clean standard response item."""
-    media_type = item.get("media_type") or default_media_type
-    title_name = item.get("title") or item.get("name", "")
-    rel_date = item.get("release_date") or item.get("first_air_date") or ""
-
-    return {
-        "media_type": media_type,
-        "tmdb_id": item.get("id"),
-        "title": title_name,
-        "display_title": title_name,
-        "original_title": item.get("original_title") or item.get("original_name", ""),
-        "overview": item.get("overview", ""),
-        "poster_url": poster_url(item.get("poster_path", "")),
-        "backdrop_url": backdrop_url(item.get("backdrop_path", "")),
-        "vote_average": item.get("vote_average", 0.0),
-        "vote_count": item.get("vote_count", 0),
-        "popularity": item.get("popularity", 0.0),
-        "release_date": rel_date,
-    }
 
 
 class TitleDetailView(APIView):
@@ -242,17 +218,13 @@ class CuratedCategoryDetailView(APIView):
                 movie_params = {"page": page, **category.tmdb_params_movie}
                 movie_res = client.discover_movies(movie_params, language=lang)
                 for item in movie_res.get("results", []):
-                    results.append(
-                        _format_raw_tmdb_title(item, default_media_type="movie")
-                    )
+                    results.append(format_tmdb_item(item, default_media_type="movie"))
 
             if category.media_type in ("tv", "both") and category.tmdb_params_tv:
                 tv_params = {"page": page, **category.tmdb_params_tv}
                 tv_res = client.discover_tv(tv_params, language=lang)
                 for item in tv_res.get("results", []):
-                    results.append(
-                        _format_raw_tmdb_title(item, default_media_type="tv")
-                    )
+                    results.append(format_tmdb_item(item, default_media_type="tv"))
 
         except TMDBServiceUnavailableError as exc:
             logger.error("TMDB error in category fetch: %s", exc)
@@ -320,13 +292,13 @@ class UpcomingTitlesView(APIView):
             if media_type in ("movie", "both"):
                 movie_data = client.get_upcoming_movies(page=page, language=lang)
                 for m in movie_data.get("results", []):
-                    formatted = _format_raw_tmdb_title(m, default_media_type="movie")
+                    formatted = format_tmdb_item(m, default_media_type="movie")
                     items.append(self._enrich_upcoming(formatted, today))
 
             if media_type in ("tv", "both"):
                 tv_data = client.get_upcoming_tv(page=page, language=lang)
                 for t in tv_data.get("results", []):
-                    formatted = _format_raw_tmdb_title(t, default_media_type="tv")
+                    formatted = format_tmdb_item(t, default_media_type="tv")
                     items.append(self._enrich_upcoming(formatted, today))
 
         except TMDBServiceUnavailableError as exc:
