@@ -7,13 +7,11 @@ must only send the query text and public title metadata (plan §3.10).
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 import pydantic
 from django.conf import settings
-from google import genai
-from google.genai import errors, types
 from pydantic import BaseModel
 
 from apps.search.prompts import (
@@ -31,6 +29,13 @@ from apps.search.providers.base import (
     TitleBrief,
 )
 from apps.search.schemas import ReasonList, SearchFilters
+
+if TYPE_CHECKING:
+    from google import genai
+
+# The SDK is imported on first use, not at module import: `google.genai`
+# takes ~0.8 s to import, and on serverless every cold start would pay for it even
+# when this provider is not in LLM_PROVIDER_CHAIN (plan v1.8).
 
 PARSE_MAX_TOKENS = 1024
 EXPLAIN_MAX_TOKENS = 2048
@@ -71,6 +76,9 @@ class GeminiProvider(LLMProvider):
     @property
     def client(self) -> genai.Client:
         if self._client is None:
+            from google import genai
+            from google.genai import types
+
             self._client = genai.Client(
                 api_key=settings.GEMINI_API_KEY,
                 http_options=types.HttpOptions(
@@ -112,6 +120,8 @@ class GeminiProvider(LLMProvider):
         output_model: type[BaseModel],
         max_tokens: int,
     ) -> LLMResult:
+        from google.genai import errors, types
+
         model = settings.GEMINI_MODEL
         config = types.GenerateContentConfig(
             system_instruction=system,

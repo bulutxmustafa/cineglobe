@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
-import anthropic
 import pydantic
 from django.conf import settings
 from pydantic import BaseModel
@@ -25,6 +25,13 @@ from apps.search.providers.base import (
 )
 from apps.search.schemas import ReasonList, SearchFilters
 
+if TYPE_CHECKING:
+    import anthropic
+
+# The SDK is imported on first use, not at module import: `import anthropic`
+# alone takes ~2.4 s, and on serverless every cold start would pay for it even
+# when this provider is not in LLM_PROVIDER_CHAIN (plan v1.8).
+
 PARSE_MAX_TOKENS = 2048
 EXPLAIN_MAX_TOKENS = 4096
 
@@ -42,6 +49,8 @@ class AnthropicProvider(LLMProvider):
     @property
     def client(self) -> anthropic.Anthropic:
         if self._client is None:
+            import anthropic
+
             self._client = anthropic.Anthropic(
                 api_key=settings.ANTHROPIC_API_KEY,
                 timeout=settings.LLM_TIMEOUT_SECONDS,
@@ -85,6 +94,8 @@ class AnthropicProvider(LLMProvider):
         output_format: type[BaseModel],
         max_tokens: int,
     ) -> LLMResult:
+        import anthropic
+
         try:
             response = self.client.messages.parse(
                 model=model,
