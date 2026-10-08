@@ -30,6 +30,8 @@ class NotebookEntrySerializer(serializers.ModelSerializer):
             "rewatch_count",
             "progress_season",
             "progress_episode",
+            "visibility",
+            "note_locked",
             "title",
             "original_title",
             "poster_url",
@@ -73,6 +75,8 @@ class NotebookWriteSerializer(serializers.Serializer):
     progress_episode = serializers.IntegerField(
         min_value=0, allow_null=True, required=False
     )
+    visibility = serializers.ChoiceField(choices=["private", "public"], required=False)
+    note_locked = serializers.BooleanField(required=False)
 
     def validate_tags(self, value):
         return list(dict.fromkeys(tag.strip() for tag in value if tag.strip()))

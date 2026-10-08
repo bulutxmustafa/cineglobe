@@ -91,6 +91,7 @@ LOCAL_APPS = [
     "apps.upcoming",
     "apps.reminders",
     "apps.notebook",
+    "apps.social",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -271,6 +272,8 @@ REST_FRAMEWORK = {
         "search": "20/min",
         # Sign-in, sign-up and password reset: slow down brute force.
         "auth": "10/min",
+        # Profile, list, share, report and block writes.
+        "social": "60/min",
     },
 }
 

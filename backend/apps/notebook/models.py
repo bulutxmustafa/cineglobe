@@ -55,6 +55,15 @@ class NotebookEntry(models.Model):
     rewatch_count = models.PositiveSmallIntegerField(default=0)
     progress_season = models.PositiveSmallIntegerField(null=True, blank=True)
     progress_episode = models.PositiveSmallIntegerField(null=True, blank=True)
+    # Faz 7C: shown on the public profile only when "public" (default private:
+    # existing entries stay private). A locked note never leaves the owner, not
+    # even through a share link that includes notes.
+    visibility = models.CharField(
+        max_length=8,
+        choices=[("private", "Only me"), ("public", "Public")],
+        default="private",
+    )
+    note_locked = models.BooleanField(default=False)
 
     # TMDB snapshot so the notebook and stats work while TMDB is down. Refreshed by
     # the daily job; never older than 6 months (TMDB terms), else the TMDB fields

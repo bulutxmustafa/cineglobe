@@ -86,6 +86,7 @@ class Notification(models.Model):
     class Kind(models.TextChoices):
         REMINDER_DUE = "reminder_due", "Reminder due"
         RELEASE_DATE_CHANGED = "release_date_changed", "Release date changed"
+        CONTENT_HIDDEN = "content_hidden", "Content hidden after reports"
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"

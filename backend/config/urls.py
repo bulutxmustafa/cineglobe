@@ -21,6 +21,8 @@ urlpatterns = [
     path("api/v1/me/notebook/", include("apps.notebook.urls")),
     path("api/v1/", include("apps.accounts.urls")),
     path("api/v1/", include("apps.reminders.urls")),
+    # Profiles, lists, sharing, moderation
+    path("api/v1/", include("apps.social.urls")),
     # Upcoming releases
     path("api/v1/upcoming/", include("apps.upcoming.urls")),
     # Curated collections
