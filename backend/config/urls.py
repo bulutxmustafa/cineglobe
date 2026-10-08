@@ -17,6 +17,8 @@ urlpatterns = [
     path("api/v1/health/", HealthCheckView.as_view(), name="health-check"),
     # Catalog (movies, tv shows, curated categories, upcoming)
     path("api/v1/", include("apps.catalog.urls")),
+    # Curated collections
+    path("api/v1/collections/", include("apps.collections.urls")),
     # Natural-language search
     path("api/v1/search/", include("apps.search.urls")),
     # People (actors, directors, filmography)
