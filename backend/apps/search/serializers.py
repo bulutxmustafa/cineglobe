@@ -37,7 +37,10 @@ class SearchResponseSerializer(serializers.Serializer):
     query = serializers.CharField()
     lang = serializers.CharField()
     media_type = serializers.CharField()
-    parser = serializers.ChoiceField(choices=["llm", "fallback"])
+    parser = serializers.ChoiceField(choices=["gemini", "anthropic", "classic"])
+    ai_status = serializers.ChoiceField(
+        choices=["ok", "quota_exceeded", "budget_exceeded", "fallback"]
+    )
     filters = serializers.DictField()
     count = serializers.IntegerField()
     results = SearchResultSerializer(many=True)

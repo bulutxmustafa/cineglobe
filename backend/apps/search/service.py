@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from typing import Any
 
@@ -11,21 +12,27 @@ from django.conf import settings
 from django.core.cache import cache
 
 from apps.catalog.tmdb_client import TMDBClient, TMDBError
-from apps.search.explainer import Explainer, result_key
-from apps.search.query_parser import QueryParser
+from apps.search.explainer import brief, result_key, template_reason
 from apps.search.ranker import Ranker
 from apps.search.retriever import Retriever
+from apps.search.router import LLMRouter, Quota
 from apps.search.schemas import SearchFilters
 
-CACHE_VERSION = "v1"
+CACHE_VERSION = "v2"
+PUNCTUATION = re.compile(r"[^\w\s]")
 
 
 class QueryNotUnderstoodError(Exception):
     """The query carries no usable viewing preference (maps to HTTP 400)."""
 
+    def __init__(self, ai_status: str) -> None:
+        super().__init__(ai_status)
+        self.ai_status = ai_status
+
 
 def normalize_query(query: str) -> str:
-    return " ".join(query.split()).casefold()
+    """Case-, punctuation- and whitespace-insensitive form used for the cache key."""
+    return " ".join(PUNCTUATION.sub(" ", query).split()).casefold()
 
 
 def cache_key(query: str, media_type: str, language: str) -> str:
@@ -37,24 +44,29 @@ def cache_key(query: str, media_type: str, language: str) -> str:
 class SearchService:
     def __init__(
         self,
-        parser: QueryParser | None = None,
+        router: LLMRouter | None = None,
         tmdb: TMDBClient | None = None,
-        explainer: Explainer | None = None,
     ) -> None:
-        self._parser = parser
+        self._router = router
         self._tmdb = tmdb
-        self._explainer = explainer
 
-    def search(self, query: str, media_type: str, language: str) -> dict[str, Any]:
+    def search(
+        self,
+        query: str,
+        media_type: str,
+        language: str,
+        quota: Quota | None = None,
+    ) -> dict[str, Any]:
         key = cache_key(query, media_type, language)
         if (cached := cache.get(key)) is not None:
             return {**cached, "cached": True}
 
         started = time.monotonic()
-        parsed = (self._parser or QueryParser()).parse(query)
+        router = self._router or LLMRouter()
+        parsed = router.parse(query, quota)
         filters = parsed.filters
         if not filters.is_meaningful:
-            raise QueryNotUnderstoodError(query)
+            raise QueryNotUnderstoodError(parsed.ai_status)
 
         # An explicit Film/Dizi toggle in the UI overrides what the text implied.
         # Re-validated so TV-only fields are cleared when the user forces "movie".
@@ -70,9 +82,12 @@ class SearchService:
         candidates = Retriever(tmdb).fetch(filters, language)
         ranked = Ranker().rank(candidates, filters)
 
-        reasons = (self._explainer or Explainer()).explain(
-            ranked, filters, query, language
-        )
+        reasons = {result_key(i): template_reason(i, filters, language) for i in ranked}
+        top_n = settings.LLM_EXPLAIN_TOP_N
+        if parsed.ai_status == "ok" and top_n > 0:
+            briefs = [brief(item) for item in ranked[:top_n]]
+            reasons.update(router.explain(briefs, query, language))
+
         results = []
         for item in ranked:
             item = {k: v for k, v in item.items() if k != "matched_keywords"}
@@ -83,11 +98,15 @@ class SearchService:
             "query": query,
             "lang": language,
             "media_type": filters.media_type,
-            "parser": parsed.source,
+            "parser": parsed.provider,
+            "ai_status": parsed.ai_status,
             "filters": filters.public_dict(),
             "count": len(results),
             "results": results,
             "took_ms": round((time.monotonic() - started) * 1000),
         }
-        cache.set(key, payload, settings.SEARCH_CACHE_TTL_SECONDS)
+        # Degraded answers (quota, budget, provider outage) are not cached, so the
+        # same query gets AI quality again once the limit resets or the LLM recovers.
+        if parsed.cacheable:
+            cache.set(key, payload, settings.SEARCH_CACHE_TTL_SECONDS)
         return {**payload, "cached": False}

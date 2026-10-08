@@ -15,6 +15,8 @@ from rest_framework.views import APIView
 
 from apps.catalog.params import get_language
 from apps.catalog.tmdb_client import TMDBError
+from apps.search.cost_guard import quota_identity
+from apps.search.router import Quota
 from apps.search.serializers import SearchRequestSerializer, SearchResponseSerializer
 from apps.search.service import QueryNotUnderstoodError, SearchService
 
@@ -36,18 +38,29 @@ MESSAGES = {
 }
 
 
-def _error(code: str, language: str, http_status: int) -> Response:
+def _error(
+    code: str, language: str, http_status: int, details: dict | None = None
+) -> Response:
     return Response(
         {
             "error": {
                 "code": code,
                 "message": MESSAGES[code][language],
                 "status_code": http_status,
-                "details": None,
+                "details": details,
             }
         },
         status=http_status,
     )
+
+
+def _quota_for(request) -> Quota:
+    """Daily AI-search quota identity: the user if signed in, else the (hashed) IP."""
+    user = request.user
+    user_id = user.pk if user and user.is_authenticated else None
+    # REMOTE_ADDR only; trusting X-Forwarded-For is configured at deploy (Faz 9).
+    identity, limit = quota_identity(user_id, request.META.get("REMOTE_ADDR"))
+    return Quota(identity, limit)
 
 
 class SearchView(APIView):
@@ -78,9 +91,16 @@ class SearchView(APIView):
             return _error("invalid_query", language, status.HTTP_400_BAD_REQUEST)
 
         try:
-            payload = SearchService().search(query, data["media_type"], language)
-        except QueryNotUnderstoodError:
-            return _error("invalid_query", language, status.HTTP_400_BAD_REQUEST)
+            payload = SearchService().search(
+                query, data["media_type"], language, quota=_quota_for(request)
+            )
+        except QueryNotUnderstoodError as exc:
+            return _error(
+                "invalid_query",
+                language,
+                status.HTTP_400_BAD_REQUEST,
+                details={"ai_status": exc.ai_status},
+            )
         except TMDBError as exc:
             logger.error("Search failed due to TMDB: %s", exc)
             return _error(
