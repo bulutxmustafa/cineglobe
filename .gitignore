@@ -91,3 +91,6 @@ redis_data/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# IDE
+.vs/
