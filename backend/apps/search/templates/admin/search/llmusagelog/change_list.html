@@ -1,0 +1,29 @@
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+  {{ block.super }}
+  <table style="margin: 0 0 16px;">
+    <thead>
+      <tr><th></th><th>Calls</th><th>Failed</th><th>Input tokens</th><th>Output tokens</th><th>Cost (USD)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Today</th>
+        <td>{{ usage_today.calls }}</td>
+        <td>{{ usage_today.failed }}</td>
+        <td>{{ usage_today.input_tokens|default:0 }}</td>
+        <td>{{ usage_today.output_tokens|default:0 }}</td>
+        <td>{{ usage_today.cost_usd|default:0|floatformat:4 }}</td>
+      </tr>
+      <tr>
+        <th>This month</th>
+        <td>{{ usage_month.calls }}</td>
+        <td>{{ usage_month.failed }}</td>
+        <td>{{ usage_month.input_tokens|default:0 }}</td>
+        <td>{{ usage_month.output_tokens|default:0 }}</td>
+        <td>{{ usage_month.cost_usd|default:0|floatformat:4 }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Daily budget (paid providers): {{ spent_today_usd|floatformat:4 }} / {{ daily_budget_usd }} USD</p>
+{% endblock %}
