@@ -1,8 +1,10 @@
 """Cost guard for AI search (plan §3.10): pricing, daily budget, quotas, circuit breaker.
 
-Counters live in the Django cache (Redis in production) and are keyed by the
-local date in QUOTA_TIME_ZONE, so quotas and the budget reset at midnight
-Europe/Istanbul. Usage rows in LLMUsageLog are the source of truth for reports.
+Quota and spend counters live in the DailyCounter table (plan v1.8: serverless
+instances share no memory, no Redis) and are keyed by the local date in
+QUOTA_TIME_ZONE, so they reset at midnight Europe/Istanbul. The circuit breaker
+uses the Django cache, which is the database cache in production. Usage rows
+in LLMUsageLog are the source of truth for reports.
 """
 
 from __future__ import annotations
@@ -15,7 +17,7 @@ from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.core.cache import cache
 
-from apps.search.models import LLMUsageLog
+from apps.search.models import DailyCounter, LLMUsageLog
 from apps.search.providers.base import LLMProvider
 
 # USD per 1M tokens (input, output). Verify against official pricing pages before
@@ -58,12 +60,11 @@ def call_cost(
 # --- Daily budget (paid providers only) -------------------------------------
 
 
-def _spend_key(day: date | None = None) -> str:
-    return f"llm:spend_micro_usd:{(day or local_today()).isoformat()}"
+SPEND_KEY = "llm:spend_micro_usd"
 
 
 def spent_today_usd() -> Decimal:
-    return Decimal(cache.get(_spend_key(), 0)) / MICRO
+    return Decimal(DailyCounter.get(SPEND_KEY, local_today())) / MICRO
 
 
 def budget_exhausted() -> bool:
@@ -74,10 +75,7 @@ def _add_spend(cost: Decimal) -> None:
     micro = int((cost * MICRO).to_integral_value())
     if micro <= 0:
         return
-    key = _spend_key()
-    # add() is a no-op if the key exists; then incr() is atomic on Redis.
-    cache.add(key, 0, seconds_until_local_midnight() + 3600)
-    cache.incr(key, micro)
+    DailyCounter.add(SPEND_KEY, local_today(), micro)
 
 
 def record_usage(
@@ -115,21 +113,21 @@ def quota_identity(user_id: int | None, ip_address: str | None) -> tuple[str, in
 
 
 def _quota_key(identity: str) -> str:
-    return f"llm:quota:{local_today().isoformat()}:{identity}"
+    return f"llm:quota:{identity}"
 
 
 def quota_remaining(identity: str, limit: int) -> int:
-    return max(limit - int(cache.get(_quota_key(identity), 0)), 0)
+    return max(limit - DailyCounter.get(_quota_key(identity), local_today()), 0)
 
 
 def consume_quota(identity: str, limit: int) -> bool:
-    """Count one AI search; False (and nothing consumed) when the quota is used up."""
-    if quota_remaining(identity, limit) <= 0:
+    """Count one AI search; False (and nothing consumed) when the quota is used up.
+
+    The check and the increment are one UPDATE, so concurrent requests cannot
+    overshoot the limit."""
+    if limit <= 0:
         return False
-    key = _quota_key(identity)
-    cache.add(key, 0, seconds_until_local_midnight() + 3600)
-    cache.incr(key)
-    return True
+    return DailyCounter.add_if_below(_quota_key(identity), local_today(), limit)
 
 
 # --- Circuit breaker ---------------------------------------------------------
