@@ -12,10 +12,12 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 - 🎭 **Oyuncu sayfaları:** En iyi yapımlar + tam filmografi (kronolojik veya en güncelden başlayarak)
 - 📅 **Yakında çıkacaklar:** Yaklaşan film/diziler ve **hatırlatıcı** (uygulama içi, e-posta, push)
 - 🌐 **Şans Globu:** Butona bas, dünya dönsün, sürpriz bir film/dizi çıksın (favorilerden veya bir koleksiyondan)
+- 🔓 **Giriş isteğe bağlı:** Hesap açmadan arayabilir, keşfedebilir, Şans Globu'nu kullanabilirsiniz
+- 📓 **Film Defterim (üyelere):** İzlediklerinizi işaretleyin, puan verin, özel notlar yazın, kendi istatistiklerinizi görün
 - ❤️ **Favoriler & izleme listesi**
-- 📱 **Web (Vue) + Mobil (Flutter)**
+- 🌐 **Yalnızca web** (telefon ve tablet tarayıcılarında tam uyumlu; native mobil uygulama yok)
 
-> Faz planı ve ayrıntılar için bkz. [`CINEGLOBE_PLAN.md`](CINEGLOBE_PLAN.md) (v1.2).
+> Faz planı ve ayrıntılar için bkz. [`CINEGLOBE_PLAN.md`](CINEGLOBE_PLAN.md) (v1.3).
 
 ---
 
@@ -26,8 +28,8 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 - **Önbellek (Cache):** Redis 7
 - **Doğal Dil Anlama (NLU):** Claude API (Anthropic) + Pydantic veri doğrulama
 - **Veri Kaynağı:** TMDB API (Film & Dizi verileri)
-- **Web Frontend:** Vue 3, Vite, TypeScript, Pinia, Tailwind CSS, GSAP, three.js / globe.gl
-- **Mobil Uygulama:** Flutter (iOS & Android)
+- **Web Frontend:** Vue 3, Vite, TypeScript, Pinia, Tailwind CSS, GSAP, three.js / globe.gl (arama motoru dostu olması için SSR/prerender — Nuxt 3 veya Vite SSG, ADR ile seçilir)
+- **Gelir:** Reklam (onay yönetimli), affiliate bağlantılar, opsiyonel Premium — TMDB ticari lisansı alınmadan açılmaz
 - **Konteynerizasyon & Dağıtım:** Docker, Docker Compose, GitHub Actions, DigitalOcean
 
 ---
@@ -37,13 +39,12 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 ```text
 cineglobe/
 ├── backend/            # Django REST API
-│   ├── apps/           # Django uygulamaları (catalog, search, people, collections, upcoming, reminders, accounts)
+│   ├── apps/           # Django uygulamaları (catalog, search, people, collections, upcoming, reminders, notebook, monetization, accounts)
 │   ├── config/         # Django ayarları (base, dev, prod)
 │   ├── requirements/   # Bağımlılıklar (base.txt, dev.txt, prod.txt)
 │   ├── tests/          # pytest test paketi
 │   └── Dockerfile      # Multi-stage Docker yapısı
-├── web/                # Vue 3 Web Frontend
-├── mobile/             # Flutter Mobil Uygulama
+├── web/                # Vue 3 Web Frontend (tek istemci)
 ├── docs/               # Mimari ve Tasarım Belgeleri
 │   └── adr/            # Mimari Karar Kayıtları (ADR)
 ├── .github/            # GitHub Actions CI/CD ve PR şablonu
@@ -103,6 +104,8 @@ Sunucu çalıştıktan sonra:
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
 - **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
+- **Film Defterim (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/?status=watched&sort=-rating` *(Faz 7B)*
+- **Defter İstatistikleri (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/stats/` *(Faz 7B)*
 - **Swagger UI:** [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
 - **ReDoc:** [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
 
@@ -136,4 +139,4 @@ pre-commit run --all-files
 
 Bu ürün film ve dizi verilerini sağlamak için TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.
 
-> **Önemli Lisans Notu:** TMDB ücretsiz API kullanımı ticari olmayan projeler içindir ve platform arayüzünde (özellikle web ve mobil footer alanlarında) **TMDB logosu ve atıf metni zorunludur**. Projenin ileride ticari gelir modeli içermesi durumunda TMDB ticari lisansı edinilmelidir.
+> **Önemli Lisans Notu:** TMDB ücretsiz API kullanımı ticari olmayan projeler içindir ve platform arayüzünde (footer / Hakkında bölümünde) **TMDB logosu ve atıf metni zorunludur**. TMDB, ana amacı gelir elde etmek olan projeleri ticari sayar; **reklam, affiliate veya Premium açılmadan önce TMDB'den ticari lisans/yazılı onay alınmalıdır** (bkz. `CINEGLOBE_PLAN.md` §2 ve Faz 10).
