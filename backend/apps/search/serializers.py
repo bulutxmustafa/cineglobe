@@ -48,5 +48,8 @@ class SearchResponseSerializer(serializers.Serializer):
         allow_null=True,
         help_text="Person intent only: same shape as POST /people/top-titles/",
     )
+    quota = serializers.DictField(
+        help_text="signed_in, limit, remaining, suggest_signup (daily AI searches)"
+    )
     took_ms = serializers.IntegerField()
     cached = serializers.BooleanField()

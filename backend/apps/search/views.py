@@ -14,9 +14,10 @@ from rest_framework.throttling import (
 )
 from rest_framework.views import APIView
 
+from apps.accounts.services import record_search
 from apps.catalog.params import get_language
 from apps.catalog.tmdb_client import TMDBError
-from apps.search.cost_guard import quota_identity
+from apps.search.cost_guard import quota_identity, quota_remaining
 from apps.search.router import Quota
 from apps.search.serializers import SearchRequestSerializer, SearchResponseSerializer
 from apps.search.service import QueryNotUnderstoodError, SearchService
@@ -92,9 +93,10 @@ class SearchView(APIView):
         if len(query) < 2 or not HAS_LETTER.search(query):
             return _error("invalid_query", language, status.HTTP_400_BAD_REQUEST)
 
+        quota = _quota_for(request)
         try:
             payload = SearchService().search(
-                query, data["media_type"], language, quota=_quota_for(request)
+                query, data["media_type"], language, quota=quota
             )
         except QueryNotUnderstoodError as exc:
             return _error(
@@ -109,4 +111,14 @@ class SearchView(APIView):
                 "service_unavailable", language, status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
+        record_search(request.user, query, data["media_type"], language)
+        signed_in = request.user.is_authenticated
+        payload["quota"] = {
+            "signed_in": signed_in,
+            "limit": quota.limit,
+            "remaining": quota_remaining(quota.identity, quota.limit),
+            # Guests out of AI searches are invited to a free account (plan Faz 7).
+            "suggest_signup": not signed_in
+            and payload["ai_status"] == "quota_exceeded",
+        }
         return Response(payload)
