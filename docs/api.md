@@ -204,6 +204,51 @@ Liste ve detay yanıtları, `lang` parametresi URL'de açıkça varsa `Cache-Con
 
 ---
 
+## 📅 Yakında Çıkacaklar (Upcoming) — Faz 4C
+
+### `GET /api/v1/upcoming/?media_type=both&genre=&month=&page=1&lang=tr`
+Bugün (Europe/Istanbul) veya sonrasında çıkacak film ve diziler, tarihe göre sıralı. Sayfa başına 20 kayıt.
+
+| Parametre | Değerler |
+|---|---|
+| `media_type` | `both` (varsayılan) · `movie` · `tv` |
+| `genre` | Mantıksal tür adı (ör. `Comedy`, `Thriller`); dizide karşılığı olmayan türler için yedek türler kullanılır |
+| `month` | `YYYY-MM` |
+
+**Kaynaklar ve kurallar** (2026-10-08'de canlı TMDB verisiyle doğrulandı):
+- **Filmler:** Önce `region=TR` sorgusuyla **Türkiye vizyon tarihi** (TMDB bu sorguda `release_date` alanına Türkiye tarihini koyuyor). Türkiye tarihi olmayan filmler global ilk vizyon tarihiyle eklenir. Hangisinin kullanıldığını `region` alanı gösterir (`TR` | `global`).
+- **Diziler:**
+  - Yeni başlayan diziler.
+  - Yeni sezona başlayan diziler: `next_episode_to_air` sezonun **1. bölümü** olmalı (`season_number` alanı). Sezon ortasındaki haftalık bölümler listelenmez.
+  - Talk-show, haber ve reality dizileri hariç.
+- **Popülerlik eşiği:** Global kaynaklı yapımlar için `UPCOMING_MIN_POPULARITY` (8). Türkiye vizyon tarihi olan filmler her zaman listelenir.
+- **Çıkmış yapımlar:** listeden otomatik düşer. Liste her İstanbul günü için ayrı önbelleğe alınır (`UPCOMING_CACHE_TTL_SECONDS`, 4 saat); CDN'de 30 dk tutulur.
+
+**Gruplar** (`group` alanı ve sayfa bazında `groups` listesi):
+
+| Grup | Kural |
+|---|---|
+| `this_week` | bugün … bugün+6 gün |
+| `this_month` | aynı takvim ayı, bir haftadan sonra |
+| `later` | sonraki aylar |
+| `tba` | tarihi açıklanmamış (`date_precision: "unknown"`) |
+
+> **Not:** TMDB tarih kesinliğini (gün/ay/yıl) bildirmiyor. Tarih varsa `date_precision: "day"`, yoksa `"unknown"` döner.
+>
+> **Bilinen eksik:** Türkçe çevirisi olmayan yabancı dizilerin adı orijinal dilinde gelir (ör. Korece). Arayüz bu durumda `original_title` ve İngilizce ad gösterimini Faz 5'te ele alacak.
+
+### Hatırlatıcılar (servis katmanı hazır; uç noktalar Faz 7'de)
+`Reminder` modeli:
+- **Tekillik:** kullanıcı + `media_type` + `tmdb_id` (aynı yapıma ikinci istek mevcut hatırlatıcıyı günceller ya da yeniden etkinleştirir).
+- **Zamanlama:** `remind_on` = `release_day` · `one_day_before` · `one_week_before`.
+- **Kanallar:** `in_app` · `email` · `push`.
+- **Durum:** `pending` · `sent` · `cancelled`.
+- **Tarih:** Filmler için Türkiye sinema tarihi (yoksa global), diziler için gala ya da yeni sezonun ilk bölümü kullanılır.
+- **Reddedilen durumlar:** Çıkmış yapım (`already_released`) ve yaklaşan sezonu olmayan dizi (`no_upcoming_season`).
+- **Günlük iş:** `refresh_release_dates` ertelenen tarihleri yakalar ve `release_date_changed_at` alanını işaretler. Gönderim Faz 7'de bağlanacak.
+
+---
+
 ## 🎭 Oyuncular (People) — Faz 4
 
 Tüm uçlar `?lang=tr|en` (veya `Accept-Language`) kabul eder. TMDB erişilemezse `503 service_unavailable` döner.
