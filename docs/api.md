@@ -334,6 +334,41 @@ Kimlik doğrulama **oturum çerezi + CSRF** ile yapılır ([ADR-0005](adr/0005-a
 
 **Arama yanıtındaki kota bilgisi:** `quota` alanı `{signed_in, limit, remaining, suggest_signup}` içerir. Misafirin kotası dolduğunda `suggest_signup: true` döner ve arayüz "ücretsiz hesap aç" önerir.
 
+## 📓 Film Defterim — Faz 7B
+
+Giriş gerektirir; her kullanıcı yalnızca kendi kayıtlarını görür. Başka bir kullanıcının kaydına yapılan istek `404` döner, kaydın var olup olmadığı belli edilmez.
+
+Her yapım için **tek kayıt** tutulur (kullanıcı + `media_type` + `tmdb_id`). Kayıt şunları içerir:
+- `status`: `want_to_watch` · `watching` · `watched` · `dropped`
+- `is_favorite`
+- `rating_x2`: 1–10 tamsayı; arayüzde 0,5–5 yıldız
+- `note`: ≤ 5000 karakter, **düz metin** olarak saklanır ve **asla LLM'e gönderilmez**
+- `tags`: ≤ 10 etiket, her biri ≤ 30 karakter
+- `watched_on`: `watched` yapılınca kendiliğinden bugünün tarihi atanır
+- `rewatch_count`
+- `progress_season` / `progress_episode`
+
+Kayıt ilk oluşturulurken TMDB'den bir **anlık görüntü** alınır: başlık, yıl, afiş, türler ve süre. Böylece TMDB kapalıyken bile defter ve istatistikler çalışır.
+
+| Uç nokta | Açıklama |
+|---|---|
+| `GET /api/v1/me/notebook/` | Liste. Filtreler: `status`, `favorites`, `media_type`, `rating_min/max`, `tag`, `genre`, `q` (başlık ve not içinde arama). `sort`: `-updated_at` (varsayılan), `-rating`, `-watched_on`, `-year`, `title` (ve artan sıralı karşılıkları). Sayfa başına 30 kayıt |
+| `GET` / `PUT` / `PATCH` / `DELETE /api/v1/me/notebook/{media_type}/{tmdb_id}/` | Tek kayıt. `PUT`/`PATCH` kayıt yoksa oluşturur (`201`), varsa günceller (`200`) |
+| `POST /api/v1/me/notebook/lookup/` | `{items: [{media_type, tmdb_id}, …]}` (en fazla 100) → sonuç kartlarında "İzledin ✓ · 4½★" göstermek için **tek sorguda** durum, favori ve puan |
+| `GET /api/v1/me/notebook/stats/` | İzlenen film/dizi sayısı, toplam izleme süresi, ortalama puan, puan dağılımı, tür dağılımı, aylık/yıllık sayılar, en yüksek puanlı 10 yapım |
+| `GET /api/v1/me/notebook/export/?format=csv\|json` | Dışa aktarma. CSV, Excel'in Türkçe karakterleri doğru açması için BOM ile başlar. Defter ayrıca `GET /api/v1/me/export/` çıktısında da yer alır |
+| `POST /api/v1/me/notebook/merge/` | `{favorites: [...]}`: misafirken tarayıcıda tutulan favoriler girişten sonra hesaba aktarılır. Hesapta zaten kaydı olan yapımlara dokunulmaz (hesaptaki veri korunur) |
+
+**Toplam izleme süresi:**
+- **Film:** süre × (1 + yeniden izleme sayısı).
+- **Dizi:** bölüm sayısı × bölüm süresi. TMDB dizilerde `episode_run_time` alanını artık boş döndürüyor (2026-10-09'da doğrulandı), bu yüzden son yayınlanan bölümün süresi kullanılır.
+
+**"İzlediklerimi hariç tut":** `exclude_watched=true` parametresi aramada (`POST /api/v1/search/`), koleksiyon detayında ve Şans Globu'nun rastgele seçiminde çalışır. Yalnızca `watched` durumundaki yapımları eler; `want_to_watch` listede kalır. Bu parametreyle dönen koleksiyon yanıtları kişiye özel olduğu için `private, no-store` olarak işaretlenir ve CDN'de paylaşılmaz.
+
+**6 ay kuralı:** Günlük iş, 30 günden eski anlık görüntüleri TMDB'den yeniler. 6 ayı aşan ve yenilenemeyen kayıtlarda TMDB kaynaklı alanlar (başlık, afiş, türler, süre) silinir; kullanıcının kendi verisi (durum, puan, not) korunur.
+
+---
+
 ## ⏰ Hatırlatıcılar — Faz 7
 
 | Uç nokta | Açıklama |
