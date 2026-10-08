@@ -70,7 +70,7 @@ class Command(BaseCommand):
             path = Path(options["report"])
             existing = path.read_text(encoding="utf-8") if path.exists() else ""
             path.write_text(
-                existing.rstrip() + "\n\n" + markdown + "\n", encoding="utf-8"
+                existing.rstrip() + "\n\n" + markdown.rstrip() + "\n", encoding="utf-8"
             )
             self.stdout.write(self.style.SUCCESS(f"Report appended to {path}"))
 
