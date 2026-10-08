@@ -12,6 +12,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 from apps.catalog.tmdb_client import TMDBClient, TMDBError
+from apps.people.resolver import PersonResolver
+from apps.people.services import PeopleService
 from apps.search.explainer import brief, result_key, template_reason
 from apps.search.ranker import Ranker
 from apps.search.retriever import Retriever
@@ -103,6 +105,7 @@ class SearchService:
             "filters": filters.public_dict(),
             "count": len(results),
             "results": results,
+            "person": self._person_block(tmdb, filters, language),
             "took_ms": round((time.monotonic() - started) * 1000),
         }
         # Degraded answers (quota, budget, provider outage) are not cached, so the
@@ -110,3 +113,23 @@ class SearchService:
         if parsed.cacheable:
             cache.set(key, payload, settings.SEARCH_CACHE_TTL_SECONDS)
         return {**payload, "cached": False}
+
+    @staticmethod
+    def _person_block(
+        tmdb: TMDBClient, filters: SearchFilters, language: str
+    ) -> dict[str, Any] | None:
+        """Best titles for "RDJ'nin en iyi filmleri"-style queries (plan Faz 4)."""
+        if filters.intent != "person" or not filters.people:
+            return None
+        resolved = PersonResolver(tmdb).resolve(filters.people[0])
+        if resolved.status != "found":
+            # Not found / ambiguous: the client can call /people/top-titles/ to choose.
+            return resolved.as_dict()
+        sections = PeopleService(tmdb).top_titles(
+            resolved.person["tmdb_id"], filters.media_type, language
+        )
+        return {
+            **resolved.as_dict(),
+            "media_type": filters.media_type,
+            "sections": sections,
+        }

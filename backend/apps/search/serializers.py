@@ -44,5 +44,9 @@ class SearchResponseSerializer(serializers.Serializer):
     filters = serializers.DictField()
     count = serializers.IntegerField()
     results = SearchResultSerializer(many=True)
+    person = serializers.DictField(
+        allow_null=True,
+        help_text="Person intent only: same shape as POST /people/top-titles/",
+    )
     took_ms = serializers.IntegerField()
     cached = serializers.BooleanField()
