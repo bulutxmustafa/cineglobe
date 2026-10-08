@@ -1,52 +1,120 @@
-"""DRF Serializers for people/actor endpoints."""
+"""Request/response serializers for people endpoints (also drive the OpenAPI schema)."""
 
 from rest_framework import serializers
 
-from apps.catalog.image_utils import poster_url, profile_url
+from apps.people.credits import ROLES, SORT_MODES
+
+MEDIA_TYPES = ["both", "movie", "tv"]
+
+
+# --- Requests ---------------------------------------------------------------
+
+
+class FilmographyQuerySerializer(serializers.Serializer):
+    sort = serializers.ChoiceField(choices=SORT_MODES, default="newest")
+    media_type = serializers.ChoiceField(choices=MEDIA_TYPES, default="both")
+    role = serializers.ChoiceField(choices=ROLES, default="acting")
+    lead_only = serializers.BooleanField(default=True)
+    include_all = serializers.BooleanField(
+        default=False, help_text="Show Self/archive/talk-show credits too."
+    )
+
+
+class TopTitlesRequestSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100, required=False, trim_whitespace=True)
+    person_id = serializers.IntegerField(min_value=1, required=False)
+    media_type = serializers.ChoiceField(choices=MEDIA_TYPES, default="both")
+    lang = serializers.ChoiceField(choices=["tr", "en"], required=False)
+
+    def validate(self, attrs):
+        if not attrs.get("name") and not attrs.get("person_id"):
+            raise serializers.ValidationError("Provide 'name' or 'person_id'.")
+        return attrs
+
+
+# --- Responses --------------------------------------------------------------
+
+
+class PersonSummarySerializer(serializers.Serializer):
+    tmdb_id = serializers.IntegerField()
+    name = serializers.CharField()
+    known_for_department = serializers.CharField()
+    profile_url = serializers.CharField()
+    known_for = serializers.ListField(child=serializers.CharField())
+    popularity = serializers.FloatField()
+
+
+class CreditSerializer(serializers.Serializer):
+    media_type = serializers.ChoiceField(choices=["movie", "tv"])
+    tmdb_id = serializers.IntegerField()
+    title = serializers.CharField()
+    original_title = serializers.CharField()
+    release_date = serializers.CharField(help_text="'' when unknown")
+    year = serializers.IntegerField(allow_null=True)
+    poster_url = serializers.CharField()
+    vote_average = serializers.FloatField()
+    vote_count = serializers.IntegerField()
+    popularity = serializers.FloatField()
+    characters = serializers.ListField(child=serializers.CharField())
+    jobs = serializers.ListField(child=serializers.CharField())
+    is_lead = serializers.BooleanField()
+    episode_count = serializers.IntegerField(required=False, help_text="Series only")
+    first_credit_year = serializers.IntegerField(
+        required=False, allow_null=True, help_text="Series only"
+    )
+
+
+class TopTitleSerializer(CreditSerializer):
+    reason = serializers.CharField()
+
+
+class TopTitlesSectionsSerializer(serializers.Serializer):
+    movies = TopTitleSerializer(many=True, required=False)
+    series = TopTitleSerializer(many=True, required=False)
+
+
+class TopTitlesResponseSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=["found", "ambiguous"])
+    query = serializers.CharField(allow_blank=True)
+    person = PersonSummarySerializer(allow_null=True)
+    candidates = PersonSummarySerializer(
+        many=True, help_text="Ambiguous: choices. Found: other people with the name."
+    )
+    media_type = serializers.CharField(required=False)
+    sections = TopTitlesSectionsSerializer(required=False)
+
+
+class FilmographyResponseSerializer(serializers.Serializer):
+    person = serializers.DictField()
+    sort = serializers.CharField()
+    media_type = serializers.CharField()
+    role = serializers.CharField()
+    lead_only = serializers.BooleanField()
+    include_all = serializers.BooleanField()
+    page = serializers.IntegerField()
+    total_pages = serializers.IntegerField()
+    total_results = serializers.IntegerField()
+    hidden_noise_count = serializers.IntegerField()
+    results = CreditSerializer(many=True)
+    upcoming = CreditSerializer(many=True, help_text="'Yakında': future-dated credits")
 
 
 class PersonDetailSerializer(serializers.Serializer):
-    """Full detail of an actor or director."""
-
-    id = serializers.IntegerField()
+    tmdb_id = serializers.IntegerField()
     name = serializers.CharField()
     biography = serializers.CharField(allow_blank=True)
-    birthday = serializers.CharField(allow_null=True, required=False)
-    deathday = serializers.CharField(allow_null=True, required=False)
-    place_of_birth = serializers.CharField(allow_null=True, required=False)
-    profile_url = serializers.SerializerMethodField()
-    popularity = serializers.FloatField(default=0.0)
-    known_for_department = serializers.CharField(allow_blank=True, default="")
+    biography_language = serializers.CharField()
+    biography_is_fallback = serializers.BooleanField()
+    birthday = serializers.CharField(allow_null=True)
+    birth_year = serializers.IntegerField(allow_null=True)
+    deathday = serializers.CharField(allow_null=True)
+    place_of_birth = serializers.CharField(allow_null=True)
+    known_for_department = serializers.CharField()
+    profile_url = serializers.CharField()
+    known_for = CreditSerializer(many=True)
 
-    def get_profile_url(self, obj) -> str:
-        return profile_url(obj.get("profile_path", ""))
 
-
-class PersonCreditItemSerializer(serializers.Serializer):
-    """Single movie or TV show credit in an actor's filmography."""
-
-    tmdb_id = serializers.IntegerField(source="id")
-    title = serializers.SerializerMethodField()
-    display_title = serializers.SerializerMethodField()
-    media_type = serializers.CharField()
-    character = serializers.CharField(allow_blank=True, default="")
-    job = serializers.CharField(allow_blank=True, default="")
-    department = serializers.CharField(allow_blank=True, default="")
-    release_date = serializers.SerializerMethodField()
-    poster_url = serializers.SerializerMethodField()
-    vote_average = serializers.FloatField(default=0.0)
-    vote_count = serializers.IntegerField(default=0)
-    popularity = serializers.FloatField(default=0.0)
-    episode_count = serializers.IntegerField(required=False, default=0)
-
-    def get_title(self, obj) -> str:
-        return obj.get("title") or obj.get("name", "")
-
-    def get_display_title(self, obj) -> str:
-        return self.get_title(obj)
-
-    def get_release_date(self, obj) -> str:
-        return obj.get("release_date") or obj.get("first_air_date") or ""
-
-    def get_poster_url(self, obj) -> str:
-        return poster_url(obj.get("poster_path", ""))
+class PersonSearchResponseSerializer(serializers.Serializer):
+    query = serializers.CharField()
+    count = serializers.IntegerField()
+    results = PersonSummarySerializer(many=True)
