@@ -17,6 +17,9 @@ urlpatterns = [
     path("api/v1/health/", HealthCheckView.as_view(), name="health-check"),
     # Catalog (movies, tv shows, curated categories, upcoming)
     path("api/v1/", include("apps.catalog.urls")),
+    # Accounts, reminders, daily cron
+    path("api/v1/", include("apps.accounts.urls")),
+    path("api/v1/", include("apps.reminders.urls")),
     # Upcoming releases
     path("api/v1/upcoming/", include("apps.upcoming.urls")),
     # Curated collections
