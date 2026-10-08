@@ -18,6 +18,7 @@ urlpatterns = [
     # Catalog (movies, tv shows, curated categories, upcoming)
     path("api/v1/", include("apps.catalog.urls")),
     # Accounts, reminders, daily cron
+    path("api/v1/me/notebook/", include("apps.notebook.urls")),
     path("api/v1/", include("apps.accounts.urls")),
     path("api/v1/", include("apps.reminders.urls")),
     # Upcoming releases
