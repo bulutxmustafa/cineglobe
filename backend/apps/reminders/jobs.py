@@ -22,6 +22,7 @@ from django.utils import timezone
 from apps.accounts.models import Notification
 from apps.catalog.models import Title
 from apps.catalog.tmdb_client import TMDBClient
+from apps.notebook.services import refresh_snapshots
 from apps.reminders.models import Reminder
 from apps.reminders.services import due_reminders, refresh_release_dates
 from apps.search.models import DailyCounter
@@ -72,6 +73,8 @@ class DailyReport:
     counters_purged: int = 0
     notifications_purged: int = 0
     stale_titles_purged: int = 0
+    snapshots_refreshed: int = 0
+    snapshots_cleared: int = 0
 
     def as_dict(self) -> dict:
         return asdict(self)
@@ -189,5 +192,12 @@ def run_daily(
         & Q(created_at__lt=timezone.now() - timedelta(days=NOTIFICATION_RETENTION_DAYS))
     ).delete()
     report.stale_titles_purged = purge_stale_tmdb_titles(today)
+    try:
+        snapshot_client = client or TMDBClient()
+    except ValueError:
+        snapshot_client = None
+    snapshots = refresh_snapshots(snapshot_client)
+    report.snapshots_refreshed = snapshots["refreshed"]
+    report.snapshots_cleared = snapshots["cleared"]
     logger.info("Daily job: %s", report.as_dict())
     return report
