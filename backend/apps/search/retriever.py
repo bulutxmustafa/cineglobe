@@ -13,7 +13,11 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from apps.catalog.formatting import format_tmdb_item
-from apps.catalog.genre_map import get_movie_genre_ids, get_tv_genre_ids
+from apps.catalog.genre_map import (
+    genre_ids_for,
+    get_movie_genre_ids,
+    get_tv_genre_ids,
+)
 from apps.catalog.tmdb_client import TMDBClient
 from apps.search.schemas import SearchFilters
 
@@ -76,6 +80,13 @@ class Retriever:
         person_ids: list[int],
         language: str,
     ) -> list[dict[str, Any]]:
+        if (
+            filters.genres_include
+            and not genre_ids_for(filters.genres_include, media_type)[0]
+        ):
+            # None of the requested genres exists for this media type: an unfiltered
+            # query would only return unrelated popular titles.
+            return []
         params = self.build_params(media_type, filters, keyword_ids, person_ids)
         discover = (
             self._client.discover_movies
@@ -117,10 +128,12 @@ class Retriever:
             "include_adult": "false",
             "vote_count.gte": MIN_VOTES_DISCOVER[media_type],
         }
-        if include := to_ids(filters.genres_include):
-            # Comma = AND for up to two genres; more than that would be too narrow.
-            sep = "," if len(set(include)) <= 2 else "|"
-            params["with_genres"] = sep.join(str(g) for g in dict.fromkeys(include))
+        include, substituted = genre_ids_for(filters.genres_include, media_type)
+        if include:
+            # Comma = AND for up to two genres; more would be too narrow. Stand-in
+            # genres (e.g. TV Mystery|Crime for Thriller) are alternatives: OR.
+            sep = "," if len(include) <= 2 and not substituted else "|"
+            params["with_genres"] = sep.join(str(g) for g in include)
         if exclude := to_ids(filters.genres_exclude):
             params["without_genres"] = _ids(exclude)
         if keyword_ids:

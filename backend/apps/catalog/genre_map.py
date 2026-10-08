@@ -86,3 +86,40 @@ def genre_name_from_tv_id(tmdb_id: int) -> str | None:
         if tv_id == tmdb_id:
             return name
     return None
+
+
+# Closest stand-ins when a genre has no direct ID in one media type. Without
+# these, a "thriller" request on TV would send no genre filter at all and
+# return unrelated popular shows (seen with live data: a sitcom for "gerilim").
+TV_SUBSTITUTES: dict[str, tuple[int, ...]] = {
+    "Thriller": (9648, 80),  # Mystery, Crime
+    "Horror": (9648,),  # Mystery
+    "Romance": (18,),  # Drama
+    "History": (10768,),  # War & Politics
+}
+MOVIE_SUBSTITUTES: dict[str, tuple[int, ...]] = {
+    "Kids": (10751,),  # Family
+    "Soap": (18,),  # Drama
+    "Reality": (99,),  # Documentary
+    "News": (99,),
+    "Talk": (99,),
+}
+
+
+def genre_ids_for(genre_names: list[str], media_type: str) -> tuple[list[int], bool]:
+    """IDs for one media type, using substitutes for missing genres.
+
+    Returns (ids, used_substitutes). ids is empty when no requested genre has
+    a direct or substitute ID in this media type.
+    """
+    direct = get_movie_genre_ids if media_type == "movie" else get_tv_genre_ids
+    substitutes = MOVIE_SUBSTITUTES if media_type == "movie" else TV_SUBSTITUTES
+    ids: list[int] = []
+    used_substitutes = False
+    for name in genre_names:
+        found = direct([name])
+        if not found and name in substitutes:
+            found = list(substitutes[name])
+            used_substitutes = True
+        ids.extend(found)
+    return list(dict.fromkeys(ids)), used_substitutes

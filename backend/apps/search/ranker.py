@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from apps.catalog.genre_map import get_movie_genre_ids, get_tv_genre_ids
+from apps.catalog.genre_map import (
+    genre_ids_for,
+    get_movie_genre_ids,
+    get_tv_genre_ids,
+)
 from apps.search.schemas import SearchFilters
 
 # Votes needed before a title's own rating outweighs the prior.
@@ -41,8 +45,8 @@ class Ranker:
             "tv": set(get_tv_genre_ids(filters.genres_exclude)),
         }
         wanted = {
-            "movie": set(get_movie_genre_ids(filters.genres_include)),
-            "tv": set(get_tv_genre_ids(filters.genres_include)),
+            mt: set(genre_ids_for(filters.genres_include, mt)[0])
+            for mt in ("movie", "tv")
         }
 
         best: dict[tuple[str, int], dict[str, Any]] = {}
