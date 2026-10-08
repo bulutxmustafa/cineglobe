@@ -1,22 +1,19 @@
-"""Catalog API views: title detail and upcoming releases with multi-language support."""
+"""Catalog API views: title detail with multi-language support."""
 
 import logging
-from datetime import date, datetime
-from typing import Any
 
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.catalog.formatting import format_tmdb_item
 from apps.catalog.models import Title
-from apps.catalog.params import get_language, get_page
+from apps.catalog.params import get_language
 from apps.catalog.serializers import TitleSerializer
 from apps.catalog.tmdb_client import (
     TMDBClient,
+    TMDBError,
     TMDBNotFoundError,
-    TMDBServiceUnavailableError,
     normalize_language,
 )
 
@@ -27,7 +24,10 @@ def _fetch_and_cache_title(
     media_type: str, tmdb_id: int, language: str = "tr-TR"
 ) -> Title:
     """Fetch a Title from TMDB, persist/update in DB, and return the instance."""
-    client = TMDBClient()
+    try:
+        client = TMDBClient()
+    except ValueError as exc:  # TMDB_API_KEY missing: answer 503, not 500
+        raise TMDBError(str(exc)) from exc
     normalized_lang = normalize_language(language)
 
     if media_type == Title.MOVIE:
@@ -129,7 +129,8 @@ class TitleDetailView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
-        except TMDBServiceUnavailableError as exc:
+        except TMDBError as exc:
+            # Outage, rate limit, rejected/missing API key: none is the client's fault.
             logger.error("TMDB unavailable: %s", exc)
             return Response(
                 {
@@ -149,99 +150,3 @@ class TitleDetailView(APIView):
 
         serializer = TitleSerializer(title, context={"language": lang})
         return Response(serializer.data)
-
-
-class UpcomingTitlesView(APIView):
-    """List upcoming film and TV releases with release countdown and reminder support."""
-
-    @extend_schema(
-        summary="List upcoming movies and series",
-        parameters=[
-            OpenApiParameter(
-                "media_type",
-                location=OpenApiParameter.QUERY,
-                enum=["both", "movie", "tv"],
-                default="both",
-            ),
-            OpenApiParameter(
-                "page", location=OpenApiParameter.QUERY, type=int, default=1
-            ),
-            OpenApiParameter(
-                "lang",
-                location=OpenApiParameter.QUERY,
-                description="Language: 'tr' or 'en'",
-            ),
-        ],
-        tags=["Upcoming"],
-    )
-    def get(self, request):
-        media_type = request.query_params.get("media_type", "both")
-        lang = get_language(request)
-        page = get_page(request)
-        client = TMDBClient()
-        today = date.today()
-
-        items: list[dict[str, Any]] = []
-
-        try:
-            if media_type in ("movie", "both"):
-                movie_data = client.get_upcoming_movies(page=page, language=lang)
-                for m in movie_data.get("results", []):
-                    formatted = format_tmdb_item(m, default_media_type="movie")
-                    items.append(self._enrich_upcoming(formatted, today))
-
-            if media_type in ("tv", "both"):
-                tv_data = client.get_upcoming_tv(page=page, language=lang)
-                for t in tv_data.get("results", []):
-                    formatted = format_tmdb_item(t, default_media_type="tv")
-                    items.append(self._enrich_upcoming(formatted, today))
-
-        except TMDBServiceUnavailableError as exc:
-            logger.error("TMDB error in upcoming fetch: %s", exc)
-            return Response(
-                {
-                    "error": {
-                        "code": "service_unavailable",
-                        "message": "Yaklaşan yapımlar verisi şu an alınamıyor.",
-                        "status_code": 503,
-                        "details": None,
-                    }
-                },
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-
-        # Sort by release date ascending (soonest first)
-        items.sort(
-            key=lambda x: (
-                x.get("countdown_days") if x.get("countdown_days") is not None else 9999
-            )
-        )
-
-        return Response(
-            {
-                "page": page,
-                "media_type": media_type,
-                "count": len(items),
-                "results": items,
-            }
-        )
-
-    def _enrich_upcoming(self, item: dict[str, Any], today: date) -> dict[str, Any]:
-        """Calculate countdown days and attach reminder readiness flag."""
-        rel_str = item.get("release_date", "")
-        countdown_days = None
-        is_upcoming = True
-
-        if rel_str:
-            try:
-                rel_date = datetime.strptime(rel_str, "%Y-%m-%d").date()
-                delta = (rel_date - today).days
-                countdown_days = max(0, delta)
-                is_upcoming = delta >= 0
-            except ValueError:
-                pass
-
-        item["countdown_days"] = countdown_days
-        item["is_unreleased"] = is_upcoming
-        item["can_set_reminder"] = is_upcoming
-        return item
