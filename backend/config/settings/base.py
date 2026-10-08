@@ -33,6 +33,10 @@ env = environ.Env(
     LLM_EXPLAIN_TOP_N=(int, 3),
     GUEST_DAILY_AI_SEARCHES=(int, 10),
     USER_DAILY_AI_SEARCHES=(int, 40),
+    PERSON_MIN_VOTES_MOVIE=(int, 1000),
+    PERSON_MIN_VOTES_TV=(int, 300),
+    PERSON_MIN_EPISODES=(int, 3),
+    PERSON_LEAD_MAX_ORDER=(int, 4),
     LLM_TIMEOUT_SECONDS=(float, 20.0),
     SEARCH_CACHE_TTL_SECONDS=(int, 3600),
     LLM_DAILY_BUDGET_USD=(float, 5.0),
@@ -215,6 +219,14 @@ GUEST_DAILY_AI_SEARCHES = env("GUEST_DAILY_AI_SEARCHES")
 USER_DAILY_AI_SEARCHES = env("USER_DAILY_AI_SEARCHES")
 # Daily quotas and the budget reset at local midnight.
 QUOTA_TIME_ZONE = "Europe/Istanbul"
+
+# People ranking rules (plan §3.2)
+PERSON_MIN_VOTES_MOVIE = env("PERSON_MIN_VOTES_MOVIE")
+PERSON_MIN_VOTES_TV = env("PERSON_MIN_VOTES_TV")
+# A series counts as a real role only from this many episodes (guest spots excluded).
+PERSON_MIN_EPISODES = env("PERSON_MIN_EPISODES")
+# Movie billing order 0..4 = top-5 cast ("lead").
+PERSON_LEAD_MAX_ORDER = env("PERSON_LEAD_MAX_ORDER")
 LLM_DAILY_BUDGET_USD = env("LLM_DAILY_BUDGET_USD")
 LLM_TIMEOUT_SECONDS = env("LLM_TIMEOUT_SECONDS")
 SEARCH_CACHE_TTL_SECONDS = env("SEARCH_CACHE_TTL_SECONDS")
