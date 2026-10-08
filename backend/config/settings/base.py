@@ -23,7 +23,16 @@ env = environ.Env(
     REDIS_URL=(str, "locmemcache://"),
     TMDB_API_KEY=(str, ""),
     ANTHROPIC_API_KEY=(str, ""),
-    ANTHROPIC_MODEL=(str, "claude-opus-5-5"),
+    ANTHROPIC_MODEL_PARSER=(str, "claude-haiku-5-5"),
+    ANTHROPIC_MODEL_EXPLAIN=(str, "claude-haiku-5-5"),
+    GEMINI_API_KEY=(str, ""),
+    GEMINI_MODEL=(str, "gemini-3.5-flash-lite"),
+    GEMINI_FREE_TIER=(bool, True),
+    LLM_PROVIDER_CHAIN=(list, ["gemini", "classic"]),
+    LLM_CIRCUIT_BREAKER_SECONDS=(int, 60),
+    LLM_EXPLAIN_TOP_N=(int, 3),
+    GUEST_DAILY_AI_SEARCHES=(int, 10),
+    USER_DAILY_AI_SEARCHES=(int, 40),
     LLM_TIMEOUT_SECONDS=(float, 20.0),
     SEARCH_CACHE_TTL_SECONDS=(int, 3600),
     LLM_DAILY_BUDGET_USD=(float, 5.0),
@@ -192,7 +201,20 @@ SPECTACULAR_SETTINGS = {
 # External API configuration
 TMDB_API_KEY = env("TMDB_API_KEY")
 ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY")
-ANTHROPIC_MODEL = env("ANTHROPIC_MODEL")
+ANTHROPIC_MODEL_PARSER = env("ANTHROPIC_MODEL_PARSER")
+ANTHROPIC_MODEL_EXPLAIN = env("ANTHROPIC_MODEL_EXPLAIN")
+GEMINI_API_KEY = env("GEMINI_API_KEY")
+GEMINI_MODEL = env("GEMINI_MODEL")
+GEMINI_FREE_TIER = env("GEMINI_FREE_TIER")
+
+# LLM provider chain & cost guard (plan §3.10)
+LLM_PROVIDER_CHAIN = [p.strip().lower() for p in env("LLM_PROVIDER_CHAIN") if p.strip()]
+LLM_CIRCUIT_BREAKER_SECONDS = env("LLM_CIRCUIT_BREAKER_SECONDS")
+LLM_EXPLAIN_TOP_N = env("LLM_EXPLAIN_TOP_N")
+GUEST_DAILY_AI_SEARCHES = env("GUEST_DAILY_AI_SEARCHES")
+USER_DAILY_AI_SEARCHES = env("USER_DAILY_AI_SEARCHES")
+# Daily quotas and the budget reset at local midnight.
+QUOTA_TIME_ZONE = "Europe/Istanbul"
 LLM_DAILY_BUDGET_USD = env("LLM_DAILY_BUDGET_USD")
 LLM_TIMEOUT_SECONDS = env("LLM_TIMEOUT_SECONDS")
 SEARCH_CACHE_TTL_SECONDS = env("SEARCH_CACHE_TTL_SECONDS")
