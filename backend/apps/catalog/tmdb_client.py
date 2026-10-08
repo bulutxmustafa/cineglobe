@@ -146,9 +146,13 @@ class TMDBClient:
         )
 
     def search_person(self, query: str) -> dict[str, Any]:
-        """Search for a person by name. Not cached (short TTL upstream)."""
-        return self._get(
-            "/search/person", params={"query": query, "include_adult": False}
+        """Search for a person by name. Cached 24 hours."""
+        params = {"query": query}
+        return self._cached_get(
+            "/search/person",
+            params=params,
+            cache_key=self._params_key("person_search", params),
+            ttl=TTL_PERSON,
         )
 
     def get_person_details(
