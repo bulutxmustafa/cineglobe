@@ -102,7 +102,9 @@ Sunucu çalıştıktan sonra:
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
 - **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; AI için `GEMINI_API_KEY` gerekir, yoksa AI'sız klasik aramayla çalışır)*
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
-- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
+- **Oyuncunun En İyi Yapımları:** `POST http://localhost:8000/api/v1/people/top-titles/` — gövde: `{"name": "RDJ", "media_type": "both"}` *(Faz 4)*
+- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest|rating|popularity&media_type=both&lang=tr` *(Faz 4)*
+- **Oyuncu Detayı:** `http://localhost:8000/api/v1/people/{tmdb_id}/?lang=tr` *(Faz 4; Türkçe biyografi yoksa İngilizce)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
 - **Film Defterim (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/?status=watched&sort=-rating` *(Faz 7B)*
 - **Defter İstatistikleri (giriş gerekir):** `http://localhost:8000/api/v1/me/notebook/stats/` *(Faz 7B)*

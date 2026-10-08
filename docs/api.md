@@ -174,6 +174,61 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
 
 ---
 
+## 🎭 Oyuncular (People) — Faz 4
+
+Tüm uçlar `?lang=tr|en` (veya `Accept-Language`) kabul eder. TMDB erişilemezse `503 service_unavailable` döner.
+
+### Sıralama kuralları (plan §3.2)
+"En iyi yapımlar" listesine yalnızca şunlar girer:
+- **Başrol:** filmde ilk 5 oyuncu (`order ≤ PERSON_LEAD_MAX_ORDER`=4). Dizide `order` bilgisi gelmediği için, en az `PERSON_MIN_EPISODES`=3 bölümde oynamış olmak (tek bölümlük konuk rolleri elenir).
+- **Oy eşiği:** film için `PERSON_MIN_VOTES_MOVIE`=1000, dizi için `PERSON_MIN_VOTES_TV`=300 oy. Az oyla şişmiş puanlar elenir.
+- **Gürültü yok:** `Self`, `Himself/Herself`, arşiv görüntüsü ve "Uncredited" rolleri; talk-show, haber ve reality dizileri.
+- Çıkmış yapımlar (gelecek tarihliler hariç). Puana göre sıralanır; bölüm başına en fazla 10 yapım.
+
+### `POST /api/v1/people/top-titles/`
+Bir oyuncunun en iyi filmleri ve/veya dizileri.
+
+```json
+{ "name": "RDJ", "media_type": "both", "lang": "tr" }
+```
+`name` yerine `person_id` (TMDB kimliği) de verilebilir. `media_type`: `both` (varsayılan: iki ayrı bölüm) | `movie` | `tv`.
+
+**İsim çözümleme:** önce takma ad tablosu (`RDJ` → Robert Downey Jr.), sonra TMDB kişi araması. Sonuç yoksa soyadıyla arama ve benzerlik kontrolü yapılır, böylece "Brayn Cranston" → Bryan Cranston. Doğal dil aramasında takma adları LLM de çözer.
+
+**Yanıtlar:**
+- `status: "found"` → `person`, `candidates` (aynı isimli diğer kişiler), `sections.movies` / `sections.series`. Her yapımda kısa bir `reason` var (örn. "Walter White rolüyle, 62 bölüm · TMDB'de 18.781 oyla 8.9/10.").
+- `status: "ambiguous"` → aynı isimli kişiler arasında popülerlik farkı belirgin değil (en popüler, ikinciden en az 3 kat popüler değil). `candidates` listesinden seçilip `person_id` ile tekrar istenir.
+- `404 person_not_found` → nazik mesaj ve öneri; `details.query` aranan isim.
+
+### `GET /api/v1/people/{tmdb_id}/filmography/`
+Tam filmografi (plan §3.6).
+
+| Parametre | Değerler | Varsayılan |
+|---|---|---|
+| `sort` | `newest` (en güncel) · `oldest` (kronolojik) · `rating` (oy eşiğini geçenler önce) · `popularity` | `newest` |
+| `media_type` | `both` · `movie` · `tv` | `both` |
+| `role` | `acting` · `directing` · `production` · `writing` | `acting` |
+| `lead_only` | başrol / tekrarlayan rol filtresi (yalnızca `acting`) | `true` |
+| `include_all` | `true` ise Self/arşiv/talk-show kayıtları da gelir | `false` |
+| `page` | 20'şer kayıt | `1` |
+
+- **Tarihi olmayan** kayıtlar her sıralamada listenin sonundadır.
+- **Gelecek tarihli** kayıtlar `results` içinde değil, ayrı `upcoming` ("Yakında") grubunda döner (yalnızca 1. sayfada; İstanbul saatiyle bugünden sonrası).
+- Aynı yapımda birden çok rol (karakter/iş) tek kayıtta birleşir (`characters`, `jobs`). Aynı TMDB kimliğine sahip film ve dizi ayrı kalır.
+- Dizi kayıtlarında `episode_count` ve kişinin diziye ilk çıktığı yıl (`first_credit_year`) bulunur. Dizinin bitiş yılı bu TMDB yanıtında olmadığı için verilmez.
+- `hidden_noise_count`: gizlenen Self/arşiv/talk-show kaydı sayısı ("Tümünü göster" düğmesi için).
+
+### `GET /api/v1/people/{tmdb_id}/`
+Biyografi, doğum yılı, fotoğraf ve en çok oylanan 4 başrol (`known_for`). TMDB'de Türkçe biyografi yoksa İngilizcesi döner ve `biography_is_fallback: true` olur (arayüzde belirtilmesi için).
+
+### `GET /api/v1/people/search/?query=`
+İsimle kişi araması (en fazla 10 sonuç; yetişkin içerik hariç).
+
+### Doğal dil aramasında oyuncu niyeti
+`POST /api/v1/search/` sorgusu bir oyuncunun en iyi işlerini soruyorsa ("RDJ'nin en iyi filmleri"), yanıttaki `person` alanı `top-titles` ile aynı yapıda bir blok taşır; diğer sorgularda `null` olur.
+
+---
+
 ## 🛡️ Standart Hata Formatı
 
 Tüm hata yanıtları (400, 401, 403, 404, 429, 500, 503) öngörülebilir ve tutarlı bir JSON formatında döner:
