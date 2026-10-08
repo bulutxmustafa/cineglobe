@@ -54,6 +54,9 @@ class CollectionQuerySerializer(serializers.Serializer):
     media_type = serializers.ChoiceField(
         choices=["both", "movie", "tv"], default="both"
     )
+    exclude_watched = serializers.BooleanField(
+        default=False, help_text="Signed-in users: hide titles marked watched"
+    )
 
 
 class RandomQuerySerializer(CollectionQuerySerializer):

@@ -13,6 +13,8 @@ class SearchRequestSerializer(serializers.Serializer):
         choices=["movie", "tv", "both"], default="both"
     )
     lang = serializers.ChoiceField(choices=["tr", "en"], required=False)
+    # Signed-in users only: hide titles marked "watched" in the Film Notebook.
+    exclude_watched = serializers.BooleanField(default=False)
 
 
 class SearchResultSerializer(serializers.Serializer):

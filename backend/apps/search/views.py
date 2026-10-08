@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 from apps.accounts.services import record_search
 from apps.catalog.params import get_language
 from apps.catalog.tmdb_client import TMDBError
+from apps.notebook.services import watched_keys
 from apps.search.cost_guard import quota_identity, quota_remaining
 from apps.search.router import Quota
 from apps.search.serializers import SearchRequestSerializer, SearchResponseSerializer
@@ -111,6 +112,14 @@ class SearchView(APIView):
                 "service_unavailable", language, status.HTTP_503_SERVICE_UNAVAILABLE
             )
 
+        if data["exclude_watched"] and request.user.is_authenticated:
+            seen = watched_keys(request.user)
+            payload["results"] = [
+                r
+                for r in payload["results"]
+                if f"{r['media_type']}:{r['tmdb_id']}" not in seen
+            ]
+            payload["count"] = len(payload["results"])
         record_search(request.user, query, data["media_type"], language)
         signed_in = request.user.is_authenticated
         payload["quota"] = {
