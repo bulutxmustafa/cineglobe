@@ -1,6 +1,6 @@
 # 🎬 CineGlobe — Film & Dizi Keşif Platformu
 
-CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebildikleri ("Silahlı çatışma var ama istihbarat da işin içinde olsun"), yapay zekanın (Claude) bu istekleri anlayıp gerekçeleriyle birlikte zengin film ve dizi önerileri sunduğu modern bir keşif platformudur.
+CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebildikleri ("Silahlı çatışma var ama istihbarat da işin içinde olsun"), yapay zekanın bu istekleri anlayıp gerekçeleriyle birlikte zengin film ve dizi önerileri sunduğu modern bir keşif platformudur.
 
 ---
 
@@ -26,7 +26,7 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 - **Backend:** Python 3.10+, Django 5, Django REST Framework, drf-spectacular (OpenAPI/Swagger)
 - **Veritabanı:** PostgreSQL 16 (İlişkisel veri + `(media_type, tmdb_id)` tekil anahtar yapısı)
 - **Önbellek (Cache):** Redis 7
-- **Doğal Dil Anlama (NLU):** Claude API (Anthropic) + Pydantic veri doğrulama
+- **Doğal Dil Anlama (NLU):** Sağlayıcıdan bağımsız LLM zinciri: Google Gemini Flash-Lite (ücretsiz katman) → isteğe bağlı Claude Haiku 5.5 → AI'sız klasik arama; Pydantic veri doğrulama ([ADR-0003](docs/adr/0003-llm-provider-chain.md), maliyet: [docs/cost.md](docs/cost.md))
 - **Veri Kaynağı:** TMDB API (Film & Dizi verileri)
 - **Web Frontend:** Vue 3, Vite, TypeScript, Pinia, Tailwind CSS, GSAP, three.js / globe.gl (arama motoru dostu olması için SSR/prerender — Nuxt 3 veya Vite SSG, ADR ile seçilir)
 - **Gelir:** Reklam (onay yönetimli), affiliate bağlantılar, opsiyonel Premium — TMDB ticari lisansı alınmadan açılmaz
@@ -100,7 +100,7 @@ python backend/manage.py runserver
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
-- **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; `ANTHROPIC_API_KEY` yoksa kural tabanlı ayrıştırıcıyla çalışır)*
+- **Doğal Dil Arama:** `POST http://localhost:8000/api/v1/search/` — gövde: `{"query": "gerilim olsun ama korku içermesin", "media_type": "both", "lang": "tr"}` *(Faz 3; AI için `GEMINI_API_KEY` gerekir, yoksa AI'sız klasik aramayla çalışır)*
 - **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
 - **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
 - **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
@@ -118,7 +118,13 @@ pytest
 pytest --cov=backend --cov-report=term-missing
 ```
 
-### 6. Kod Standartları ve Pre-commit
+### 6. LLM Kalite Kapısı (canlı anahtar gerekir, isteğe bağlı)
+```bash
+python backend/manage.py run_llm_eval --provider gemini --report docs/llm-eval.md
+```
+Gemini'nin arama sorgularını yeterince iyi anlayıp anlamadığını 30 sorguluk setle ölçer (bkz. [docs/llm-eval.md](docs/llm-eval.md)).
+
+### 7. Kod Standartları ve Pre-commit
 ```bash
 pre-commit install
 pre-commit run --all-files

@@ -90,6 +90,7 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
 
 * **Yetkilendirme:** Açık (Public)
 * **Rate Limiting:** `20 istek / dakika` (`search` scope) + genel anon/user limitleri
+* **Günlük AI kotası:** misafir `GUEST_DAILY_AI_SEARCHES` (IP özetine göre), üye `USER_DAILY_AI_SEARCHES`; gece yarısı (Europe/Istanbul) sıfırlanır. Kota dolunca istek **reddedilmez**, klasik aramayla yanıtlanır (`ai_status=quota_exceeded`). Önbellekten dönen arama kota tüketmez.
 * **Önbellek:** Aynı sorgu (büyük/küçük harf ve boşluk farkı gözetmeksizin) + `media_type` + `lang` üçlüsü `SEARCH_CACHE_TTL_SECONDS` (varsayılan 1 saat) boyunca önbellekten döner. `lang` anahtarın parçasıdır; TR cevabı EN kullanıcıya gitmez.
 
 #### İstek Gövdesi
@@ -107,11 +108,11 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
 | `lang` | hayır | `tr` \| `en`. Verilmezse `?lang=` ya da `Accept-Language` kullanılır |
 
 #### İşleyiş
-1. **QueryParser:** `ANTHROPIC_API_KEY` tanımlıysa Claude (`ANTHROPIC_MODEL`, varsayılan `claude-opus-5-5`) sorguyu structured outputs ile `SearchFilters` şemasına çevirir. Kullanıcı metni `<user_query>` etiketleri içinde **veri** olarak gönderilir; çıktı yalnızca şemaya uyabilir (prompt injection davranışı değiştiremez).
-2. **Fallback:** Anahtar yoksa ya da LLM hata/zaman aşımı/geçersiz JSON/ret döndürürse kural tabanlı TR/EN ayrıştırıcı devreye girer. Arama LLM yüzünden asla 500 vermez. Yanıttaki `parser` alanı hangisinin kullanıldığını gösterir.
+1. **LLM sağlayıcı zinciri** (`LLM_PROVIDER_CHAIN`, varsayılan `gemini,classic`): sorgu sırayla denenen sağlayıcılara gider: Gemini Flash-Lite (ücretsiz katman) → (isteğe bağlı) Claude Haiku 5.5 → klasik. Kullanıcı metni `<user_query>` etiketleri içinde **veri** olarak gönderilir; çıktı yalnızca `SearchFilters` şemasına uyabilir (prompt injection davranışı değiştiremez). LLM'e kullanıcı kimliği, e-posta veya IP **gitmez**.
+2. **Yedek (klasik arama):** Anahtar yoksa, sağlayıcı 429/zaman aşımı/5xx/geçersiz JSON (1 yeniden denemeden sonra) döndürürse, kota ya da günlük bütçe dolduysa kural tabanlı TR/EN ayrıştırıcı devreye girer. Arama LLM yüzünden asla 500 vermez. Hata veren sağlayıcı 60 sn boyunca denenmez (devre kesici). `parser` hangi sağlayıcının yanıtladığını (`gemini` | `anthropic` | `classic`), `ai_status` nedenini (`ok` | `quota_exceeded` | `budget_exceeded` | `fallback`) gösterir. `ok` dışındaki yanıtlar önbelleğe alınmaz.
 3. **Retriever:** Filtreler film ve dizi için ayrı TMDB `discover` parametrelerine çevrilir (tür ID'leri farklı). `both` ise iki sorgu paralel atılır. Anahtar kelime eşleşmesi çok dar kalırsa (< 5 sonuç) anahtar kelimesiz ikinci sorguyla tamamlanır.
 4. **Ranker:** Bayes ortalamalı puan (film için 1000, dizi için 300 oy güven eşiği) + anahtar kelime/tür uyumu bonusu. `genres_exclude` kesin elemedir. Tekilleştirme `(media_type, tmdb_id)` ile yapılır; aynı ID'li film ve dizi birbirini silmez.
-5. **Explainer:** Tüm sonuçlar için tek LLM çağrısıyla, spoiler içermeyen gerekçeler üretilir. LLM yoksa tür ve puandan oluşan şablon cümle kullanılır.
+5. **Gerekçeler:** Her sonuç LLM'siz, seçili dilde bir şablon gerekçe alır. `ai_status=ok` ise ilk `LLM_EXPLAIN_TOP_N` (varsayılan 3) sonuç için tek toplu LLM çağrısıyla spoiler içermeyen gerekçeler üretilir (maliyet: [docs/cost.md](cost.md)).
 
 #### Başarılı Yanıt (HTTP 200 OK)
 ```json
@@ -119,7 +120,8 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
   "query": "kısa bölümlü, hafif, komik bir dizi",
   "lang": "tr",
   "media_type": "tv",
-  "parser": "llm",
+  "parser": "gemini",
+  "ai_status": "ok",
   "filters": {
     "intent": "discover",
     "media_type": "tv",
@@ -165,7 +167,7 @@ Serbest metinle yazılmış bir isteği ("gerilim olsun ama korku içermesin") f
 #### Hata Yanıtları
 | Durum | `code` | Ne zaman |
 |-------|--------|----------|
-| 400 | `invalid_query` | Boş, 2 karakterden kısa, harf içermeyen ya da izleme tercihi içermeyen sorgu (mesajda örnek sorgu önerilir) |
+| 400 | `invalid_query` | Boş, 2 karakterden kısa, harf içermeyen ya da izleme tercihi içermeyen sorgu (mesajda örnek sorgu önerilir). `details.ai_status` sorgunun AI ile mi klasik ayrıştırıcıyla mı değerlendirildiğini söyler |
 | 400 | `invalid` | Eksik `query` alanı veya geçersiz `media_type`/`lang` |
 | 429 | `throttled` | Rate limit aşıldı |
 | 503 | `service_unavailable` | TMDB erişilemiyor veya `TMDB_API_KEY` tanımlı değil |

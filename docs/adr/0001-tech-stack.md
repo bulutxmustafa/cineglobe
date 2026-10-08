@@ -1,6 +1,6 @@
 # 1. Teknoloji Yığını ve Mimari Seçimleri
 
-* **Durum:** Kabul Edildi (Accepted) — §7 (Flutter mobil istemci) [ADR-0002](0002-web-only.md) ile geçersiz kılındı
+* **Durum:** Kabul Edildi (Accepted) — §7 (Flutter mobil istemci) [ADR-0002](0002-web-only.md) ile geçersiz kılındı; §4 (Claude API) [ADR-0003](0003-llm-provider-chain.md) ile sağlayıcıdan bağımsız zincire dönüştü
 * **Tarih:** 2026-09-28
 * **Karar Vericiler:** CineGlobe Ekibi & Antigravity Ajanı
 
