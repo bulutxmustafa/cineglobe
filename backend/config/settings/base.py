@@ -20,7 +20,11 @@ env = environ.Env(
     DJANGO_ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
     CORS_ALLOWED_ORIGINS=(list, ["http://localhost:5173", "http://127.0.0.1:5173"]),
     DATABASE_URL=(str, "postgres://cineglobe:cineglobe@localhost:5432/cineglobe"),
-    REDIS_URL=(str, "locmemcache://"),
+    CACHE_BACKEND=(str, "db"),
+    CACHE_MAX_ENTRIES=(int, 5000),
+    DB_CONN_MAX_AGE=(int, 0),
+    CSRF_TRUSTED_ORIGINS=(list, []),
+    TRUSTED_PROXY_COUNT=(int, 0),
     TMDB_API_KEY=(str, ""),
     ANTHROPIC_API_KEY=(str, ""),
     ANTHROPIC_MODEL_PARSER=(str, "claude-haiku-5-5"),
@@ -82,6 +86,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    # Serves admin/static files locally; on Vercel the CDN serves them.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -110,7 +116,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-ASGI_APPLICATION = "config.asgi.application"
+# No ASGI_APPLICATION on purpose: Vercel prefers ASGI when both are set, and
+# this sync DRF app is meant to run as WSGI (config/asgi.py stays for local use).
 
 # Database & Cache configuration
 if IS_TESTING:
@@ -133,7 +140,24 @@ else:
             default="postgres://cineglobe:cineglobe@localhost:5432/cineglobe",
         )
     }
-    CACHES = {"default": env.cache("REDIS_URL", default="locmemcache://")}
+    # Serverless instances share no memory: cache, quota and breaker state live
+    # in the database (plan v1.8; Redis is not used). Neon: use the *pooled* URL.
+    DATABASES["default"]["CONN_MAX_AGE"] = env("DB_CONN_MAX_AGE")
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+    if env("CACHE_BACKEND") == "locmem":
+        CACHES = {
+            "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+        }
+    else:
+        CACHES = {
+            "default": {
+                "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+                "LOCATION": "django_cache",
+                # Django's default of 300 entries would constantly evict TMDB
+                # responses. ~20 KB/entry → ~100 MB at 5000, well inside Neon's 1 GB.
+                "OPTIONS": {"MAX_ENTRIES": env("CACHE_MAX_ENTRIES")},
+            }
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -161,6 +185,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Locally and in tests WhiteNoise reads app static dirs directly (no collectstatic
+# needed). On Vercel, collectstatic runs at build and the CDN serves STATIC_ROOT.
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = DEBUG or IS_TESTING
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -169,6 +197,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 CORS_ALLOW_CREDENTIALS = True
 
 # Django REST Framework
@@ -185,6 +214,10 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
+    # Behind a proxy (Vercel: 1) the client IP comes from X-Forwarded-For; 0 = use
+    # REMOTE_ADDR. Never None: DRF would then trust any client-sent X-Forwarded-For
+    # and a guest could dodge throttling and the AI-search quota by spoofing it.
+    "NUM_PROXIES": env("TRUSTED_PROXY_COUNT"),
     "DEFAULT_THROTTLE_RATES": {
         "anon": "120/min",
         "user": "600/min",

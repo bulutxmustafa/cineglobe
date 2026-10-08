@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.throttling import (
     AnonRateThrottle,
+    BaseThrottle,
     ScopedRateThrottle,
     UserRateThrottle,
 )
@@ -58,8 +59,9 @@ def _quota_for(request) -> Quota:
     """Daily AI-search quota identity: the user if signed in, else the (hashed) IP."""
     user = request.user
     user_id = user.pk if user and user.is_authenticated else None
-    # REMOTE_ADDR only; trusting X-Forwarded-For is configured at deploy (Faz 9).
-    identity, limit = quota_identity(user_id, request.META.get("REMOTE_ADDR"))
+    # Same client identity DRF throttling uses: honours REST_FRAMEWORK["NUM_PROXIES"],
+    # so behind Vercel's proxy each visitor gets their own quota (not one shared IP).
+    identity, limit = quota_identity(user_id, BaseThrottle().get_ident(request))
     return Quota(identity, limit)
 
 
