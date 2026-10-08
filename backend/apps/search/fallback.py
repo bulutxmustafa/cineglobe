@@ -145,7 +145,17 @@ NEGATION_PATTERN = re.compile(
     r"\b(olmasın|içermesin|istemiyorum|istemem|hariç|değil|olmayan|içermeyen"
     r"|yok|olmadan|no|not|without|except|non)\b"
 )
-CLAUSE_SPLIT = re.compile(r"[,.;!?]|\b(?:ama|fakat|ancak|ve|ile|but|and|with)\b")
+# Clauses: split on punctuation and contrast words; then on conjunctions into parts.
+CLAUSE_SPLIT = re.compile(r"[,.;!?]|\b(?:ama|fakat|ancak|but)\b")
+PART_SPLIT = re.compile(r"\b(?:ve|ile|veya|and|with|or)\b")
+# A part with its own wish verb stops a later negation from spreading back to it:
+# "korku ve şiddet olmasın" excludes both, "gerilim olsun ve korku olmasın" does not.
+AFFIRMATIVE_PATTERN = re.compile(
+    r"\b(olsun|istiyorum|isterim|içersin|want|like|love|please)\b"
+)
+NOT_TV = re.compile(
+    r"\b(?:not a|no) (?:series|show)|\bdizi (?:olmasın|değil|istemiyorum)"
+)
 
 SHORT_EPISODE = re.compile(
     r"kısa bölüm|short episode|30 dakika|yarım saat|half[- ]hour|sitcom"
@@ -154,7 +164,14 @@ SHORT_GENERAL = re.compile(
     r"çok uzun olmasın|uzun olmasın|kısa|not too long|short|mini ?dizi|miniseries"
 )
 MINI_SERIES = re.compile(r"mini ?dizi|miniseries|limited series")
-DECADE = re.compile(r"\b(?:19)?([2-9]0)\s*(?:'|’)?\s*(?:ler|lar|li|lı|s)\b")
+# Decades: "1990s", "2010'lar", "90'larda", "70'lerden", "80s". No space allowed
+# before the suffix, so "50 sezon" is not read as the 1950s.
+FULL_DECADE = re.compile(r"\b((?:19|20)\d)0(?:'|’)?(?:ler|lar|li|lı|s)\w*")
+SHORT_DECADE = re.compile(r"\b([2-9])0(?:'|’)?(?:ler|lar|li|lı|s)\w*")
+ENDED = re.compile(
+    r"bitmiş|tamamlanmış|sona ermiş|\bended\b|\bfinished\b|\bcompleted?\b"
+)
+ONGOING = re.compile(r"devam eden|hala süren|ongoing|still running|currently airing")
 YEAR = re.compile(r"\b(19\d{2}|20\d{2})\b")
 AFTER_WORDS = re.compile(r"sonra|sonrası|after|since|newer")
 BEFORE_WORDS = re.compile(r"önce|öncesi|before|older")
@@ -184,9 +201,16 @@ def parse_query_fallback(query: str) -> SearchFilters:
     include: list[str] = []
     exclude: list[str] = []
     for clause in filter(None, (c.strip() for c in CLAUSE_SPLIT.split(text) if c)):
-        negated = bool(NEGATION_PATTERN.search(clause))
-        target = exclude if negated else include
-        target.extend(_stem_hits(clause, GENRE_STEMS))
+        parts = [p.strip() for p in PART_SPLIT.split(clause) if p.strip()]
+        carry = False  # negation spreading back from a later part
+        for part in reversed(parts):
+            if NEGATION_PATTERN.search(part):
+                negated = carry = True
+            elif AFFIRMATIVE_PATTERN.search(part):
+                negated = carry = False
+            else:
+                negated = carry
+            (exclude if negated else include).extend(_stem_hits(part, GENRE_STEMS))
 
     keywords: list[str] = []
     for hit in _stem_hits(text, KEYWORD_STEMS):
@@ -194,7 +218,13 @@ def parse_query_fallback(query: str) -> SearchFilters:
 
     moods = _stem_hits(text, MOOD_STEMS)
     has_tv = any(re.search(r"(?<!\w)" + s, text) for s in TV_STEMS)
-    has_movie = any(re.search(r"(?<!\w)" + s, text) for s in MOVIE_STEMS)
+    if NOT_TV.search(text):
+        has_tv, has_movie_hint = False, True
+    else:
+        has_movie_hint = False
+    has_movie = has_movie_hint or any(
+        re.search(r"(?<!\w)" + s, text) for s in MOVIE_STEMS
+    )
     media_type = "tv" if has_tv and not has_movie else "both"
     if has_movie and not has_tv:
         media_type = "movie"
@@ -211,8 +241,11 @@ def parse_query_fallback(query: str) -> SearchFilters:
         runtime_max = 110
 
     year_from = year_to = None
-    if decade := DECADE.search(text_en):
-        year_from = 1900 + int(decade.group(1))
+    if decade := FULL_DECADE.search(text_en):
+        year_from = int(decade.group(1)) * 10
+        year_to = year_from + 9
+    elif decade := SHORT_DECADE.search(text_en):
+        year_from = 1900 + int(decade.group(1)) * 10
         year_to = year_from + 9
     elif year := YEAR.search(text):
         value = int(year.group(1))
@@ -222,6 +255,12 @@ def parse_query_fallback(query: str) -> SearchFilters:
             year_to = value
         else:
             year_from = year_to = value
+
+    status = "any"
+    if ENDED.search(text):
+        status = "ended"
+    elif ONGOING.search(text):
+        status = "ongoing"
 
     filters = SearchFilters(
         media_type=media_type,
@@ -234,6 +273,7 @@ def parse_query_fallback(query: str) -> SearchFilters:
         runtime_max=runtime_max,
         episode_runtime_max=episode_runtime_max,
         max_seasons=max_seasons,
+        status=status,
         language_hint="tr" if TURKISH_HINT.search(text) else "en",
     )
     filters.is_meaningful = filters.has_signal()
