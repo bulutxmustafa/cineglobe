@@ -23,7 +23,9 @@ env = environ.Env(
     REDIS_URL=(str, "locmemcache://"),
     TMDB_API_KEY=(str, ""),
     ANTHROPIC_API_KEY=(str, ""),
-    ANTHROPIC_MODEL=(str, "claude-3-5-sonnet-20241022"),
+    ANTHROPIC_MODEL=(str, "claude-opus-5-5"),
+    LLM_TIMEOUT_SECONDS=(float, 20.0),
+    SEARCH_CACHE_TTL_SECONDS=(int, 3600),
     LLM_DAILY_BUDGET_USD=(float, 5.0),
     SENTRY_DSN=(str, ""),
 )
@@ -174,6 +176,7 @@ REST_FRAMEWORK = {
         "anon": "120/min",
         "user": "600/min",
         "health": "120/min",
+        "search": "20/min",
     },
 }
 
@@ -191,4 +194,6 @@ TMDB_API_KEY = env("TMDB_API_KEY")
 ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY")
 ANTHROPIC_MODEL = env("ANTHROPIC_MODEL")
 LLM_DAILY_BUDGET_USD = env("LLM_DAILY_BUDGET_USD")
+LLM_TIMEOUT_SECONDS = env("LLM_TIMEOUT_SECONDS")
+SEARCH_CACHE_TTL_SECONDS = env("SEARCH_CACHE_TTL_SECONDS")
 SENTRY_DSN = env("SENTRY_DSN")
