@@ -1,6 +1,6 @@
 # 1. Teknoloji Yığını ve Mimari Seçimleri
 
-* **Durum:** Kabul Edildi (Accepted)
+* **Durum:** Kabul Edildi (Accepted) — §7 (Flutter mobil istemci) [ADR-0002](0002-web-only.md) ile geçersiz kılındı
 * **Tarih:** 2026-09-28
 * **Karar Vericiler:** CineGlobe Ekibi & Antigravity Ajanı
 

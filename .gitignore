@@ -48,28 +48,6 @@ yarn-error.log*
 .vite/
 web/.vite/
 
-# Flutter & Dart Mobile
-mobile/.dart_tool/
-.dart_tool/
-mobile/.flutter-plugins
-mobile/.flutter-plugins-dependencies
-mobile/.packages
-mobile/.pub-cache/
-mobile/.pub/
-mobile/build/
-mobile/android/.gradle/
-mobile/android/captures/
-mobile/android/gradlew
-mobile/android/gradlew.bat
-mobile/android/local.properties
-mobile/android/**/GeneratedPluginRegistrant.java
-mobile/ios/Pods/
-mobile/ios/.symlinks/
-mobile/ios/Flutter/Flutter.framework
-mobile/ios/Flutter/Flutter.podspec
-mobile/ios/Flutter/Generated.xcconfig
-mobile/ios/Flutter/app.framework
-
 # Environment & Secrets
 .env
 .env.*
