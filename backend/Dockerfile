@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt /app/requirements.txt
 COPY requirements/ /app/requirements/
-RUN pip install --no-cache-dir --user -r /app/requirements/base.txt
+RUN pip install --no-cache-dir --user -r /app/requirements/prod.txt
 
 # Final stage
 FROM python:3.10-slim
@@ -37,4 +38,6 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Portable fallback host (plan v1.8: Render/Cloud Run if Vercel does not fit).
+ENV DJANGO_SETTINGS_MODULE=config.settings.prod
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
