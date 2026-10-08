@@ -27,6 +27,11 @@ MIN_RESULTS_BEFORE_RELAX = 5
 TV_STATUS = {"ongoing": "0", "ended": "3|4"}
 
 
+def _without_adult(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    # Belt and braces: include_adult=false is also sent on every discover call.
+    return [r for r in results if not r.get("adult")]
+
+
 def _ids(values: list[int]) -> str:
     return ",".join(str(v) for v in dict.fromkeys(values))
 
@@ -77,12 +82,14 @@ class Retriever:
             if media_type == "movie"
             else self._client.discover_tv
         )
-        results = discover(params, language=language).get("results", [])
+        results = _without_adult(discover(params, language=language).get("results", []))
         matched_keywords = bool(keyword_ids)
 
         if keyword_ids and len(results) < MIN_RESULTS_BEFORE_RELAX:
             relaxed = self.build_params(media_type, filters, [], person_ids)
-            extra = discover(relaxed, language=language).get("results", [])
+            extra = _without_adult(
+                discover(relaxed, language=language).get("results", [])
+            )
             seen = {r.get("id") for r in results}
             tagged = [dict(r, _kw=True) for r in results]
             tagged += [dict(r, _kw=False) for r in extra if r.get("id") not in seen]

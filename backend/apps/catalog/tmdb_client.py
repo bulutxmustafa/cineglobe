@@ -29,6 +29,9 @@ TTL_DETAIL_ONGOING_TV = 60 * 60 * 6  # 6 hours
 TTL_DISCOVER = 60 * 60  # 1 hour
 TTL_PERSON = 60 * 60 * 24  # 24 hours
 
+# Endpoints whose results can contain adult titles unless filtered.
+ADULT_FILTERED_PREFIXES = ("/discover/", "/search/")
+
 # HTTP client settings
 DEFAULT_TIMEOUT = 10.0  # seconds
 MAX_RETRIES = 3
@@ -264,6 +267,9 @@ class TMDBClient:
     def _get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Execute GET request against TMDB with retries and error normalisation."""
         all_params = {"api_key": self._api_key, **(params or {})}
+        if path.startswith(ADULT_FILTERED_PREFIXES):
+            # Plan v1.7: adult titles never enter search, lists or the globe.
+            all_params["include_adult"] = "false"
         last_exc: Exception | None = None
 
         for attempt in range(1, MAX_RETRIES + 1):
