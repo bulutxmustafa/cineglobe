@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
     "url, patch_target",
     [
         ("/api/v1/collections/snack-watch/", "apps.collections.views.TMDBClient"),
-        ("/api/v1/upcoming/", "apps.catalog.views.TMDBClient"),
+        ("/api/v1/upcoming/", "apps.upcoming.views.TMDBClient"),
     ],
 )
 @pytest.mark.parametrize("page", ["abc", "0", "-1", "501", "1.5"])
