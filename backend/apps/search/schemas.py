@@ -112,3 +112,22 @@ class SearchFilters(BaseModel):
     def public_dict(self) -> dict:
         """Filters as returned to API clients ('applied filters')."""
         return self.model_dump(exclude={"is_meaningful"})
+
+
+class Reason(BaseModel):
+    key: str
+    reason: str
+
+
+class ReasonList(BaseModel):
+    """Structured-output schema for batched "why was this recommended?" lines."""
+
+    reasons: list[Reason]
+
+    def as_mapping(self) -> dict[str, str]:
+        mapping: dict[str, str] = {}
+        for entry in self.reasons:
+            text = " ".join(entry.reason.split())
+            if text:
+                mapping[entry.key] = text
+        return mapping
