@@ -4,6 +4,21 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 
 ---
 
+## ✨ Özellikler
+
+- 🔎 **Doğal dille arama:** "Silahlı çatışma olsun ama istihbarat da olsun" gibi cümlelerle film ve dizi bulma
+- 🌍 **Türkçe / English:** Arayüz, içerik ve öneri gerekçeleri seçilen dilde
+- 🗂️ **Hazır koleksiyonlar:** Sıkılmam Diyeceğiniz Filmler, Sürükleyici, Çerezlik, Kafanızı Dağıtacak, Başladığı Gibi Bitecek, Tersköşe ve daha fazlası
+- 🎭 **Oyuncu sayfaları:** En iyi yapımlar + tam filmografi (kronolojik veya en güncelden başlayarak)
+- 📅 **Yakında çıkacaklar:** Yaklaşan film/diziler ve **hatırlatıcı** (uygulama içi, e-posta, push)
+- 🌐 **Şans Globu:** Butona bas, dünya dönsün, sürpriz bir film/dizi çıksın (favorilerden veya bir koleksiyondan)
+- ❤️ **Favoriler & izleme listesi**
+- 📱 **Web (Vue) + Mobil (Flutter)**
+
+> Faz planı ve ayrıntılar için bkz. [`CINEGLOBE_PLAN.md`](CINEGLOBE_PLAN.md) (v1.2).
+
+---
+
 ## 🏗️ Mimari & Teknoloji Yığını
 
 - **Backend:** Python 3.10+, Django 5, Django REST Framework, drf-spectacular (OpenAPI/Swagger)
@@ -22,7 +37,7 @@ CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebild
 ```text
 cineglobe/
 ├── backend/            # Django REST API
-│   ├── apps/           # Django uygulamaları (catalog, search, people, accounts)
+│   ├── apps/           # Django uygulamaları (catalog, search, people, collections, upcoming, reminders, accounts)
 │   ├── config/         # Django ayarları (base, dev, prod)
 │   ├── requirements/   # Bağımlılıklar (base.txt, dev.txt, prod.txt)
 │   ├── tests/          # pytest test paketi
@@ -84,6 +99,9 @@ python backend/manage.py runserver
 Sunucu çalıştıktan sonra:
 - **Sağlık Kontrolü:** [http://localhost:8000/api/v1/health/](http://localhost:8000/api/v1/health/)
 - **Film/Dizi Detayı:** `http://localhost:8000/api/v1/titles/{media_type}/{tmdb_id}/?lang=tr`
+- **Koleksiyonlar:** `http://localhost:8000/api/v1/collections/{slug}/?lang=tr` *(Faz 4B)*
+- **Oyuncu Filmografisi:** `http://localhost:8000/api/v1/people/{tmdb_id}/filmography/?sort=newest|oldest&lang=en` *(Faz 4)*
+- **Yakında Çıkacaklar:** `http://localhost:8000/api/v1/upcoming/?media_type=both&lang=tr` *(Faz 4C)*
 - **Swagger UI:** [http://localhost:8000/api/schema/swagger-ui/](http://localhost:8000/api/schema/swagger-ui/)
 - **ReDoc:** [http://localhost:8000/api/schema/redoc/](http://localhost:8000/api/schema/redoc/)
 
