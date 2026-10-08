@@ -26,6 +26,10 @@ env = environ.Env(
     UPCOMING_REGION=(str, "TR"),
     UPCOMING_CACHE_TTL_SECONDS=(int, 4 * 3600),
     UPCOMING_MIN_POPULARITY=(float, 8.0),
+    EMAIL_URL=(str, ""),
+    DEFAULT_FROM_EMAIL=(str, "CineGlobe <no-reply@localhost>"),
+    SITE_URL=(str, "http://localhost:5173"),
+    CRON_SECRET=(str, ""),
     DB_CONN_MAX_AGE=(int, 0),
     CSRF_TRUSTED_ORIGINS=(list, []),
     TRUSTED_PROXY_COUNT=(int, 0),
@@ -167,6 +171,35 @@ else:
         }
 
 # Password validation
+# Accounts (plan Faz 7, ADR-0005): e-mail sign-in, session cookie + CSRF.
+AUTH_USER_MODEL = "accounts.User"
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+]
+if IS_TESTING:
+    # Argon2 is deliberately slow; tests only need a valid hash.
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days
+# The SPA reads the CSRF token from this cookie and sends it as X-CSRFToken.
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# E-mail: off until a free provider is chosen by the user (plan Faz 7). With no
+# EMAIL_URL, mails go to the console locally and reminders use in-app only.
+EMAIL_ENABLED = bool(env("EMAIL_URL"))
+if EMAIL_ENABLED:
+    vars().update(env.email_url("EMAIL_URL"))
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+# Public web address, used in e-mail links (password reset, unsubscribe).
+SITE_URL = env("SITE_URL").rstrip("/")
+# Shared secret for the daily cron endpoint (Vercel sends it as a Bearer token).
+CRON_SECRET = env("CRON_SECRET")
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -211,6 +244,11 @@ CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
+    # Session cookie only (ADR-0005). Unsafe requests from signed-in users
+    # must carry the CSRF token.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
@@ -230,6 +268,8 @@ REST_FRAMEWORK = {
         "user": "600/min",
         "health": "120/min",
         "search": "20/min",
+        # Sign-in, sign-up and password reset: slow down brute force.
+        "auth": "10/min",
     },
 }
 
