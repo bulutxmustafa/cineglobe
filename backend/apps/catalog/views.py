@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from apps.catalog.categories import get_all_curated_categories, get_curated_category
 from apps.catalog.image_utils import backdrop_url, poster_url
 from apps.catalog.models import Title
+from apps.catalog.params import get_language, get_page
 from apps.catalog.serializers import TitleSerializer
 from apps.catalog.tmdb_client import (
     TMDBClient,
@@ -137,9 +138,7 @@ class TitleDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
+        lang = get_language(request)
 
         try:
             title = _fetch_and_cache_title(media_type, tmdb_id, language=lang)
@@ -192,9 +191,7 @@ class CuratedCategoryListView(APIView):
         tags=["Categories"],
     )
     def get(self, request):
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
+        lang = get_language(request)
         categories = get_all_curated_categories(language=lang)
         return Response({"categories": categories, "count": len(categories)})
 
@@ -234,10 +231,8 @@ class CuratedCategoryDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
-        page = int(request.query_params.get("page", 1))
+        lang = get_language(request)
+        page = get_page(request)
         client = TMDBClient()
 
         results: list[dict[str, Any]] = []
@@ -314,10 +309,8 @@ class UpcomingTitlesView(APIView):
     )
     def get(self, request):
         media_type = request.query_params.get("media_type", "both")
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
-        page = int(request.query_params.get("page", 1))
+        lang = get_language(request)
+        page = get_page(request)
         client = TMDBClient()
         today = date.today()
 

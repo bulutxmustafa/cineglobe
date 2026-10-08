@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.catalog.params import get_language
 from apps.catalog.tmdb_client import (
     TMDBClient,
     TMDBNotFoundError,
@@ -88,9 +89,7 @@ class PersonDetailView(APIView):
         tags=["People"],
     )
     def get(self, request, person_id: int):
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
+        lang = get_language(request)
         client = TMDBClient()
 
         try:
@@ -157,9 +156,7 @@ class PersonCreditsView(APIView):
     def get(self, request, person_id: int):
         sort_by = request.query_params.get("sort_by", "recent")
         media_type = request.query_params.get("media_type", "both")
-        lang = request.query_params.get("lang") or request.headers.get(
-            "Accept-Language", "tr"
-        )
+        lang = get_language(request)
 
         client = TMDBClient()
 
