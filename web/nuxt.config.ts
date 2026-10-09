@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       titleTemplate: '%s',
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       meta: [
-        { name: 'theme-color', content: '#101923' },
+        { name: 'theme-color', content: '#0b1f3a' },
         { name: 'application-name', content: 'CINEGLOB' },
       ],
     },

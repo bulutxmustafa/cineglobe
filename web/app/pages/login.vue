@@ -83,12 +83,12 @@ async function submit() {
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   padding: 0 12px;
-  background: #0e1620;
-  color: var(--text);
+  background: #fff;
+  color: var(--ink);
   outline: none;
 }
 .field:focus {
-  border-color: var(--ink);
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 </style>

@@ -6,11 +6,11 @@
 
 @layer base {
   html {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--paper);
+    color: var(--ink);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
+    scroll-behavior: smooth;
   }
   body {
     min-height: 100vh;
@@ -26,7 +26,7 @@
   }
   a { color: inherit; }
   :focus-visible {
-    outline: 2px solid var(--gold);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -47,25 +47,26 @@
   }
   .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.06); }
   .btn-primary:active { transform: translateY(1px) scale(0.98); box-shadow: 0 0 0 #b9852a, 0 4px 8px rgb(0 0 0 / 28%); }
-  .btn-quiet { border: 1px solid var(--line); background: rgb(255 255 255 / 4%); color: var(--text); }
-  .btn-quiet:hover { border-color: var(--gold); }
+  .btn-quiet { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+  .btn-quiet:hover { border-color: var(--accent); }
   .btn-glass { border: 1px solid var(--border); background: transparent; color: var(--text); }
   .btn-glass:hover { border-color: var(--gold); background: rgb(242 185 80 / 8%); }
 
   .chip {
-    @apply inline-flex min-h-[36px] items-center rounded-full px-3.5 text-sm;
-    border: 1px solid var(--line);
-    background: rgb(255 255 255 / 5%);
+    @apply inline-flex min-h-[34px] items-center rounded-full px-3 text-[13px];
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
     color: var(--ink-soft);
     transition: border-color var(--dur), color var(--dur), background var(--dur);
   }
-  .chip:hover { border-color: var(--gold); color: var(--ink); }
-  .chip-dark { background: rgb(255 255 255 / 5%); border-color: var(--border); color: var(--text-2); }
+  .chip:hover { border-color: var(--accent); color: var(--ink); }
+  .chip-dark { background: rgb(255 255 255 / 12%); border-color: rgb(255 255 255 / 26%); color: #eaf8fb; }
   .chip-dark:hover { border-color: var(--gold); color: var(--text); }
   .badge {
     @apply inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide;
   }
   .section-title { @apply mb-4 text-2xl; }
+  .panel-light { background: transparent; padding: 0; }
   .rise { animation: rise 460ms var(--ease) both; }
 }
 
@@ -79,5 +80,6 @@
 .page-leave-to { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

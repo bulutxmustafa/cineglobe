@@ -26,7 +26,7 @@
   "search": {
     "label": "Ne izlemek istersin?",
     "placeholder": "Ne izlemek istersin? Örn. tek akşamda biten, tempolu bir film",
-    "button": "Bana Film Bul",
+    "button": "Öner",
     "type": "Tür",
     "types": {
       "both": "Hepsi",
@@ -160,7 +160,8 @@
     "details": "Ayrıntılar",
     "globeAlt": "Dönen küre",
     "wheelAlt": "Dönen afiş çarkı",
-    "cheer": "İşte bu! İyi seyirler 🍿"
+    "cheer": "İşte bu! İyi seyirler 🍿",
+    "headline": "Karar vermek yorucu. Çarkı biz çevirelim."
   },
   "auth": {
     "title": "Giriş",

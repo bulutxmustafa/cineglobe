@@ -34,7 +34,7 @@ const dateText = computed(() =>
         </span>
         <span v-if="rating" class="rating absolute bottom-2 left-2">★ {{ rating }}</span>
       </div>
-      <h3 class="mt-2.5 line-clamp-2 font-sans text-[0.95rem] font-semibold leading-snug">{{ name }}</h3>
+      <h3 class="mt-2.5 line-clamp-2 font-sans text-[0.85rem] font-semibold leading-snug">{{ name }}</h3>
     </NuxtLink>
     <p class="mt-0.5 text-[13px]" style="color: var(--ink-soft)">
       <span v-if="dateText">{{ dateText }}</span>

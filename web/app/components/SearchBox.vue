@@ -77,7 +77,7 @@ function pick(text: string) {
         @focus="focused = true"
         @blur="focused = false"
       />
-      <button type="submit" class="go"><span class="spark" aria-hidden="true">✨</span><span>{{ t('search.button') }}</span></button>
+      <button type="submit" class="go"><LogoMark :size="26" variant="default" class="spark" /><span>{{ t('search.button') }}</span></button>
     </div>
 
     <fieldset class="seg">
@@ -88,9 +88,8 @@ function pick(text: string) {
       </label>
     </fieldset>
 
-    <div v-if="examples" class="mt-4 flex flex-wrap items-center gap-2" :aria-label="t('search.tryLabel')">
-      <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--ink-faint)">{{ t('search.try') }}</span>
-      <button v-for="e in exampleList" :key="e" type="button" class="chip" @click="pick(e)">{{ e }}</button>
+    <div v-if="examples" class="mt-3 flex flex-wrap items-center gap-2" :aria-label="t('search.tryLabel')">
+      <button v-for="e in exampleList.slice(0, 2)" :key="e" type="button" class="chip chip-dark" @click="pick(e)">{{ e }}</button>
     </div>
   </form>
 </template>
@@ -99,24 +98,24 @@ function pick(text: string) {
 .panel {
   padding: 14px;
   border-radius: 20px;
-  background: rgb(23 37 54 / 92%);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  background: var(--box);
+  border: 1px solid rgb(255 255 255 / 16%);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 14px 30px rgb(0 0 0 / 30%);
 }
 .bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #0e1620;
+  background: #ffffff;
   border-radius: 14px;
   padding: 5px 5px 5px 16px;
-  border: 1px solid var(--border);
-  color: var(--text-2);
+  border: 2px solid transparent;
+  color: #5a7a88;
   transition: border-color var(--dur), box-shadow var(--dur);
 }
 .bar.focused {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgb(242 185 80 / 18%);
+  box-shadow: 0 0 0 3px rgb(242 185 80 / 30%);
 }
 .search-input {
   flex: 1;
@@ -125,11 +124,11 @@ function pick(text: string) {
   border: 0;
   outline: none;
   background: transparent;
-  font-size: 1rem;
-  color: var(--text);
+  font-size: 0.9rem;
+  color: #0d2b3a;
 }
 .search-input::placeholder {
-  color: #7f90a2;
+  color: #6f8a96;
 }
 .go {
   display: inline-flex;
@@ -141,7 +140,7 @@ function pick(text: string) {
   border-radius: 12px;
   cursor: pointer;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--accent-ink);
   background: var(--gold);
   box-shadow: 0 2px 0 #b9852a, 0 10px 20px rgb(0 0 0 / 30%);
@@ -152,13 +151,14 @@ function pick(text: string) {
   filter: brightness(1.07);
 }
 .go:hover .spark {
-  transform: rotate(18deg) scale(1.2);
+  transform: rotate(40deg) scale(1.12);
 }
 .go:active {
   transform: translateY(1px) scale(0.97);
   box-shadow: 0 0 0 #b9852a, 0 4px 8px rgb(0 0 0 / 30%);
 }
 .spark {
+  flex: none;
   display: inline-block;
   transition: transform 300ms var(--spring);
 }
@@ -168,8 +168,8 @@ function pick(text: string) {
   padding: 3px;
   gap: 2px;
   border-radius: 999px;
-  background: #0e1620;
-  border: 1px solid var(--border);
+  background: rgb(255 255 255 / 14%);
+  border: 1px solid rgb(255 255 255 / 22%);
 }
 .seg label {
   display: inline-flex;
@@ -178,10 +178,10 @@ function pick(text: string) {
   min-height: 38px;
   padding: 0 14px;
   border-radius: 999px;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  color: var(--text-2);
+  color: #e3f5f8;
   transition: background var(--dur), color var(--dur);
 }
 .seg label:hover {

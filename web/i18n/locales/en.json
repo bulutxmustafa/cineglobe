@@ -26,7 +26,7 @@
   "search": {
     "label": "What do you want to watch?",
     "placeholder": "What do you want to watch? e.g. a fast-paced movie that ends in one evening",
-    "button": "Find me a movie",
+    "button": "Suggest",
     "type": "Type",
     "types": {
       "both": "All",
@@ -160,7 +160,8 @@
     "details": "Details",
     "globeAlt": "Spinning globe",
     "wheelAlt": "Spinning poster wheel",
-    "cheer": "There it is! Enjoy 🍿"
+    "cheer": "There it is! Enjoy 🍿",
+    "headline": "Deciding is tiring. Let us spin the wheel."
   },
   "auth": {
     "title": "Sign in",
