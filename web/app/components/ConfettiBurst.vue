@@ -2,7 +2,7 @@
 // A short celebratory burst of confetti; re-fires whenever `fire` changes.
 const props = defineProps<{ fire: number }>()
 const pieces = ref<{ id: number; x: number; dx: number; rot: number; delay: number; color: string; size: number }[]>([])
-const colors = ['#f7cf6f', '#e39a2e', '#ffffff', '#ff8a5c', '#7dd3fc', '#f9a8d4']
+const colors = ['#5eead4', '#34d399', '#ffffff', '#ffd166', '#7dd3fc', '#a5b4fc']
 
 watch(
   () => props.fire,

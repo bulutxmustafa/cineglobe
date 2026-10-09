@@ -41,7 +41,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
       <ClientOnly><PosterWall :posters="posters" /></ClientOnly>
       <div
         class="absolute inset-0"
-        style="background: radial-gradient(ellipse at 50% 45%, rgb(42 17 33 / 82%) 0%, rgb(42 17 33 / 45%) 70%, rgb(42 17 33 / 15%) 100%), linear-gradient(180deg, rgb(42 17 33 / 0%) 60%, rgb(42 17 33 / 90%) 100%)"
+        style="background: radial-gradient(ellipse at 50% 45%, rgb(11 29 58 / 82%) 0%, rgb(11 29 58 / 45%) 70%, rgb(11 29 58 / 15%) 100%), linear-gradient(180deg, rgb(11 29 58 / 0%) 60%, rgb(11 29 58 / 90%) 100%)"
       />
       <div class="container-page relative py-12 text-center sm:py-20">
         <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]" style="background: var(--grad); color: #1c1306">
@@ -99,7 +99,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
           v-for="(step, i) in ($tm('home.how') as { t: string; d: string }[])"
           :key="i"
           class="rounded-[18px] border p-6"
-          :style="{ borderColor: 'transparent', background: ['linear-gradient(160deg,#fff1d6,#ffd9a8)', 'linear-gradient(160deg,#ffe1dc,#ffb8ab)', 'linear-gradient(160deg,#d8f3ee,#a6e3d8)'][i], boxShadow: '0 10px 26px rgb(120 60 20 / 14%)' }"
+          :style="{ borderColor: 'transparent', background: ['linear-gradient(160deg,#e3f8f0,#b4ebd6)', 'linear-gradient(160deg,#e1ecff,#b3cdf8)', 'linear-gradient(160deg,#dcf7f5,#a4e6e0)'][i], boxShadow: '0 10px 26px rgb(11 60 70 / 14%)' }"
         >
           <span class="inline-flex h-10 w-10 items-center justify-center rounded-full font-serif text-xl font-semibold" style="background: var(--grad); color: #1c1306">{{ i + 1 }}</span>
           <h3 class="mt-3 font-sans text-lg font-semibold">{{ $rt(step.t as any) }}</h3>

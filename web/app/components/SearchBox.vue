@@ -116,8 +116,8 @@ function pick(text: string) {
   color: var(--ink-soft);
 }
 .bar.focused {
-  border-color: #ff9a5c;
-  box-shadow: 0 0 0 4px rgb(255 154 92 / 30%);
+  border-color: #34d399;
+  box-shadow: 0 0 0 4px rgb(52 211 153 / 30%);
 }
 .search-input {
   flex: 1;
@@ -145,9 +145,9 @@ function pick(text: string) {
   cursor: pointer;
   font-weight: 700;
   font-size: 1rem;
-  color: #2a1306;
+  color: #04251d;
   background: var(--grad);
-  box-shadow: 0 8px 22px rgb(255 122 69 / 45%);
+  box-shadow: 0 8px 22px rgb(34 181 115 / 45%);
   transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
 }
 .go::after {
@@ -163,7 +163,7 @@ function pick(text: string) {
 }
 .go:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 12px 28px rgb(255 122 69 / 55%);
+  box-shadow: 0 12px 28px rgb(34 181 115 / 55%);
 }
 .go:hover .gomark {
   transform: rotate(40deg) scale(1.1);
@@ -223,7 +223,7 @@ function pick(text: string) {
   box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
 }
 .seg label:focus-within {
-  outline: 2px solid #e39a2e;
+  outline: 2px solid #34d399;
 }
 @media (max-width: 480px) {
   .go span {

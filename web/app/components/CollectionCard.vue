@@ -5,12 +5,12 @@ const props = defineProps<{ collection: Collection; index: number }>()
 const localePath = useLocalePath()
 const { locale } = useI18n()
 const palettes = [
-  ['#7a1f3d', '#e0533f'],
-  ['#0f5c63', '#25b3a5'],
-  ['#243b8f', '#5b8cf5'],
-  ['#146b4a', '#4cc184'],
-  ['#6b2377', '#e0518c'],
-  ['#8a4a0f', '#f5a93a'],
+  ['#0b2a5b', '#1d6fd1'],
+  ['#064e3b', '#10b981'],
+  ['#0e3a52', '#14b8a6'],
+  ['#1e2a78', '#4f6df5'],
+  ['#0f4c3a', '#4fcf9a'],
+  ['#12395c', '#38bdf8'],
 ]
 const bg = computed(() => {
   const [a, b] = palettes[(props.index - 1) % palettes.length]!
@@ -53,13 +53,13 @@ const { data: posters } = useFetch<string[]>(() => `${base}/collections/${props.
 <style scoped>
 .card {
   border: 1px solid rgb(255 255 255 / 22%);
-  box-shadow: 0 14px 32px rgb(60 20 30 / 28%);
+  box-shadow: 0 14px 32px rgb(8 30 60 / 30%);
   transition: transform 220ms var(--ease), border-color 220ms var(--ease), box-shadow 220ms var(--ease);
 }
 .card:hover {
   transform: translateY(-4px);
-  border-color: #ffd166;
-  box-shadow: 0 20px 40px rgb(60 20 30 / 38%);
+  border-color: #5eead4;
+  box-shadow: 0 20px 40px rgb(8 30 60 / 40%);
 }
 .num {
   font-family: var(--font-serif);

@@ -16,7 +16,7 @@ const columns = computed(() => {
 <template>
   <div class="wall" aria-hidden="true">
     <div v-for="(col, c) in columns" :key="c" class="col" :class="c % 2 ? 'down' : 'up'" :style="{ animationDuration: `${70 + c * 9}s` }">
-      <img v-for="(src, i) in col" :key="i" :src="src" alt="" loading="lazy" width="200" height="300" />
+      <img v-for="(src, i) in col" :key="i" :src="src" alt="" decoding="async" fetchpriority="low" width="200" height="300" />
     </div>
     <div class="veil" />
   </div>
