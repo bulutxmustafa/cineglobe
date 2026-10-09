@@ -85,7 +85,7 @@ function landed() {
         <div class="mx-auto mt-6 flex max-w-xl flex-wrap items-end justify-center gap-3 text-left">
           <div>
             <label for="lcol" class="mb-1 block text-sm font-medium text-white/80">{{ t('lucky.from') }}</label>
-            <select id="lcol" v-model="slug" class="min-h-[52px] rounded-[14px] border-0 bg-white px-3 text-[var(--ink)]" :disabled="spinning">
+            <select id="lcol" v-model="slug" class="min-h-[52px] rounded-[14px] border border-white/20 bg-[#161f33] px-3 text-white" :disabled="spinning">
               <option v-for="c in cols?.collections" :key="c.slug" :value="c.slug">{{ c.icon }} {{ c.name }}</option>
             </select>
           </div>
@@ -101,7 +101,7 @@ function landed() {
       <div
         v-else-if="pick && shown"
         class="reveal mx-auto grid max-w-3xl gap-6 rounded-[20px] border p-5 sm:grid-cols-[220px_1fr]"
-        style="border-color: var(--line-strong); background: #d9eadf; box-shadow: 0 18px 44px rgb(60 40 10 / 14%)"
+        style="border-color: var(--line-strong); background: #161f33; box-shadow: 0 18px 44px rgb(60 40 10 / 14%)"
       >
         <TitleCard :item="pick" />
         <div>

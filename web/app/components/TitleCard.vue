@@ -16,7 +16,7 @@ const dateText = computed(() =>
 
 <template>
   <article class="group relative flex flex-col">
-    <FavoriteButton :item="item" compact class="absolute right-2 top-2 z-10 !bg-white/90" />
+    <FavoriteButton :item="item" compact class="absolute right-2 top-2 z-10 !bg-[#0b0f19]/70" />
     <NuxtLink :to="localePath(`/title/${item.media_type}/${item.tmdb_id}`)" class="block">
       <div class="relative aspect-[2/3] overflow-hidden rounded-[6px]" style="background: var(--line); box-shadow: var(--shadow)">
         <img
@@ -33,7 +33,7 @@ const dateText = computed(() =>
         </div>
         <span
           class="badge absolute left-2 top-2"
-          :style="item.media_type === 'tv' ? 'background: var(--ink); color: #fff' : 'background: #fff; color: var(--ink)'"
+          :style="item.media_type === 'tv' ? 'background: #8b5cf6; color: #fff' : 'background: rgb(255 255 255 / 92%); color: #0b0f19'"
         >{{ item.media_type === 'tv' ? t('title.tv') : t('title.movie') }}</span>
       </div>
       <h3 class="mt-2 line-clamp-2 font-sans text-[0.95rem] font-semibold leading-snug">{{ name }}</h3>

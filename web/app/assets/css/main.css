@@ -38,9 +38,9 @@
     @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] px-4 text-sm font-medium transition-colors;
     transition-duration: var(--dur);
   }
-  .btn-primary { background: #1c7d57; color: #fff; box-shadow: 0 4px 0 #14573d; font-weight: 700; }
-  .btn-primary:hover { background: #218c63; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #14573d; }
+  .btn-primary { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; font-weight: 700; box-shadow: 0 0 22px rgb(236 72 153 / 40%), 0 6px 18px rgb(139 92 246 / 35%); }
+  .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 0 32px rgb(236 72 153 / 60%), 0 8px 22px rgb(139 92 246 / 45%); }
+  .btn-primary:active { transform: translateY(1px) scale(0.98); }
   .btn-glass { background: rgb(255 255 255 / 12%); color: #fff; border: 1px solid rgb(255 255 255 / 28%); }
   .btn-glass:hover { background: rgb(255 255 255 / 22%); }
   .btn-quiet { border: 1px solid var(--line-strong); background: var(--surface); }
@@ -53,7 +53,7 @@
     transition: border-color var(--dur), color var(--dur);
   }
   .chip:hover { border-color: var(--ink); color: var(--ink); }
-  .chip-dark { background: rgb(255 255 255 / 10%); border-color: rgb(255 255 255 / 25%); color: #fff; }
+  .chip-dark { background: rgb(255 255 255 / 8%); border-color: rgb(255 255 255 / 20%); color: #dbe3f3; }
   .chip-dark:hover { background: rgb(255 255 255 / 20%); border-color: #fff; color: #fff; }
   .badge {
     @apply inline-flex items-center rounded-[3px] px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide;

@@ -60,7 +60,7 @@ function pick(text: string) {
 </script>
 
 <template>
-  <form role="search" :class="dark ? 'panel' : ''" @submit.prevent="go()">
+  <form role="search" class="panel" @submit.prevent="go()">
     <label for="q" class="sr-only">{{ t('search.label') }}</label>
     <div class="bar" :class="{ focused }">
       <svg class="mag" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -77,10 +77,10 @@ function pick(text: string) {
         @focus="focused = true"
         @blur="focused = false"
       />
-      <button type="submit" class="go"><LogoMark :size="26" class="gomark" /><span>{{ t('search.button') }}</span></button>
+      <button type="submit" class="go"><span class="gomark" aria-hidden="true">✨</span><span>{{ t('search.button') }}</span></button>
     </div>
 
-    <fieldset class="seg" :class="{ dark }">
+    <fieldset class="seg dark">
       <legend class="sr-only">{{ t('search.type') }}</legend>
       <label v-for="opt in ['both', 'movie', 'tv']" :key="opt" :class="{ on: media === opt }">
         <input v-model="media" type="radio" name="media" :value="opt" class="sr-only" />
@@ -89,8 +89,8 @@ function pick(text: string) {
     </fieldset>
 
     <div v-if="examples" class="mt-4 flex flex-wrap items-center gap-2" :aria-label="t('search.tryLabel')">
-      <span class="text-xs font-medium uppercase tracking-wider" :style="{ color: dark ? 'rgb(255 255 255 / 55%)' : 'var(--ink-faint)' }">{{ t('search.try') }}</span>
-      <button v-for="e in exampleList" :key="e" type="button" class="chip" :class="{ 'chip-dark': dark }" @click="pick(e)">{{ e }}</button>
+      <span class="text-xs font-medium uppercase tracking-wider" style="color: rgb(255 255 255 / 55%)">{{ t('search.try') }}</span>
+      <button v-for="e in exampleList" :key="e" type="button" class="chip chip-dark" @click="pick(e)">{{ e }}</button>
     </div>
   </form>
 </template>
@@ -99,24 +99,26 @@ function pick(text: string) {
 .panel {
   padding: 14px;
   border-radius: 22px;
-  background: #1b3a5c;
-  border: 1px solid #2d5580;
-  box-shadow: 0 20px 44px rgb(6 16 30 / 40%);
+  background: rgb(255 255 255 / 7%);
+  border: 1px solid rgb(255 255 255 / 14%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 .bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fff;
+  background: rgb(11 15 25 / 55%);
   border-radius: 16px;
   padding: 6px 6px 6px 16px;
-  border: 2px solid transparent;
+  border: 1px solid rgb(255 255 255 / 16%);
   transition: border-color var(--dur), box-shadow var(--dur);
-  color: var(--ink-soft);
+  color: rgb(255 255 255 / 60%);
 }
 .bar.focused {
-  border-color: #e9b44c;
-  box-shadow: 0 0 0 4px rgb(233 180 76 / 35%);
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 4px rgb(139 92 246 / 30%), 0 0 28px rgb(139 92 246 / 35%);
 }
 .search-input {
   flex: 1;
@@ -126,47 +128,54 @@ function pick(text: string) {
   outline: none;
   background: transparent;
   font-size: 1rem;
-  color: var(--ink);
+  color: #fff;
 }
 .search-input::placeholder {
-  color: #8a7e70;
+  color: rgb(255 255 255 / 50%);
 }
 .go {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 48px;
-  padding: 0 22px 0 14px;
+  padding: 0 24px;
   border: 0;
   border-radius: 14px;
   cursor: pointer;
   font-weight: 700;
   font-size: 1rem;
   color: #fff;
-  background: #1c7d57;
-  box-shadow: 0 4px 0 #14573d;
-  transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  box-shadow: 0 0 24px rgb(236 72 153 / 50%), 0 6px 20px rgb(139 92 246 / 40%);
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), filter 200ms var(--ease);
+  animation: glow 2.8s ease-in-out infinite;
 }
 .go:hover {
-  transform: translateY(-1px);
-  background: #218c63;
+  transform: translateY(-2px) scale(1.04);
+  filter: brightness(1.12);
+  box-shadow: 0 0 36px rgb(236 72 153 / 70%), 0 8px 26px rgb(139 92 246 / 55%);
 }
 .go:hover .gomark {
-  transform: rotate(40deg) scale(1.1);
+  display: inline-block;
+  font-size: 1.15rem;
+  transition: transform 320ms var(--ease);
+}
+@keyframes glow {
+  50% {
+    box-shadow: 0 0 34px rgb(236 72 153 / 70%), 0 6px 22px rgb(139 92 246 / 50%);
+  }
 }
 .go:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #14573d;
+  transform: scale(0.97);
 }
 .gomark {
   transition: transform 320ms var(--ease);
   filter: drop-shadow(0 2px 3px rgb(42 19 6 / 30%));
 }
 @media (prefers-reduced-motion: reduce) {
-  .go,
-  .gomark {
-    transition: none;
+  .go {
+    animation: none;
   }
 }
 .seg {
@@ -175,10 +184,8 @@ function pick(text: string) {
   padding: 4px;
   gap: 2px;
   border-radius: 999px;
-  background: var(--line);
-}
-.seg.dark {
-  background: #12263f;
+  background: rgb(11 15 25 / 55%);
+  border: 1px solid rgb(255 255 255 / 12%);
 }
 .seg label {
   display: inline-flex;
@@ -197,20 +204,17 @@ function pick(text: string) {
   color: rgb(255 255 255 / 80%);
 }
 .seg label.on {
-  background: #fff;
-  color: var(--ink);
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+  box-shadow: 0 0 16px rgb(236 72 153 / 40%);
 }
 .seg label:focus-within {
-  outline: 2px solid #e9b44c;
+  outline: 2px solid #a78bfa;
 }
 @media (max-width: 480px) {
-  .go span {
-    display: none;
-  }
   .go {
-    padding: 0 14px;
+    padding: 0 16px;
   }
 }
 </style>

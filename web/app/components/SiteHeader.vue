@@ -8,7 +8,7 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 10%); background: rgb(18 38 63 / 97%)">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 8%); background: rgb(11 15 25 / 80%)">
     <div class="container-page flex h-16 items-center gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="CINEGLOB">
         <LogoMark :size="34" />
