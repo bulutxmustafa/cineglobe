@@ -25,7 +25,7 @@ if (error.value?.statusCode === 404) {
 
 const name = computed(() => data.value?.collection.name ?? '')
 useSeoMeta({
-  title: () => (name.value ? `${name.value} | CINEGLOB` : 'CINEGLOB'),
+  title: () => (name.value ? `${name.value} | FilmPusula` : 'FilmPusula'),
   description: () => data.value?.collection.description ?? '',
   ogTitle: () => name.value,
   ogDescription: () => data.value?.collection.description ?? '',

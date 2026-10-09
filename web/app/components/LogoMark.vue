@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// CINEGLOB mark: a globe (meridians) with a play triangle, in sky blue and emerald.
+// FilmPusula mark: a globe (meridians) with a play triangle, in sky blue and emerald.
 withDefaults(defineProps<{ size?: number; variant?: string }>(), { size: 34, variant: 'default' })
 </script>
 

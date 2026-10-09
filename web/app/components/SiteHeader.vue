@@ -12,9 +12,9 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 <template>
   <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: var(--border); background: rgb(11 31 58 / 92%)">
     <div class="container-page flex h-16 items-center gap-4">
-      <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="CINEGLOB">
+      <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="FilmPusula">
         <LogoMark :size="34" />
-        <span class="logo text-[1.15rem] font-extrabold tracking-[0.14em]">CINEGLOB</span>
+        <span class="logo text-[1.15rem] font-extrabold tracking-[0.14em]">FilmPusula</span>
       </NuxtLink>
       <nav class="hidden items-center gap-1.5 text-sm sm:flex" :aria-label="$t('nav.main')">
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>

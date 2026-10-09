@@ -5,7 +5,7 @@ const router = useRouter()
 const { login, register } = useAuth()
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, follow' }] })
-useSeoMeta({ title: () => `${t('auth.title')} | CINEGLOB` })
+useSeoMeta({ title: () => `${t('auth.title')} | FilmPusula` })
 
 const mode = ref<'login' | 'register'>('login')
 const email = ref('')

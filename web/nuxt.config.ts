@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       meta: [
         { name: 'theme-color', content: '#0b1f3a' },
-        { name: 'application-name', content: 'CINEGLOB' },
+        { name: 'application-name', content: 'FilmPusula' },
       ],
     },
   },

@@ -11,7 +11,7 @@ useSeoMeta({
   ogTitle: () => t('site.homeTitle'),
   ogDescription: () => t('site.homeDescription'),
   ogType: 'website',
-  ogSiteName: 'CINEGLOB',
+  ogSiteName: 'FilmPusula',
 })
 useHead({
   script: [
@@ -20,8 +20,8 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: 'CINEGLOB',
-        alternateName: 'CINEGLOB Film Önerileri ve Keşif Platformu',
+        name: 'FilmPusula',
+        alternateName: 'FilmPusula Film Önerileri ve Keşif Platformu',
         url: config.public.siteUrl,
       }),
     },

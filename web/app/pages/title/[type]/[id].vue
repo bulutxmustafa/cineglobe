@@ -39,7 +39,7 @@ const name = computed(() => data.value?.display_title || data.value?.title || ''
 const year = computed(() => yearOf(data.value?.release_date))
 const description = computed(() => (data.value?.display_overview || t('title.noOverview')).slice(0, 160))
 useSeoMeta({
-  title: () => `${name.value}${year.value ? ` (${year.value})` : ''} | CINEGLOB`,
+  title: () => `${name.value}${year.value ? ` (${year.value})` : ''} | FilmPusula`,
   description: () => description.value,
   ogTitle: () => name.value,
   ogDescription: () => description.value,

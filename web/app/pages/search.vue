@@ -11,7 +11,7 @@ const { t, locale } = useI18n()
 const base = useApiBase()
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, follow' }] })
-useSeoMeta({ title: () => `${t('search.title')} | CINEGLOB` })
+useSeoMeta({ title: () => `${t('search.title')} | FilmPusula` })
 
 const query = computed(() => String(route.query.q ?? '').trim())
 const mediaType = computed(() => String(route.query.type ?? 'both'))

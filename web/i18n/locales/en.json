@@ -1,10 +1,10 @@
 {
   "site": {
-    "name": "CINEGLOB",
+    "name": "FilmPusula",
     "subtitle": "Movie Recommendations and Discovery Platform",
     "tagline": "Movie recommendations and discovery platform. If you can't decide what to watch, you're in the right place.",
-    "homeTitle": "CINEGLOB {'|'} Movie Recommendations and Discovery Platform",
-    "homeDescription": "Can't decide what to watch? Describe the movie or series you feel like in your own words and CINEGLOB finds recommendations for you. Curated collections and upcoming releases are here too."
+    "homeTitle": "FilmPusula {'|'} Movie Recommendations and Discovery Platform",
+    "homeDescription": "Can't decide what to watch? Describe the movie or series you feel like in your own words and FilmPusula finds recommendations for you. Curated collections and upcoming releases are here too."
   },
   "nav": {
     "main": "Main navigation",
@@ -74,7 +74,7 @@
   },
   "collections": {
     "title": "Collections",
-    "metaTitle": "Movie and Series Collections {'|'} CINEGLOB",
+    "metaTitle": "Movie and Series Collections {'|'} FilmPusula",
     "metaDescription": "Movie and series collections made by mood: never boring, immersive, snack-sized watches and more.",
     "lead": "Lists made by mood, with spoiler-free reasons.",
     "filterAll": "All",
@@ -86,7 +86,7 @@
   },
   "upcoming": {
     "title": "Upcoming releases",
-    "metaTitle": "Upcoming Movies and Series {'|'} CINEGLOB",
+    "metaTitle": "Upcoming Movies and Series {'|'} FilmPusula",
     "metaDescription": "Movies hitting theatres and series starting soon, sorted by date.",
     "lead": "Sorted by release date (Turkey dates first). Undated titles come last.",
     "groups": {
@@ -149,7 +149,7 @@
   },
   "lucky": {
     "title": "Lucky Pick",
-    "metaTitle": "Lucky Pick: what should I watch tonight? {'|'} CINEGLOB",
+    "metaTitle": "Lucky Pick: what should I watch tonight? {'|'} FilmPusula",
     "metaDescription": "Can't decide? Pick a collection and we choose a random movie or series for you.",
     "lead": "Deciding is tiring. Pick a collection, spin the wheel and let tonight be decided!",
     "from": "Collection",

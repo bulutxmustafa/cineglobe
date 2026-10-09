@@ -1,10 +1,10 @@
 {
   "site": {
-    "name": "CINEGLOB",
+    "name": "FilmPusula",
     "subtitle": "Film Önerileri ve Keşif Platformu",
     "tagline": "Film Önerileri ve Keşif Platformu. Ne izleyeceğine karar veremiyorsan doğru yerdesin.",
-    "homeTitle": "CINEGLOB {'|'} Film Önerileri ve Keşif Platformu",
-    "homeDescription": "Ne izleyeceğine karar veremiyorsan doğru yerdesin. Aradığın filmi ya da diziyi kendi cümlenle anlat; CINEGLOB sana film ve dizi önerileri bulsun. Hazır koleksiyonlar ve yakında çıkacak yapımlar da burada."
+    "homeTitle": "FilmPusula {'|'} Film Önerileri ve Keşif Platformu",
+    "homeDescription": "Ne izleyeceğine karar veremiyorsan doğru yerdesin. Aradığın filmi ya da diziyi kendi cümlenle anlat; FilmPusula sana film ve dizi önerileri bulsun. Hazır koleksiyonlar ve yakında çıkacak yapımlar da burada."
   },
   "nav": {
     "main": "Ana gezinme",
@@ -74,7 +74,7 @@
   },
   "collections": {
     "title": "Koleksiyonlar",
-    "metaTitle": "Film ve Dizi Koleksiyonları {'|'} CINEGLOB",
+    "metaTitle": "Film ve Dizi Koleksiyonları {'|'} FilmPusula",
     "metaDescription": "Ruh haline göre hazırlanmış film ve dizi koleksiyonları: sıkmayanlar, içine çekenler, atıştırmalık izlemeler ve daha fazlası.",
     "lead": "Ruh haline göre hazırlanmış, spoiler içermeyen gerekçelerle sunulan listeler.",
     "filterAll": "Hepsi",
@@ -86,7 +86,7 @@
   },
   "upcoming": {
     "title": "Yakında çıkacaklar",
-    "metaTitle": "Yakında Çıkacak Filmler ve Diziler {'|'} CINEGLOB",
+    "metaTitle": "Yakında Çıkacak Filmler ve Diziler {'|'} FilmPusula",
     "metaDescription": "Türkiye'de yakında vizyona girecek filmler ve yeni başlayacak diziler, tarihe göre sıralı.",
     "lead": "Türkiye vizyon tarihlerine göre sıralanır. Tarihi belli olmayanlar en altta.",
     "groups": {
@@ -149,7 +149,7 @@
   },
   "lucky": {
     "title": "Şans Seçici",
-    "metaTitle": "Şans Seçici: Bu akşam ne izlesem? {'|'} CINEGLOB",
+    "metaTitle": "Şans Seçici: Bu akşam ne izlesem? {'|'} FilmPusula",
     "metaDescription": "Karar veremiyor musun? Bir koleksiyon seç, biz sana rastgele bir film ya da dizi seçelim.",
     "lead": "Karar vermek yorucu. Bir koleksiyon seç, çarkı çevir, bu akşamın filmi belli olsun!",
     "from": "Koleksiyon",

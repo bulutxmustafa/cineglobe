@@ -4,7 +4,7 @@ import type { TitleItem } from '~/composables/useApi'
 const { t } = useI18n()
 const { items } = useFavorites()
 useHead({ meta: [{ name: 'robots', content: 'noindex, follow' }] })
-useSeoMeta({ title: () => `${t('fav.title')} | CINEGLOB` })
+useSeoMeta({ title: () => `${t('fav.title')} | FilmPusula` })
 
 const list = computed(() => items.value.map((f) => ({ ...f, display_title: f.title }) as TitleItem))
 </script>

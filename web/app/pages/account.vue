@@ -5,7 +5,7 @@ const router = useRouter()
 const { me, ready, refresh, logout } = useAuth()
 
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
-useSeoMeta({ title: () => `${t('auth.account')} | CINEGLOB` })
+useSeoMeta({ title: () => `${t('auth.account')} | FilmPusula` })
 
 onMounted(async () => {
   if (!ready.value) await refresh()

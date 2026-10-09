@@ -32,7 +32,7 @@ const { data: films, pending } = await useFetch<{ results: TitleItem[] }>(`${bas
 
 const description = computed(() => (person.value?.biography || '').slice(0, 160))
 useSeoMeta({
-  title: () => `${person.value?.name} | CINEGLOB`,
+  title: () => `${person.value?.name} | FilmPusula`,
   description: () => description.value,
   ogTitle: () => person.value?.name,
   ogDescription: () => description.value,
