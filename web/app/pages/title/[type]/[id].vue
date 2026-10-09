@@ -59,6 +59,11 @@ useHead({
           description: data.value?.display_overview || undefined,
           datePublished: data.value?.release_date || undefined,
           url: `${config.public.siteUrl}${route.path}`,
+          genre: data.value?.genres?.map((g) => g.name),
+          aggregateRating:
+            data.value?.vote_average && data.value?.vote_count
+              ? { '@type': 'AggregateRating', ratingValue: Number(data.value.vote_average.toFixed(1)), ratingCount: data.value.vote_count, bestRating: 10, worstRating: 0 }
+              : undefined,
         }),
       ),
     },

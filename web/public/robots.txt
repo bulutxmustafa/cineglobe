@@ -5,3 +5,5 @@ Disallow: /en/search
 Disallow: /tr/account
 Disallow: /en/account
 Disallow: /s/
+
+Sitemap: https://filmpusula.vercel.app/sitemap.xml
