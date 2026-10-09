@@ -103,9 +103,12 @@ useHead({
           <h2 class="mt-6 text-xl">{{ t('title.overview') }}</h2>
           <p class="mt-2 max-w-2xl leading-relaxed">{{ data.display_overview || t('title.noOverview') }}</p>
 
-          <NuxtLink :to="localePath({ path: '/search', query: { q: name } })" class="btn btn-quiet mt-6">
-            {{ t('title.more') }}
-          </NuxtLink>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <FavoriteButton :item="{ media_type: data.media_type, tmdb_id: data.tmdb_id, title: data.title, display_title: data.display_title, poster_url: data.poster_url, release_date: data.release_date ?? undefined, vote_average: data.vote_average ?? undefined }" />
+            <NuxtLink :to="localePath({ path: '/search', query: { q: name } })" class="btn btn-quiet">
+              {{ t('title.more') }}
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>

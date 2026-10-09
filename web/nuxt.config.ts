@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tokens.css', '~/assets/css/main.css'],
   runtimeConfig: {
     public: {
-      apiBase: 'http://127.0.0.1:8000/api/v1',
+      apiBase: 'http://localhost:8000/api/v1',
       siteUrl,
     },
   },
@@ -42,6 +42,7 @@ export default defineNuxtConfig({
     '/*/title/**': { swr: 86400 },
     '/*/person/**': { swr: 86400 },
     '/*/search': { ssr: false },
+    '/*/account': { ssr: false },
   },
   typescript: { strict: true },
 })

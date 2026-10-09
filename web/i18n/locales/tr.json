@@ -13,7 +13,9 @@
     "collections": "Koleksiyonlar",
     "upcoming": "Yakında çıkacaklar",
     "search": "Ara",
-    "language": "Switch to English"
+    "language": "Switch to English",
+    "favorites": "Favoriler",
+    "lucky": "Şans Seçici"
   },
   "hero": {
     "eyebrow": "Film önerileri ve keşif platformu",
@@ -25,7 +27,11 @@
     "placeholder": "Ne izlemek istersin? Örn. tek akşamda biten, tempolu bir film",
     "button": "Öner",
     "type": "Tür",
-    "types": { "both": "Hepsi", "movie": "Film", "tv": "Dizi" },
+    "types": {
+      "both": "Hepsi",
+      "movie": "Film",
+      "tv": "Dizi"
+    },
     "tryLabel": "Örnek aramalar",
     "examples": [
       "Kısa bölümlü, hafif, komik bir dizi",
@@ -50,9 +56,18 @@
     "allUpcoming": "Tüm takvim",
     "howTitle": "Nasıl çalışır?",
     "how": [
-      { "t": "Cümleni yaz", "d": "Tür, ruh hali, süre, dönem… Aklındakini kendi kelimelerinle anlat." },
-      { "t": "Önerileri gör", "d": "Her önerinin yanında neden uygun olduğu yazar." },
-      { "t": "Karar ver", "d": "Koleksiyonlara göz at, yakında çıkacakları takip et." }
+      {
+        "t": "Cümleni yaz",
+        "d": "Tür, ruh hali, süre, dönem… Aklındakini kendi kelimelerinle anlat."
+      },
+      {
+        "t": "Önerileri gör",
+        "d": "Her önerinin yanında neden uygun olduğu yazar."
+      },
+      {
+        "t": "Karar ver",
+        "d": "Koleksiyonlara göz at, yakında çıkacakları takip et."
+      }
     ]
   },
   "collections": {
@@ -101,7 +116,11 @@
     "knownFor": "En bilinen işleri",
     "filmography": "Filmografi",
     "born": "Doğum",
-    "sort": { "newest": "En güncel", "oldest": "Kronolojik", "rating": "En iyi" },
+    "sort": {
+      "newest": "En güncel",
+      "oldest": "Kronolojik",
+      "rating": "En iyi"
+    },
     "notFound": "Bu kişi bulunamadı."
   },
   "state": {
@@ -117,5 +136,41 @@
     "title": "Sayfa bulunamadı",
     "body": "Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.",
     "home": "Ana sayfaya dön"
+  },
+  "fav": {
+    "title": "Favorilerim",
+    "lead": "Beğendiklerini buraya kaydet. Favoriler bu tarayıcıda saklanır; hesap açarsan defterine taşınır.",
+    "add": "Favoriye ekle",
+    "remove": "Favorilerden çıkar",
+    "saved": "Favorilerde"
+  },
+  "lucky": {
+    "title": "Şans Seçici",
+    "metaTitle": "Şans Seçici: Bu akşam ne izlesem? {'|'} CINEGLOB",
+    "metaDescription": "Karar veremiyor musun? Bir koleksiyon seç, biz sana rastgele bir film ya da dizi seçelim.",
+    "lead": "Karar veremiyor musun? Bir koleksiyon seç, sana rastgele bir yapım seçelim.",
+    "from": "Koleksiyon",
+    "go": "Şansımı dene",
+    "again": "Bir tane daha",
+    "spinning": "Seçiliyor…",
+    "tonight": "Bu akşam bu",
+    "details": "Ayrıntılar"
+  },
+  "auth": {
+    "title": "Giriş",
+    "login": "Giriş yap",
+    "register": "Hesap aç",
+    "account": "Hesabım",
+    "logout": "Çıkış yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "passwordHint": "En az 8 karakter.",
+    "adult": "18 yaşından büyük olduğumu onaylıyorum.",
+    "needAdult": "Hesap açmak için 18 yaşından büyük olduğunu onaylaman gerekiyor.",
+    "failed": "İşlem yapılamadı. Bilgilerini kontrol edip tekrar dene.",
+    "optional": "Hesap isteğe bağlı: keşfetmek için gerekmez. Hesapla favorilerin ve defterin her cihazda seninle olur.",
+    "toRegister": "Hesabın yok mu? Ücretsiz hesap aç",
+    "toLogin": "Zaten hesabın var mı? Giriş yap",
+    "signedInAs": "Giriş yapılan hesap"
   }
 }

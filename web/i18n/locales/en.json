@@ -13,7 +13,9 @@
     "collections": "Collections",
     "upcoming": "Upcoming",
     "search": "Search",
-    "language": "Türkçe'ye geç"
+    "language": "Türkçe'ye geç",
+    "favorites": "Favourites",
+    "lucky": "Lucky Pick"
   },
   "hero": {
     "eyebrow": "Movie recommendations and discovery platform",
@@ -25,7 +27,11 @@
     "placeholder": "What do you want to watch? e.g. a fast-paced movie that ends in one evening",
     "button": "Suggest",
     "type": "Type",
-    "types": { "both": "All", "movie": "Movies", "tv": "Series" },
+    "types": {
+      "both": "All",
+      "movie": "Movies",
+      "tv": "Series"
+    },
     "tryLabel": "Example searches",
     "examples": [
       "A light, funny series with short episodes",
@@ -50,9 +56,18 @@
     "allUpcoming": "Full calendar",
     "howTitle": "How it works",
     "how": [
-      { "t": "Write your sentence", "d": "Genre, mood, length, era… say it in your own words." },
-      { "t": "See the picks", "d": "Every suggestion says why it fits." },
-      { "t": "Decide", "d": "Browse collections and follow what is coming." }
+      {
+        "t": "Write your sentence",
+        "d": "Genre, mood, length, era… say it in your own words."
+      },
+      {
+        "t": "See the picks",
+        "d": "Every suggestion says why it fits."
+      },
+      {
+        "t": "Decide",
+        "d": "Browse collections and follow what is coming."
+      }
     ]
   },
   "collections": {
@@ -101,7 +116,11 @@
     "knownFor": "Best known for",
     "filmography": "Filmography",
     "born": "Born",
-    "sort": { "newest": "Newest", "oldest": "Chronological", "rating": "Best rated" },
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Chronological",
+      "rating": "Best rated"
+    },
     "notFound": "This person was not found."
   },
   "state": {
@@ -117,5 +136,41 @@
     "title": "Page not found",
     "body": "The page may have moved or never existed.",
     "home": "Back to home"
+  },
+  "fav": {
+    "title": "My favourites",
+    "lead": "Save what you like here. Favourites stay in this browser; if you sign up they move to your notebook.",
+    "add": "Add to favourites",
+    "remove": "Remove from favourites",
+    "saved": "In favourites"
+  },
+  "lucky": {
+    "title": "Lucky Pick",
+    "metaTitle": "Lucky Pick: what should I watch tonight? {'|'} CINEGLOB",
+    "metaDescription": "Can't decide? Pick a collection and we choose a random movie or series for you.",
+    "lead": "Can't decide? Pick a collection and we choose something at random.",
+    "from": "Collection",
+    "go": "Try my luck",
+    "again": "One more",
+    "spinning": "Picking…",
+    "tonight": "Tonight's pick",
+    "details": "Details"
+  },
+  "auth": {
+    "title": "Sign in",
+    "login": "Sign in",
+    "register": "Create account",
+    "account": "My account",
+    "logout": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "adult": "I confirm I am over 18.",
+    "needAdult": "You need to confirm you are over 18 to sign up.",
+    "failed": "Something went wrong. Check your details and try again.",
+    "optional": "An account is optional: you don't need one to discover. With one, your favourites and notebook follow you across devices.",
+    "toRegister": "No account yet? Create a free one",
+    "toLogin": "Already have an account? Sign in",
+    "signedInAs": "Signed in as"
   }
 }

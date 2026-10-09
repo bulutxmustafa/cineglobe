@@ -15,7 +15,8 @@ const dateText = computed(() =>
 </script>
 
 <template>
-  <article class="group flex flex-col">
+  <article class="group relative flex flex-col">
+    <FavoriteButton :item="item" compact class="absolute right-2 top-2 z-10 !bg-white/90" />
     <NuxtLink :to="localePath(`/title/${item.media_type}/${item.tmdb_id}`)" class="block">
       <div class="relative aspect-[2/3] overflow-hidden rounded-[6px]" style="background: var(--line); box-shadow: var(--shadow)">
         <img

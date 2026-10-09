@@ -6,9 +6,10 @@ $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Env
 
 $env:DATABASE_URL = "sqlite:///dev_local.sqlite3"
 $env:CACHE_BACKEND = "locmem"
+$env:CSRF_TRUSTED_ORIGINS = "http://localhost:3000"
 Push-Location "$root\backend"
 & "$root\.venv\Scripts\python.exe" manage.py migrate -v 0
-Start-Process -FilePath "$root\.venv\Scripts\python.exe" -ArgumentList "manage.py runserver 8000 --noreload" -WindowStyle Minimized
+Start-Process -FilePath "$root\.venv\Scripts\python.exe" -ArgumentList "manage.py runserver localhost:8000 --noreload" -WindowStyle Minimized
 Pop-Location
 
 Push-Location "$root\web"

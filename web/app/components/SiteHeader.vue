@@ -2,6 +2,8 @@
 const localePath = useLocalePath()
 const { locale } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
+const { me, ready, refresh } = useAuth()
+onMounted(() => { if (!ready.value) refresh() })
 const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 'tr'))
 </script>
 
@@ -15,9 +17,14 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
         <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
         <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
+        <NuxtLink :to="localePath('/lucky')" class="nav-link">{{ $t('nav.lucky') }}</NuxtLink>
+        <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
       </nav>
       <div class="ml-auto flex items-center gap-2">
         <NuxtLink :to="localePath('/search')" class="btn btn-quiet">{{ $t('nav.search') }}</NuxtLink>
+        <NuxtLink :to="localePath(me ? '/account' : '/login')" class="btn btn-quiet">
+          {{ me ? $t('auth.account') : $t('auth.login') }}
+        </NuxtLink>
         <a
           :href="switchLocalePath(otherCode)"
           class="btn btn-quiet !px-3 uppercase"
@@ -30,6 +37,8 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
       <NuxtLink :to="localePath('/')" class="nav-link py-2">{{ $t('nav.discover') }}</NuxtLink>
       <NuxtLink :to="localePath('/collections')" class="nav-link py-2">{{ $t('nav.collections') }}</NuxtLink>
       <NuxtLink :to="localePath('/upcoming')" class="nav-link py-2">{{ $t('nav.upcoming') }}</NuxtLink>
+      <NuxtLink :to="localePath('/lucky')" class="nav-link py-2">{{ $t('nav.lucky') }}</NuxtLink>
+      <NuxtLink :to="localePath('/favorites')" class="nav-link py-2">{{ $t('nav.favorites') }}</NuxtLink>
     </nav>
   </header>
 </template>
