@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /tr/search
+Disallow: /en/search
+Disallow: /tr/account
+Disallow: /en/account
+Disallow: /s/

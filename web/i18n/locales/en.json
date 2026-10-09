@@ -1,0 +1,121 @@
+{
+  "site": {
+    "name": "CINEGLOB",
+    "subtitle": "Movie Recommendations and Discovery Platform",
+    "tagline": "Movie recommendations and discovery platform. If you can't decide what to watch, you're in the right place.",
+    "homeTitle": "CINEGLOB {'|'} Movie Recommendations and Discovery Platform",
+    "homeDescription": "Can't decide what to watch? Describe the movie or series you feel like in your own words and CINEGLOB finds recommendations for you. Curated collections and upcoming releases are here too."
+  },
+  "nav": {
+    "main": "Main navigation",
+    "skip": "Skip to content",
+    "discover": "Discover",
+    "collections": "Collections",
+    "upcoming": "Upcoming",
+    "search": "Search",
+    "language": "Türkçe'ye geç"
+  },
+  "hero": {
+    "eyebrow": "Movie recommendations and discovery platform",
+    "title": "If you can't decide what to watch, you're in the right place.",
+    "lead": "Write what you feel like in your own words: “a light short-episode series” or “a thriller with a twist ending”. We find it and tell you why we picked it."
+  },
+  "search": {
+    "label": "What do you want to watch?",
+    "placeholder": "What do you want to watch? e.g. a fast-paced movie that ends in one evening",
+    "button": "Suggest",
+    "type": "Type",
+    "types": { "both": "All", "movie": "Movies", "tv": "Series" },
+    "tryLabel": "Example searches",
+    "examples": [
+      "A light, funny series with short episodes",
+      "A thriller with a twist ending",
+      "A warm family movie for the weekend",
+      "A crime series you can't stop watching"
+    ],
+    "title": "Search results",
+    "searching": "Thinking…",
+    "resultsFor": "Recommendations for “{query}”",
+    "empty": "We found nothing for that sentence. Try other words or a clearer description.",
+    "aiQuota": "AI search is used up for today. Classic search is on and results still come.",
+    "aiFallback": "The AI did not answer just now. Showing results from classic search.",
+    "error": "Search is unavailable right now. Please try again shortly."
+  },
+  "home": {
+    "collections": "Ready-made collections",
+    "collectionsLead": "Lists picked by mood and checked one by one.",
+    "allCollections": "All collections",
+    "upcoming": "Coming soon",
+    "upcomingLead": "Movies and series arriving in the next days.",
+    "allUpcoming": "Full calendar",
+    "howTitle": "How it works",
+    "how": [
+      { "t": "Write your sentence", "d": "Genre, mood, length, era… say it in your own words." },
+      { "t": "See the picks", "d": "Every suggestion says why it fits." },
+      { "t": "Decide", "d": "Browse collections and follow what is coming." }
+    ]
+  },
+  "collections": {
+    "title": "Collections",
+    "metaTitle": "Movie and Series Collections {'|'} CINEGLOB",
+    "metaDescription": "Movie and series collections made by mood: never boring, immersive, snack-sized watches and more.",
+    "lead": "Lists made by mood, with spoiler-free reasons.",
+    "filterAll": "All",
+    "pageOf": "Page {page} / {total}",
+    "prev": "Previous",
+    "next": "Next",
+    "notFound": "This collection was not found."
+  },
+  "upcoming": {
+    "title": "Upcoming releases",
+    "metaTitle": "Upcoming Movies and Series {'|'} CINEGLOB",
+    "metaDescription": "Movies hitting theatres and series starting soon, sorted by date.",
+    "lead": "Sorted by release date (Turkey dates first). Undated titles come last.",
+    "groups": {
+      "this_week": "This week",
+      "this_month": "This month",
+      "later": "Later",
+      "tba": "Date not announced"
+    }
+  },
+  "title": {
+    "movie": "Movie",
+    "tv": "Series",
+    "posterAlt": "{name} poster",
+    "overview": "Overview",
+    "noOverview": "No overview is available for this title.",
+    "originalTitle": "Original title",
+    "rating": "TMDB rating",
+    "votes": "{n} votes",
+    "released": "Released",
+    "seasons": "{n} seasons",
+    "episodes": "{n} episodes",
+    "runtime": "{n} min",
+    "more": "Search for similar picks",
+    "notFound": "This title was not found."
+  },
+  "person": {
+    "bio": "Biography",
+    "bioFallback": "No Turkish biography found; showing the English one.",
+    "noBio": "No biography available.",
+    "knownFor": "Best known for",
+    "filmography": "Filmography",
+    "born": "Born",
+    "sort": { "newest": "Newest", "oldest": "Chronological", "rating": "Best rated" },
+    "notFound": "This person was not found."
+  },
+  "state": {
+    "errorTitle": "Could not load right now",
+    "errorBody": "We could not reach the server. Please try again shortly.",
+    "emptyTitle": "Nothing to show here",
+    "emptyBody": "Try changing the filters."
+  },
+  "footer": {
+    "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB. Movie and series data and images belong to TMDB."
+  },
+  "error": {
+    "title": "Page not found",
+    "body": "The page may have moved or never existed.",
+    "home": "Back to home"
+  }
+}

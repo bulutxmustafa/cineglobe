@@ -1,0 +1,121 @@
+{
+  "site": {
+    "name": "CINEGLOB",
+    "subtitle": "Film Önerileri ve Keşif Platformu",
+    "tagline": "Film Önerileri ve Keşif Platformu. Ne izleyeceğine karar veremiyorsan doğru yerdesin.",
+    "homeTitle": "CINEGLOB {'|'} Film Önerileri ve Keşif Platformu",
+    "homeDescription": "Ne izleyeceğine karar veremiyorsan doğru yerdesin. Aradığın filmi ya da diziyi kendi cümlenle anlat; CINEGLOB sana film ve dizi önerileri bulsun. Hazır koleksiyonlar ve yakında çıkacak yapımlar da burada."
+  },
+  "nav": {
+    "main": "Ana gezinme",
+    "skip": "İçeriğe geç",
+    "discover": "Keşfet",
+    "collections": "Koleksiyonlar",
+    "upcoming": "Yakında çıkacaklar",
+    "search": "Ara",
+    "language": "Switch to English"
+  },
+  "hero": {
+    "eyebrow": "Film önerileri ve keşif platformu",
+    "title": "Ne izleyeceğine karar veremiyorsan doğru yerdesin.",
+    "lead": "Canının çektiğini kendi cümlenle yaz: “kısa bölümlü, hafif bir dizi” ya da “sonu şaşırtan gerilim”. Gerisini biz bulalım, neden önerdiğimizi de yazalım."
+  },
+  "search": {
+    "label": "Ne izlemek istersin?",
+    "placeholder": "Ne izlemek istersin? Örn. tek akşamda biten, tempolu bir film",
+    "button": "Öner",
+    "type": "Tür",
+    "types": { "both": "Hepsi", "movie": "Film", "tv": "Dizi" },
+    "tryLabel": "Örnek aramalar",
+    "examples": [
+      "Kısa bölümlü, hafif, komik bir dizi",
+      "Sonu şaşırtan gerilim filmi",
+      "Hafta sonu için sıcak bir aile filmi",
+      "Telefonu bırakmadan izlenen suç dizisi"
+    ],
+    "title": "Arama sonuçları",
+    "searching": "Düşünüyorum…",
+    "resultsFor": "“{query}” için öneriler",
+    "empty": "Bu cümleyle sonuç bulamadık. Farklı kelimelerle ya da daha açık bir cümleyle dene.",
+    "aiQuota": "Yapay zekâ ile arama bugünlük doldu. Klasik arama açık, sonuçlar yine geliyor.",
+    "aiFallback": "Yapay zekâ şu an yanıt vermedi. Klasik arama ile sonuç gösteriyoruz.",
+    "error": "Arama şu an yapılamıyor. Biraz sonra tekrar dene."
+  },
+  "home": {
+    "collections": "Hazır koleksiyonlar",
+    "collectionsLead": "Ruh haline göre seçilmiş, tek tek kontrol edilmiş listeler.",
+    "allCollections": "Tüm koleksiyonlar",
+    "upcoming": "Yakında vizyonda",
+    "upcomingLead": "Önümüzdeki günlerde çıkacak film ve diziler.",
+    "allUpcoming": "Tüm takvim",
+    "howTitle": "Nasıl çalışır?",
+    "how": [
+      { "t": "Cümleni yaz", "d": "Tür, ruh hali, süre, dönem… Aklındakini kendi kelimelerinle anlat." },
+      { "t": "Önerileri gör", "d": "Her önerinin yanında neden uygun olduğu yazar." },
+      { "t": "Karar ver", "d": "Koleksiyonlara göz at, yakında çıkacakları takip et." }
+    ]
+  },
+  "collections": {
+    "title": "Koleksiyonlar",
+    "metaTitle": "Film ve Dizi Koleksiyonları {'|'} CINEGLOB",
+    "metaDescription": "Ruh haline göre hazırlanmış film ve dizi koleksiyonları: sıkmayanlar, içine çekenler, atıştırmalık izlemeler ve daha fazlası.",
+    "lead": "Ruh haline göre hazırlanmış, spoiler içermeyen gerekçelerle sunulan listeler.",
+    "filterAll": "Hepsi",
+    "pageOf": "Sayfa {page} / {total}",
+    "prev": "Önceki",
+    "next": "Sonraki",
+    "notFound": "Bu koleksiyon bulunamadı."
+  },
+  "upcoming": {
+    "title": "Yakında çıkacaklar",
+    "metaTitle": "Yakında Çıkacak Filmler ve Diziler {'|'} CINEGLOB",
+    "metaDescription": "Türkiye'de yakında vizyona girecek filmler ve yeni başlayacak diziler, tarihe göre sıralı.",
+    "lead": "Türkiye vizyon tarihlerine göre sıralanır. Tarihi belli olmayanlar en altta.",
+    "groups": {
+      "this_week": "Bu hafta",
+      "this_month": "Bu ay",
+      "later": "Daha sonra",
+      "tba": "Tarihi açıklanmadı"
+    }
+  },
+  "title": {
+    "movie": "Film",
+    "tv": "Dizi",
+    "posterAlt": "{name} afişi",
+    "overview": "Özet",
+    "noOverview": "Bu yapım için Türkçe özet bulunamadı.",
+    "originalTitle": "Orijinal adı",
+    "rating": "TMDB puanı",
+    "votes": "{n} oy",
+    "released": "Çıkış",
+    "seasons": "{n} sezon",
+    "episodes": "{n} bölüm",
+    "runtime": "{n} dk",
+    "more": "Benzer öneriler için ara",
+    "notFound": "Bu yapım bulunamadı."
+  },
+  "person": {
+    "bio": "Biyografi",
+    "bioFallback": "Türkçe biyografi bulunamadı; İngilizcesi gösteriliyor.",
+    "noBio": "Biyografi bulunamadı.",
+    "knownFor": "En bilinen işleri",
+    "filmography": "Filmografi",
+    "born": "Doğum",
+    "sort": { "newest": "En güncel", "oldest": "Kronolojik", "rating": "En iyi" },
+    "notFound": "Bu kişi bulunamadı."
+  },
+  "state": {
+    "errorTitle": "Şu an yüklenemedi",
+    "errorBody": "Sunucuya ulaşamadık. Biraz sonra yeniden dene.",
+    "emptyTitle": "Burada gösterecek bir şey yok",
+    "emptyBody": "Filtreleri değiştirmeyi dene."
+  },
+  "footer": {
+    "tmdb": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır. Film ve dizi verileri ile görseller TMDB'ye aittir."
+  },
+  "error": {
+    "title": "Sayfa bulunamadı",
+    "body": "Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.",
+    "home": "Ana sayfaya dön"
+  }
+}

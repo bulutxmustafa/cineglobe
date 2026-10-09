@@ -72,3 +72,6 @@ Desktop.ini
 
 # IDE
 .vs/
+*.sqlite3
+web/.nuxt/
+web/.output/
