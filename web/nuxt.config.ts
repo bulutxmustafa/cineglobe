@@ -6,10 +6,9 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n', '@nuxtjs/tailwindcss'],
   css: ['~/assets/css/tokens.css', '~/assets/css/main.css'],
   runtimeConfig: {
-    public: {
-      apiBase: 'http://localhost:8000/api/v1',
-      siteUrl,
-    },
+    // Server-side only: where the Django API lives (NUXT_API_ORIGIN).
+    apiOrigin: 'http://localhost:8000',
+    public: { siteUrl },
   },
   app: {
     head: {
@@ -34,6 +33,9 @@ export default defineNuxtConfig({
   },
   // Plan v1.8: pages are served from the CDN; the server renders only on a cache miss.
   routeRules: {
+    // The browser always talks to /api/v1 on this same origin, so the session and CSRF
+    // cookies are first-party; the server forwards it to Django.
+    '/api/v1/**': { proxy: `${process.env.NUXT_API_ORIGIN || 'http://localhost:8000'}/api/v1/**` },
     '/tr': { swr: 3600 },
     '/en': { swr: 3600 },
     '/*/collections': { swr: 3600 },

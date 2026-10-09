@@ -26,8 +26,10 @@ export interface Collection {
   media_type: string
 }
 
+/** Server render calls Django directly; the browser uses the same-origin proxy. */
 export function useApiBase() {
-  return useRuntimeConfig().public.apiBase.replace(/\/$/, '')
+  if (import.meta.server) return `${useRuntimeConfig().apiOrigin.replace(/\/$/, '')}/api/v1`
+  return '/api/v1'
 }
 
 export function useApiFetch<T>(path: string, query: Record<string, unknown> = {}) {
