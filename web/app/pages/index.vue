@@ -30,21 +30,31 @@ useHead({
 
 const { data: cols, pending: colsPending, error: colsError } = await useApiFetch<{ collections: Collection[] }>('/collections/')
 const { data: up, pending: upPending, error: upError } = await useApiFetch<{ results: TitleItem[] }>('/upcoming/', { media_type: 'both' })
+const { data: wall } = await useApiFetch<{ results: TitleItem[] }>('/collections/never-boring/')
+const posters = computed(() => (wall.value?.results ?? []).map((r) => r.poster_url || '').filter(Boolean))
 const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster_url).slice(0, 5))
 </script>
 
 <template>
   <div>
-    <section class="border-b" style="border-color: var(--line); background: var(--surface)">
-      <div class="container-page py-12 sm:py-16">
-        <p class="text-sm font-semibold uppercase tracking-[0.12em]" style="color: var(--accent)">{{ t('hero.eyebrow') }}</p>
-        <h1 class="mt-3 max-w-3xl text-[2rem] leading-[1.15] sm:text-[2.75rem]">
+    <section class="relative overflow-hidden" style="background: var(--night)">
+      <ClientOnly><PosterWall :posters="posters" /></ClientOnly>
+      <div
+        class="absolute inset-0"
+        style="background: radial-gradient(ellipse at 20% 30%, rgb(109 40 217 / 55%), transparent 60%), linear-gradient(180deg, rgb(13 11 31 / 55%), rgb(13 11 31 / 92%))"
+      />
+      <div class="container-page relative py-16 sm:py-24">
+        <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white" style="background: var(--grad)">
+          {{ t('hero.eyebrow') }}
+        </p>
+        <h1 class="mt-4 max-w-3xl text-[2.2rem] leading-[1.1] text-white sm:text-[3.4rem]">
           {{ t('hero.title') }}
         </h1>
-        <p class="mt-4 max-w-2xl text-base sm:text-lg" style="color: var(--ink-soft)">{{ t('hero.lead') }}</p>
+        <p class="mt-5 max-w-2xl text-base text-white/80 sm:text-lg">{{ t('hero.lead') }}</p>
         <div class="mt-8 max-w-3xl">
-          <SearchBox examples />
+          <SearchBox examples dark />
         </div>
+        <NuxtLink :to="localePath('/lucky')" class="btn btn-glass mt-6">🌍 {{ t('nav.lucky') }}</NuxtLink>
       </div>
     </section>
 
@@ -88,12 +98,12 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
         <li
           v-for="(step, i) in ($tm('home.how') as { t: string; d: string }[])"
           :key="i"
-          class="rounded-[10px] border p-5"
-          style="border-color: var(--line); background: var(--surface)"
+          class="rounded-[16px] p-6 text-white"
+          :style="{ background: ['linear-gradient(135deg,#e11d48,#f97316)', 'linear-gradient(135deg,#6d28d9,#06b6d4)', 'linear-gradient(135deg,#0ea5e9,#6366f1)'][i], boxShadow: '0 10px 28px rgb(13 11 31 / 16%)' }"
         >
-          <span class="font-serif text-3xl font-semibold" style="color: var(--accent)">{{ i + 1 }}</span>
-          <h3 class="mt-2 font-sans text-base font-semibold">{{ $rt(step.t as any) }}</h3>
-          <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ $rt(step.d as any) }}</p>
+          <span class="font-serif text-4xl font-semibold opacity-90">{{ i + 1 }}</span>
+          <h3 class="mt-2 font-sans text-lg font-semibold">{{ $rt(step.t as any) }}</h3>
+          <p class="mt-1 text-sm text-white/90">{{ $rt(step.d as any) }}</p>
         </li>
       </ol>
     </section>

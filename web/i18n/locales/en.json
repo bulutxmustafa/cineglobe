@@ -154,7 +154,8 @@
     "again": "One more",
     "spinning": "Picking…",
     "tonight": "Tonight's pick",
-    "details": "Details"
+    "details": "Details",
+    "globeAlt": "Spinning globe"
   },
   "auth": {
     "title": "Sign in",

@@ -29,7 +29,7 @@ async function spin() {
       $fetch<{ pick: TitleItem | null }>(`${base}/collections/${slug.value}/random/`, {
         query: { lang: locale.value, exclude: recent.value.slice(-8).join(',') },
       }),
-      new Promise((r) => setTimeout(r, 900)), // short suspense; also respects reduced motion below
+      new Promise((r) => setTimeout(r, 2600)), // short suspense; also respects reduced motion below
     ])
     pick.value = res.pick
     if (res.pick) recent.value.push(`${res.pick.media_type}:${res.pick.tmdb_id}`)
@@ -42,26 +42,35 @@ async function spin() {
 </script>
 
 <template>
-  <div class="container-page py-10">
-    <h1 class="text-3xl">{{ t('lucky.title') }}</h1>
-    <p class="mt-2 max-w-2xl" style="color: var(--ink-soft)">{{ t('lucky.lead') }}</p>
+  <div>
+    <section class="relative overflow-hidden" style="background: radial-gradient(ellipse at 50% 20%, #2a1f6b, var(--night) 70%)">
+      <div class="container-page relative py-12 text-center text-white">
+        <h1 class="text-3xl sm:text-4xl">{{ t('lucky.title') }}</h1>
+        <p class="mx-auto mt-2 max-w-xl text-white/80">{{ t('lucky.lead') }}</p>
 
-    <div class="mt-6 flex flex-wrap items-end gap-3">
-      <div>
-        <label for="lcol" class="mb-1 block text-sm font-medium">{{ t('lucky.from') }}</label>
-        <select id="lcol" v-model="slug" class="min-h-[44px] rounded-[6px] border bg-white px-3" style="border-color: var(--line-strong)">
-          <option v-for="c in cols?.collections" :key="c.slug" :value="c.slug">{{ c.name }}</option>
-        </select>
+        <ClientOnly><LuckyGlobe :spinning="spinning" class="mt-4" /></ClientOnly>
+
+        <div class="mx-auto mt-4 flex max-w-xl flex-wrap items-end justify-center gap-3 text-left">
+          <div>
+            <label for="lcol" class="mb-1 block text-sm font-medium text-white/80">{{ t('lucky.from') }}</label>
+            <select id="lcol" v-model="slug" class="min-h-[48px] rounded-[10px] border-0 bg-white px-3 text-[var(--ink)]">
+              <option v-for="c in cols?.collections" :key="c.slug" :value="c.slug">{{ c.name }}</option>
+            </select>
+          </div>
+          <button class="btn btn-primary min-h-[48px] px-6 text-base" :disabled="spinning || !slug" @click="spin">
+            {{ spinning ? t('lucky.spinning') : pick ? t('lucky.again') : t('lucky.go') }}
+          </button>
+        </div>
       </div>
-      <button class="btn btn-primary min-h-[44px]" :disabled="spinning || !slug" @click="spin">
-        {{ spinning ? t('lucky.spinning') : pick ? t('lucky.again') : t('lucky.go') }}
-      </button>
-    </div>
+    </section>
 
-    <div class="mt-8" aria-live="polite">
-      <div v-if="spinning" class="spin mx-auto h-16 w-16 rounded-full border-4" aria-hidden="true" />
-      <p v-else-if="failed" class="text-sm" role="alert">{{ t('state.errorBody') }}</p>
-      <div v-else-if="pick" class="grid max-w-3xl gap-6 sm:grid-cols-[220px_1fr]">
+    <div class="container-page py-10" aria-live="polite">
+      <p v-if="failed" class="text-sm" role="alert">{{ t('state.errorBody') }}</p>
+      <div
+        v-else-if="pick && !spinning"
+        class="reveal mx-auto grid max-w-3xl gap-6 rounded-[16px] border p-5 sm:grid-cols-[220px_1fr]"
+        style="border-color: var(--line); background: var(--surface); box-shadow: var(--shadow)"
+      >
         <TitleCard :item="pick" />
         <div>
           <p class="text-sm font-semibold uppercase tracking-wide" style="color: var(--accent)">{{ t('lucky.tonight') }}</p>
@@ -79,14 +88,13 @@ async function spin() {
 </template>
 
 <style scoped>
-.spin {
-  border-color: var(--line);
-  border-top-color: var(--accent);
-  animation: spin 700ms linear infinite;
+.reveal {
+  animation: pop 450ms var(--ease);
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
   }
 }
 button:disabled {

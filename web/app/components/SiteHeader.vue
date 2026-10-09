@@ -8,10 +8,10 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b bg-[var(--paper)]/95 backdrop-blur-sm" style="border-color: var(--line)">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 10%); background: rgb(13 11 31 / 92%)">
     <div class="container-page flex h-16 items-center gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-baseline gap-2" aria-label="CINEGLOB">
-        <span class="font-serif text-[1.35rem] font-bold tracking-[0.14em]" style="color: var(--accent)">CINEGLOB</span>
+        <span class="logo font-serif text-[1.35rem] font-bold tracking-[0.14em]">CINEGLOB</span>
       </NuxtLink>
       <nav class="hidden items-center gap-5 text-sm sm:flex" :aria-label="$t('nav.main')">
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
@@ -21,13 +21,13 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
         <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
       </nav>
       <div class="ml-auto flex items-center gap-2">
-        <NuxtLink :to="localePath('/search')" class="btn btn-quiet">{{ $t('nav.search') }}</NuxtLink>
-        <NuxtLink :to="localePath(me ? '/account' : '/login')" class="btn btn-quiet">
+        <NuxtLink :to="localePath('/search')" class="btn btn-glass">{{ $t('nav.search') }}</NuxtLink>
+        <NuxtLink :to="localePath(me ? '/account' : '/login')" class="btn btn-glass">
           {{ me ? $t('auth.account') : $t('auth.login') }}
         </NuxtLink>
         <a
           :href="switchLocalePath(otherCode)"
-          class="btn btn-quiet !px-3 uppercase"
+          class="btn btn-glass !px-3 uppercase"
           :hreflang="otherCode"
           :aria-label="$t('nav.language')"
         >{{ otherCode }}</a>
@@ -45,13 +45,19 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 
 <style scoped>
 .nav-link {
-  color: var(--ink-soft);
+  color: rgb(255 255 255 / 70%);
   white-space: nowrap;
   transition: color var(--dur);
 }
 .nav-link:hover,
 .nav-link.router-link-exact-active {
-  color: var(--ink);
+  color: #fff;
+}
+.logo {
+  background: linear-gradient(135deg, #ff7a9a, #ffc15e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .nav-link.router-link-exact-active {
   text-decoration: underline;

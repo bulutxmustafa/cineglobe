@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ initial?: string; examples?: boolean; mediaType?: string }>()
+const props = defineProps<{ initial?: string; examples?: boolean; mediaType?: string; dark?: boolean }>()
 const emit = defineEmits<{ submit: [query: string, type: string] }>()
 const localePath = useLocalePath()
 const router = useRouter()
@@ -42,14 +42,14 @@ function pick(text: string) {
         v-for="opt in ['both', 'movie', 'tv']"
         :key="opt"
         class="chip cursor-pointer"
-        :class="{ 'chip-on': media === opt }"
+        :class="[dark ? 'chip-dark' : '', { 'chip-on': media === opt }]"
       >
         <input v-model="media" type="radio" name="media" :value="opt" class="sr-only" />
         {{ t(`search.types.${opt}`) }}
       </label>
     </fieldset>
     <div v-if="examples" class="mt-4 flex flex-wrap gap-2" :aria-label="t('search.tryLabel')">
-      <button v-for="e in exampleList" :key="e" type="button" class="chip" @click="pick(e)">{{ e }}</button>
+      <button v-for="e in exampleList" :key="e" type="button" class="chip" :class="{ 'chip-dark': dark }" @click="pick(e)">{{ e }}</button>
     </div>
   </form>
 </template>
@@ -65,8 +65,13 @@ function pick(text: string) {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .chip-on {
-  border-color: var(--ink);
-  color: var(--ink);
+  border-color: var(--accent);
+  color: var(--accent);
   font-weight: 600;
+}
+.chip-dark.chip-on {
+  background: #fff;
+  color: var(--night);
+  border-color: #fff;
 }
 </style>

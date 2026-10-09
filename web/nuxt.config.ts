@@ -1,3 +1,5 @@
+const isDev = process.env.NODE_ENV === 'development'
+const swr = (seconds: number) => (isDev ? {} : { swr: seconds })
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export default defineNuxtConfig({
@@ -36,13 +38,13 @@ export default defineNuxtConfig({
     // The browser always talks to /api/v1 on this same origin, so the session and CSRF
     // cookies are first-party; the server forwards it to Django.
     '/api/v1/**': { proxy: `${process.env.NUXT_API_ORIGIN || 'http://localhost:8000'}/api/v1/**` },
-    '/tr': { swr: 3600 },
-    '/en': { swr: 3600 },
-    '/*/collections': { swr: 3600 },
-    '/*/collections/**': { swr: 3600 },
-    '/*/upcoming': { swr: 1800 },
-    '/*/title/**': { swr: 86400 },
-    '/*/person/**': { swr: 86400 },
+    '/tr': swr(3600),
+    '/en': swr(3600),
+    '/*/collections': swr(3600),
+    '/*/collections/**': swr(3600),
+    '/*/upcoming': swr(1800),
+    '/*/title/**': swr(86400),
+    '/*/person/**': swr(86400),
     '/*/search': { ssr: false },
     '/*/account': { ssr: false },
   },
