@@ -77,7 +77,7 @@ function pick(text: string) {
         @focus="focused = true"
         @blur="focused = false"
       />
-      <button type="submit" class="go btn btn-primary">{{ t('search.button') }}</button>
+      <button type="submit" class="go"><LogoMark :size="26" class="gomark" /><span>{{ t('search.button') }}</span></button>
     </div>
 
     <fieldset class="seg" :class="{ dark }">
@@ -116,8 +116,8 @@ function pick(text: string) {
   color: var(--ink-soft);
 }
 .bar.focused {
-  border-color: #e39a2e;
-  box-shadow: 0 0 0 4px rgb(227 154 46 / 25%);
+  border-color: #ff9a5c;
+  box-shadow: 0 0 0 4px rgb(255 154 92 / 30%);
 }
 .search-input {
   flex: 1;
@@ -133,9 +133,61 @@ function pick(text: string) {
   color: #8a7e70;
 }
 .go {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   min-height: 48px;
-  padding: 0 26px;
-  border-radius: 12px;
+  padding: 0 22px 0 14px;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #2a1306;
+  background: var(--grad);
+  box-shadow: 0 8px 22px rgb(255 122 69 / 45%);
+  transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.go::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 55%), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.4s ease-in-out infinite;
+}
+.go:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 28px rgb(255 122 69 / 55%);
+}
+.go:hover .gomark {
+  transform: rotate(40deg) scale(1.1);
+}
+.go:active {
+  transform: scale(0.97);
+}
+.gomark {
+  transition: transform 320ms var(--ease);
+  filter: drop-shadow(0 2px 3px rgb(42 19 6 / 30%));
+}
+@keyframes shine {
+  0%,
+  55% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .go::after {
+    animation: none;
+  }
 }
 .seg {
   display: inline-flex;
@@ -174,8 +226,11 @@ function pick(text: string) {
   outline: 2px solid #e39a2e;
 }
 @media (max-width: 480px) {
+  .go span {
+    display: none;
+  }
   .go {
-    padding: 0 16px;
+    padding: 0 14px;
   }
 }
 </style>

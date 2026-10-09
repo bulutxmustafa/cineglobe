@@ -70,7 +70,7 @@ function landed() {
 
 <template>
   <div>
-    <section class="relative overflow-hidden" style="background: radial-gradient(ellipse at 50% 30%, #3a2b18, var(--night) 70%)">
+    <section class="relative overflow-hidden" style="background: radial-gradient(ellipse at 50% 30%, #6a2a3f, var(--night) 70%)">
       <ConfettiBurst :fire="confetti" />
       <div class="container-page relative py-10 text-center text-white">
         <h1 class="text-2xl sm:text-3xl">🎡 {{ t('lucky.title') }}</h1>
@@ -101,7 +101,7 @@ function landed() {
       <div
         v-else-if="pick && shown"
         class="reveal mx-auto grid max-w-3xl gap-6 rounded-[20px] border p-5 sm:grid-cols-[220px_1fr]"
-        style="border-color: var(--line-strong); background: linear-gradient(160deg, #fffdf8, #f6eddc); box-shadow: 0 18px 44px rgb(60 40 10 / 14%)"
+        style="border-color: var(--line-strong); background: linear-gradient(160deg, #fff1d6, #ffd9a8); box-shadow: 0 18px 44px rgb(60 40 10 / 14%)"
       >
         <TitleCard :item="pick" />
         <div>

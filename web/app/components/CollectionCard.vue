@@ -4,6 +4,18 @@ import type { Collection, TitleItem } from '~/composables/useApi'
 const props = defineProps<{ collection: Collection; index: number }>()
 const localePath = useLocalePath()
 const { locale } = useI18n()
+const palettes = [
+  ['#7a1f3d', '#e0533f'],
+  ['#0f5c63', '#25b3a5'],
+  ['#243b8f', '#5b8cf5'],
+  ['#146b4a', '#4cc184'],
+  ['#6b2377', '#e0518c'],
+  ['#8a4a0f', '#f5a93a'],
+]
+const bg = computed(() => {
+  const [a, b] = palettes[(props.index - 1) % palettes.length]!
+  return `linear-gradient(150deg, ${a}, ${b})`
+})
 const base = useApiBase()
 
 // Three posters from the collection itself (small payload, CDN-cached upstream).
@@ -23,12 +35,13 @@ const { data: posters } = useFetch<string[]>(() => `${base}/collections/${props.
   <NuxtLink
     :to="localePath(`/collections/${collection.slug}`)"
     class="card group relative flex h-full min-h-[190px] overflow-hidden rounded-[18px] p-5"
+    :style="{ background: bg }"
   >
     <div class="relative z-10 flex max-w-[58%] flex-col justify-between">
       <span class="num">{{ String(index).padStart(2, '0') }}</span>
       <div>
-        <span class="block font-serif text-xl font-semibold leading-snug text-[#fbf3e2]">{{ collection.name }}</span>
-        <span class="mt-1 block text-[13px] leading-snug text-[#cdbfa8]">{{ collection.description }}</span>
+        <span class="block font-serif text-xl font-semibold leading-snug text-white">{{ collection.name }}</span>
+        <span class="mt-1 block text-[13px] leading-snug text-white/85">{{ collection.description }}</span>
       </div>
     </div>
     <div class="fan" aria-hidden="true">
@@ -39,15 +52,14 @@ const { data: posters } = useFetch<string[]>(() => `${base}/collections/${props.
 
 <style scoped>
 .card {
-  background: linear-gradient(160deg, #241d17, #15110e);
-  border: 1px solid #3a2f23;
-  box-shadow: 0 12px 30px rgb(20 17 15 / 22%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  box-shadow: 0 14px 32px rgb(60 20 30 / 28%);
   transition: transform 220ms var(--ease), border-color 220ms var(--ease), box-shadow 220ms var(--ease);
 }
 .card:hover {
   transform: translateY(-4px);
-  border-color: #e39a2e;
-  box-shadow: 0 18px 38px rgb(20 17 15 / 34%);
+  border-color: #ffd166;
+  box-shadow: 0 20px 40px rgb(60 20 30 / 38%);
 }
 .num {
   font-family: var(--font-serif);

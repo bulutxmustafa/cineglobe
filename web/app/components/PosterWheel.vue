@@ -113,7 +113,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   border-radius: 10px;
   overflow: hidden;
   background: #2a2119;
-  border: 2px solid rgb(247 207 111 / 55%);
+  border: 2px solid rgb(255 209 102 / 70%);
   box-shadow: 0 16px 40px rgb(0 0 0 / 55%);
 }
 .card img {
