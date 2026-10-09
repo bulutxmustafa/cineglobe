@@ -6,8 +6,46 @@ const router = useRouter()
 const { t, tm, rt } = useI18n()
 const q = ref(props.initial ?? '')
 const media = ref(props.mediaType || 'both')
+const focused = ref(false)
 
 const exampleList = computed(() => (tm('search.examples') as string[]).map((e) => rt(e)))
+const icons: Record<string, string> = { both: '✨', movie: '🎬', tv: '📺' }
+
+// Placeholder "types" the example sentences, so the box shows what it can do.
+const typed = ref('')
+let timer: ReturnType<typeof setTimeout> | undefined
+function startTyping() {
+  if (!props.dark || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  let ex = 0
+  let ch = 0
+  let erasing = false
+  const step = () => {
+    const full = exampleList.value[ex % exampleList.value.length] ?? ''
+    if (!erasing) {
+      ch++
+      typed.value = full.slice(0, ch)
+      if (ch >= full.length) {
+        erasing = true
+        timer = setTimeout(step, 1600)
+        return
+      }
+    } else {
+      ch -= 2
+      typed.value = full.slice(0, Math.max(ch, 0))
+      if (ch <= 0) {
+        erasing = false
+        ex++
+        ch = 0
+      }
+    }
+    timer = setTimeout(step, erasing ? 18 : 42)
+  }
+  step()
+}
+onMounted(startTyping)
+onBeforeUnmount(() => clearTimeout(timer))
+
+const shownPlaceholder = computed(() => (props.dark && typed.value ? typed.value : t('search.placeholder')))
 
 function go(text = q.value) {
   const value = text.trim()
@@ -22,56 +60,122 @@ function pick(text: string) {
 </script>
 
 <template>
-  <form role="search" @submit.prevent="go()">
+  <form role="search" :class="dark ? 'panel' : ''" @submit.prevent="go()">
     <label for="q" class="sr-only">{{ t('search.label') }}</label>
-    <div class="flex flex-col gap-2 sm:flex-row">
+    <div class="bar" :class="{ focused }">
+      <svg class="mag" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+      </svg>
       <input
         id="q"
         v-model="q"
         type="search"
         maxlength="300"
         autocomplete="off"
-        :placeholder="t('search.placeholder')"
-        class="search-input min-h-[52px] flex-1 rounded-[6px] border bg-white px-4 text-base"
+        :placeholder="shownPlaceholder"
+        class="search-input"
+        @focus="focused = true"
+        @blur="focused = false"
       />
-      <button type="submit" class="btn btn-primary min-h-[52px] px-6">{{ t('search.button') }}</button>
+      <button type="submit" class="go btn btn-primary">{{ t('search.button') }}</button>
     </div>
-    <fieldset class="mt-3 flex flex-wrap items-center gap-2">
+
+    <fieldset class="seg" :class="{ dark }">
       <legend class="sr-only">{{ t('search.type') }}</legend>
-      <label
-        v-for="opt in ['both', 'movie', 'tv']"
-        :key="opt"
-        class="chip cursor-pointer"
-        :class="[dark ? 'chip-dark' : '', { 'chip-on': media === opt }]"
-      >
+      <label v-for="opt in ['both', 'movie', 'tv']" :key="opt" :class="{ on: media === opt }">
         <input v-model="media" type="radio" name="media" :value="opt" class="sr-only" />
-        {{ t(`search.types.${opt}`) }}
+        <span aria-hidden="true">{{ icons[opt] }}</span> {{ t(`search.types.${opt}`) }}
       </label>
     </fieldset>
-    <div v-if="examples" class="mt-4 flex flex-wrap gap-2" :aria-label="t('search.tryLabel')">
+
+    <div v-if="examples" class="mt-4 flex flex-wrap items-center gap-2" :aria-label="t('search.tryLabel')">
+      <span class="text-xs font-medium uppercase tracking-wider" :style="{ color: dark ? 'rgb(255 255 255 / 55%)' : 'var(--ink-faint)' }">{{ t('search.try') }}</span>
       <button v-for="e in exampleList" :key="e" type="button" class="chip" :class="{ 'chip-dark': dark }" @click="pick(e)">{{ e }}</button>
     </div>
   </form>
 </template>
 
 <style scoped>
-.search-input {
-  border-color: var(--line-strong);
-  outline: none;
-  transition: border-color var(--dur);
+.panel {
+  padding: 14px;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 9%);
+  border: 1px solid rgb(255 255 255 / 18%);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 35%);
 }
-.search-input:focus {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-.chip-on {
-  border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 600;
-}
-.chip-dark.chip-on {
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: #fff;
-  color: var(--night);
-  border-color: #fff;
+  border-radius: 16px;
+  padding: 6px 6px 6px 16px;
+  border: 2px solid transparent;
+  transition: border-color var(--dur), box-shadow var(--dur);
+  color: var(--ink-soft);
+}
+.bar.focused {
+  border-color: #e39a2e;
+  box-shadow: 0 0 0 4px rgb(227 154 46 / 25%);
+}
+.search-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--ink);
+}
+.search-input::placeholder {
+  color: #8a7e70;
+}
+.go {
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 12px;
+}
+.seg {
+  display: inline-flex;
+  margin-top: 12px;
+  padding: 4px;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.seg.dark {
+  background: rgb(255 255 255 / 12%);
+}
+.seg label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: background var(--dur), color var(--dur);
+}
+.seg.dark label {
+  color: rgb(255 255 255 / 80%);
+}
+.seg label.on {
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+}
+.seg label:focus-within {
+  outline: 2px solid #e39a2e;
+}
+@media (max-width: 480px) {
+  .go {
+    padding: 0 16px;
+  }
 }
 </style>

@@ -1,0 +1,23 @@
+<script setup lang="ts">
+// CINEGLOB mark: a globe (meridians) with a play triangle, in gold.
+withDefaults(defineProps<{ size?: number }>(), { size: 34 })
+const id = 'cg-logo-grad'
+</script>
+
+<template>
+  <svg :width="size" :height="size" viewBox="0 0 48 48" aria-hidden="true">
+    <defs>
+      <linearGradient :id="id" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fbe3a0" />
+        <stop offset="1" stop-color="#e08a1e" />
+      </linearGradient>
+    </defs>
+    <circle cx="24" cy="24" r="22" :fill="`url(#${id})`" />
+    <g fill="none" stroke="#14110f" stroke-opacity="0.28" stroke-width="1.4">
+      <ellipse cx="24" cy="24" rx="9" ry="22" />
+      <path d="M2.5 24h43M5 14.5h38M5 33.5h38" />
+    </g>
+    <circle cx="24" cy="24" r="22" fill="none" stroke="#14110f" stroke-opacity="0.35" stroke-width="1.6" />
+    <path d="M19.5 15.5v17l14-8.5z" fill="#14110f" />
+  </svg>
+</template>

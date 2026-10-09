@@ -45,7 +45,8 @@
     "empty": "Bu cümleyle sonuç bulamadık. Farklı kelimelerle ya da daha açık bir cümleyle dene.",
     "aiQuota": "Yapay zekâ ile arama bugünlük doldu. Klasik arama açık, sonuçlar yine geliyor.",
     "aiFallback": "Yapay zekâ şu an yanıt vermedi. Klasik arama ile sonuç gösteriyoruz.",
-    "error": "Arama şu an yapılamıyor. Biraz sonra tekrar dene."
+    "error": "Arama şu an yapılamıyor. Biraz sonra tekrar dene.",
+    "try": "Dene:"
   },
   "home": {
     "collections": "Hazır koleksiyonlar",
@@ -148,14 +149,16 @@
     "title": "Şans Seçici",
     "metaTitle": "Şans Seçici: Bu akşam ne izlesem? {'|'} CINEGLOB",
     "metaDescription": "Karar veremiyor musun? Bir koleksiyon seç, biz sana rastgele bir film ya da dizi seçelim.",
-    "lead": "Karar veremiyor musun? Bir koleksiyon seç, sana rastgele bir yapım seçelim.",
+    "lead": "Karar vermek yorucu. Bir koleksiyon seç, çarkı çevir, bu akşamın filmi belli olsun!",
     "from": "Koleksiyon",
-    "go": "Şansımı dene",
-    "again": "Bir tane daha",
-    "spinning": "Seçiliyor…",
-    "tonight": "Bu akşam bu",
+    "go": "Çarkı çevir!",
+    "again": "Bir tur daha!",
+    "spinning": "Çark dönüyor…",
+    "tonight": "Bu akşamın seçimi",
     "details": "Ayrıntılar",
-    "globeAlt": "Dönen küre"
+    "globeAlt": "Dönen küre",
+    "wheelAlt": "Dönen afiş çarkı",
+    "cheer": "İşte bu! İyi seyirler 🍿"
   },
   "auth": {
     "title": "Giriş",

@@ -41,20 +41,20 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
       <ClientOnly><PosterWall :posters="posters" /></ClientOnly>
       <div
         class="absolute inset-0"
-        style="background: linear-gradient(90deg, rgb(20 17 15 / 88%) 0%, rgb(20 17 15 / 55%) 50%, rgb(20 17 15 / 10%) 100%), linear-gradient(180deg, rgb(20 17 15 / 0%) 60%, rgb(20 17 15 / 90%) 100%)"
+        style="background: radial-gradient(ellipse at 50% 45%, rgb(20 17 15 / 82%) 0%, rgb(20 17 15 / 45%) 70%, rgb(20 17 15 / 15%) 100%), linear-gradient(180deg, rgb(20 17 15 / 0%) 60%, rgb(20 17 15 / 90%) 100%)"
       />
-      <div class="container-page relative py-16 sm:py-24">
+      <div class="container-page relative py-12 text-center sm:py-20">
         <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]" style="background: var(--grad); color: #1c1306">
           {{ t('hero.eyebrow') }}
         </p>
-        <h1 class="mt-4 max-w-3xl text-[2.2rem] leading-[1.1] text-white sm:text-[3.4rem]">
+        <h1 class="mx-auto mt-4 max-w-2xl text-[1.6rem] leading-[1.2] text-white sm:text-[2.2rem]">
           {{ t('hero.title') }}
         </h1>
-        <p class="mt-5 max-w-2xl text-base text-white/80 sm:text-lg">{{ t('hero.lead') }}</p>
-        <div class="mt-8 max-w-3xl">
+        <p class="mx-auto mt-3 max-w-xl text-sm text-white/75 sm:text-base">{{ t('hero.lead') }}</p>
+        <div class="mx-auto mt-8 max-w-2xl text-left">
           <SearchBox examples dark />
         </div>
-        <NuxtLink :to="localePath('/lucky')" class="btn btn-glass mt-6">🌍 {{ t('nav.lucky') }}</NuxtLink>
+        <NuxtLink :to="localePath('/lucky')" class="btn btn-glass mt-6">🎡 {{ t('nav.lucky') }}</NuxtLink>
       </div>
     </section>
 

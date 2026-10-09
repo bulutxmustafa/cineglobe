@@ -45,7 +45,8 @@
     "empty": "We found nothing for that sentence. Try other words or a clearer description.",
     "aiQuota": "AI search is used up for today. Classic search is on and results still come.",
     "aiFallback": "The AI did not answer just now. Showing results from classic search.",
-    "error": "Search is unavailable right now. Please try again shortly."
+    "error": "Search is unavailable right now. Please try again shortly.",
+    "try": "Try:"
   },
   "home": {
     "collections": "Ready-made collections",
@@ -148,14 +149,16 @@
     "title": "Lucky Pick",
     "metaTitle": "Lucky Pick: what should I watch tonight? {'|'} CINEGLOB",
     "metaDescription": "Can't decide? Pick a collection and we choose a random movie or series for you.",
-    "lead": "Can't decide? Pick a collection and we choose something at random.",
+    "lead": "Deciding is tiring. Pick a collection, spin the wheel and let tonight be decided!",
     "from": "Collection",
-    "go": "Try my luck",
-    "again": "One more",
-    "spinning": "Picking…",
+    "go": "Spin the wheel!",
+    "again": "Spin again!",
+    "spinning": "Spinning…",
     "tonight": "Tonight's pick",
     "details": "Details",
-    "globeAlt": "Spinning globe"
+    "globeAlt": "Spinning globe",
+    "wheelAlt": "Spinning poster wheel",
+    "cheer": "There it is! Enjoy 🍿"
   },
   "auth": {
     "title": "Sign in",
