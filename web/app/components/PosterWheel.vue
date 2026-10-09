@@ -113,7 +113,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   border-radius: 10px;
   overflow: hidden;
   background: #2a2119;
-  border: 2px solid rgb(167 139 250 / 90%);
+  border: 2px solid rgb(247 207 111 / 55%);
   box-shadow: 0 16px 40px rgb(0 0 0 / 55%);
 }
 .card img {
@@ -129,7 +129,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   width: 70%;
   height: 80%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgb(139 92 246 / 22%), transparent 65%);
+  background: radial-gradient(ellipse, rgb(242 185 80 / 16%), transparent 65%);
   pointer-events: none;
 }
 .floor {

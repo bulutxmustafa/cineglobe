@@ -70,7 +70,7 @@ function landed() {
 
 <template>
   <div>
-    <section class="relative overflow-hidden" style="background: var(--night)">
+    <section class="relative overflow-hidden" style="background: linear-gradient(180deg, var(--bg-2), var(--bg))">
       <ConfettiBurst :fire="confetti" />
       <div class="container-page relative py-10 text-center text-white">
         <h1 class="text-2xl sm:text-3xl">🎡 {{ t('lucky.title') }}</h1>
@@ -85,7 +85,7 @@ function landed() {
         <div class="mx-auto mt-6 flex max-w-xl flex-wrap items-end justify-center gap-3 text-left">
           <div>
             <label for="lcol" class="mb-1 block text-sm font-medium text-white/80">{{ t('lucky.from') }}</label>
-            <select id="lcol" v-model="slug" class="min-h-[52px] rounded-[14px] border border-white/20 bg-[#161f33] px-3 text-white" :disabled="spinning">
+            <select id="lcol" v-model="slug" class="min-h-[52px] rounded-[12px] border px-3 text-[var(--text)]" style="background: #0e1620; border-color: var(--border)" :disabled="spinning">
               <option v-for="c in cols?.collections" :key="c.slug" :value="c.slug">{{ c.icon }} {{ c.name }}</option>
             </select>
           </div>
@@ -100,8 +100,8 @@ function landed() {
       <p v-if="failed" class="text-center text-sm" role="alert">{{ t('state.errorBody') }}</p>
       <div
         v-else-if="pick && shown"
-        class="reveal mx-auto grid max-w-3xl gap-6 rounded-[20px] border p-5 sm:grid-cols-[220px_1fr]"
-        style="border-color: var(--line-strong); background: #161f33; box-shadow: 0 18px 44px rgb(60 40 10 / 14%)"
+        class="reveal surface-light mx-auto grid max-w-3xl gap-6 rounded-[20px] border p-5 sm:grid-cols-[220px_1fr]"
+        style="border-color: var(--line-strong); box-shadow: 0 18px 44px rgb(0 0 0 / 35%)"
       >
         <TitleCard :item="pick" />
         <div>

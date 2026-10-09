@@ -6,61 +6,78 @@
 
 @layer base {
   html {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--bg);
+    color: var(--text);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
   }
   body {
-    background: var(--paper);
     min-height: 100vh;
     line-height: 1.55;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3 {
     font-family: var(--font-serif);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
   }
   a { color: inherit; }
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--gold);
     outline-offset: 2px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
-  ::selection { background: var(--accent-soft); }
+  ::selection { background: rgb(242 185 80 / 35%); }
 }
 
 @layer components {
   .container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+
   .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[6px] px-4 text-sm font-medium transition-colors;
-    transition-duration: var(--dur);
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[12px] px-4 text-sm font-semibold;
+    transition: background var(--dur), border-color var(--dur), transform var(--dur) var(--spring), box-shadow var(--dur), filter var(--dur);
   }
-  .btn-primary { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; font-weight: 700; box-shadow: 0 0 22px rgb(236 72 153 / 40%), 0 6px 18px rgb(139 92 246 / 35%); }
-  .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 0 32px rgb(236 72 153 / 60%), 0 8px 22px rgb(139 92 246 / 45%); }
-  .btn-primary:active { transform: translateY(1px) scale(0.98); }
-  .btn-glass { background: rgb(255 255 255 / 12%); color: #fff; border: 1px solid rgb(255 255 255 / 28%); }
-  .btn-glass:hover { background: rgb(255 255 255 / 22%); }
-  .btn-quiet { border: 1px solid var(--line-strong); background: var(--surface); }
-  .btn-quiet:hover { border-color: var(--ink); }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--accent-ink);
+    box-shadow: 0 2px 0 #b9852a, 0 10px 20px rgb(0 0 0 / 28%);
+  }
+  .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.06); }
+  .btn-primary:active { transform: translateY(1px) scale(0.98); box-shadow: 0 0 0 #b9852a, 0 4px 8px rgb(0 0 0 / 28%); }
+  .btn-quiet { border: 1px solid var(--line); background: rgb(255 255 255 / 4%); color: var(--text); }
+  .btn-quiet:hover { border-color: var(--gold); }
+  .btn-glass { border: 1px solid var(--border); background: transparent; color: var(--text); }
+  .btn-glass:hover { border-color: var(--gold); background: rgb(242 185 80 / 8%); }
+
   .chip {
-    @apply inline-flex min-h-[36px] items-center rounded-full px-3 text-sm;
-    border: 1px solid var(--line-strong);
-    background: var(--surface);
+    @apply inline-flex min-h-[36px] items-center rounded-full px-3.5 text-sm;
+    border: 1px solid var(--line);
+    background: rgb(255 255 255 / 5%);
     color: var(--ink-soft);
-    transition: border-color var(--dur), color var(--dur);
+    transition: border-color var(--dur), color var(--dur), background var(--dur);
   }
-  .chip:hover { border-color: var(--ink); color: var(--ink); }
-  .chip-dark { background: rgb(255 255 255 / 8%); border-color: rgb(255 255 255 / 20%); color: #dbe3f3; }
-  .chip-dark:hover { background: rgb(255 255 255 / 20%); border-color: #fff; color: #fff; }
+  .chip:hover { border-color: var(--gold); color: var(--ink); }
+  .chip-dark { background: rgb(255 255 255 / 5%); border-color: var(--border); color: var(--text-2); }
+  .chip-dark:hover { border-color: var(--gold); color: var(--text); }
   .badge {
-    @apply inline-flex items-center rounded-[3px] px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide;
+    @apply inline-flex items-center rounded-[6px] px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide;
   }
   .section-title { @apply mb-4 text-2xl; }
+  .rise { animation: rise 460ms var(--ease) both; }
 }
 
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+/* Page transitions: short and quiet */
+.page-enter-active, .page-leave-active { transition: opacity 160ms ease, transform 160ms ease; }
+.page-enter-from { opacity: 0; transform: translateY(6px); }
+.page-leave-to { opacity: 0; }
+
 @media (prefers-reduced-motion: reduce) {
-  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

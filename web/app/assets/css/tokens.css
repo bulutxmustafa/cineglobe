@@ -1,25 +1,59 @@
-/* CINEGLOB design tokens: warm paper, ink text, one accent. */
+/* CINEGLOB design system: one set of tokens for every page. */
 :root {
-  --paper: #0b0f19;
-  --surface: #161f33;
-  --ink: #e8ecf4;
-  --ink-soft: #a9b4c8;
-  --ink-faint: #7c889e;
-  --line: #243049;
-  --line-strong: #33425f;
-  --accent: #f5b83d;
-  --accent-ink: #ffffff;
-  --accent-soft: #2a2440;
-  --night: #0b0f19;
-  --night-2: #161f33;
-  --grad: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --gold: #fbbf24;
-  --star: #fbbf24;
-  --radius: 6px;
-  --radius-lg: 10px;
-  --shadow: 0 1px 2px rgb(29 27 23 / 8%), 0 4px 14px rgb(29 27 23 / 6%);
+  /* Core palette */
+  --bg: #101923;
+  --bg-2: #172536;
+  --elevated: #223449;
+  --gold: #f2b950;
+  --teal: #19a99c;
+  --cream: #f1ede5;
+  --text: #f7f5f0;
+  --text-2: #b1beca;
+  --border: #34465a;
+
+  /* Collection card family (all derived from the navy / petrol / aubergine range) */
+  --card-1: #1f3b5a;
+  --card-2: #1a4a54;
+  --card-3: #3a2c52;
+  --card-4: #175458;
+  --card-5: #243f66;
+  --card-6: #4b3555;
+
+  /* Semantic aliases used across components */
+  --paper: var(--bg);
+  --surface: var(--elevated);
+  --ink: var(--text);
+  --ink-soft: var(--text-2);
+  --ink-faint: #8798a9;
+  --line: var(--border);
+  --line-strong: #4a6078;
+  --accent: var(--gold);
+  --accent-ink: #1a1305;
+  --accent-soft: rgb(242 185 80 / 14%);
+  --night: var(--bg);
+  --night-2: var(--bg-2);
+  --star: var(--gold);
+
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 4px rgb(0 0 0 / 25%), 0 10px 24px rgb(0 0 0 / 28%);
   --font-serif: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ease: cubic-bezier(0.2, 0, 0, 1);
-  --dur: 160ms;
+  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur: 180ms;
+}
+
+/* Warm light bands: same system, inverted text. */
+.surface-light {
+  --ink: #18222d;
+  --ink-soft: #4a5867;
+  --ink-faint: #6c7a89;
+  --line: #ddd5c6;
+  --line-strong: #c9bfae;
+  --surface: #fffdf8;
+  --accent: #8a5a06;
+  --shadow: 0 2px 4px rgb(60 40 10 / 10%), 0 8px 20px rgb(60 40 10 / 12%);
+  background: var(--cream);
+  color: var(--ink);
 }

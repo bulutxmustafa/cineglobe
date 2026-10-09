@@ -3,18 +3,20 @@ const localePath = useLocalePath()
 const { locale } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 const { me, ready, refresh } = useAuth()
-onMounted(() => { if (!ready.value) refresh() })
+onMounted(() => {
+  if (!ready.value) refresh()
+})
 const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 'tr'))
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 8%); background: rgb(11 15 25 / 80%)">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: var(--border); background: rgb(16 25 35 / 90%)">
     <div class="container-page flex h-16 items-center gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="CINEGLOB">
         <LogoMark :size="34" />
-        <span class="logo font-serif text-[1.35rem] font-bold tracking-[0.14em]">CINEGLOB</span>
+        <span class="logo font-serif text-[1.3rem] font-bold tracking-[0.14em]">CINEGLOB</span>
       </NuxtLink>
-      <nav class="hidden items-center gap-5 text-sm sm:flex" :aria-label="$t('nav.main')">
+      <nav class="hidden items-center gap-6 text-sm sm:flex" :aria-label="$t('nav.main')">
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
         <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
         <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
@@ -26,12 +28,7 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
         <NuxtLink :to="localePath(me ? '/account' : '/login')" class="btn btn-glass">
           {{ me ? $t('auth.account') : $t('auth.login') }}
         </NuxtLink>
-        <a
-          :href="switchLocalePath(otherCode)"
-          class="btn btn-glass !px-3 uppercase"
-          :hreflang="otherCode"
-          :aria-label="$t('nav.language')"
-        >{{ otherCode }}</a>
+        <a :href="switchLocalePath(otherCode)" class="btn btn-glass !px-3 uppercase" :hreflang="otherCode" :aria-label="$t('nav.language')">{{ otherCode }}</a>
       </div>
     </div>
     <nav class="container-page flex gap-5 overflow-x-auto pb-2 text-sm sm:hidden" :aria-label="$t('nav.main')">
@@ -46,22 +43,21 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 
 <style scoped>
 .nav-link {
-  color: rgb(255 255 255 / 70%);
+  color: var(--text-2);
   white-space: nowrap;
   transition: color var(--dur);
 }
 .nav-link:hover,
 .nav-link.router-link-exact-active {
-  color: #fff;
-}
-.logo {
-  background: none;
-  color: #f6f1e1;
+  color: var(--text);
 }
 .nav-link.router-link-exact-active {
   text-decoration: underline;
-  text-decoration-color: #e9b44c;
-  text-underline-offset: 6px;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 8px;
   text-decoration-thickness: 2px;
+}
+.logo {
+  color: var(--gold);
 }
 </style>

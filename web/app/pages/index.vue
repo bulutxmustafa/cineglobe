@@ -37,71 +37,76 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 
 <template>
   <div>
-    <section class="relative overflow-hidden" style="background: var(--night)">
+    <!-- Hero: posters under a navy veil that melts into the next section -->
+    <section class="relative overflow-hidden" style="background: var(--bg)">
       <ClientOnly><PosterWall :posters="posters" /></ClientOnly>
       <div
         class="absolute inset-0"
-        style="background: radial-gradient(ellipse at 50% 45%, rgb(11 15 25 / 82%) 0%, rgb(11 15 25 / 45%) 70%, rgb(11 15 25 / 15%) 100%), linear-gradient(180deg, rgb(11 15 25 / 0%) 60%, rgb(11 15 25 / 90%) 100%)"
+        style="background: radial-gradient(ellipse at 50% 42%, rgb(16 25 35 / 80%) 0%, rgb(16 25 35 / 55%) 62%, rgb(16 25 35 / 35%) 100%), linear-gradient(180deg, rgb(16 25 35 / 25%) 0%, rgb(16 25 35 / 0%) 35%, rgb(23 37 54 / 100%) 100%)"
       />
-      <div class="container-page relative py-12 text-center sm:py-20">
-        <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]" style="background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #1c1306">
+      <div class="container-page relative pb-16 pt-12 text-center sm:pb-24 sm:pt-20">
+        <p class="inline-block rounded-full border px-3.5 py-1 text-xs font-bold uppercase tracking-[0.16em]" style="border-color: rgb(242 185 80 / 55%); color: var(--gold); background: rgb(16 25 35 / 55%)">
           {{ t('hero.eyebrow') }}
         </p>
-        <h1 class="mx-auto mt-4 max-w-2xl text-[1.6rem] leading-[1.2] text-white sm:text-[2.2rem]">
+        <h1 class="mx-auto mt-5 max-w-2xl text-[1.9rem] leading-[1.12] sm:text-[2.7rem]" style="text-shadow: 0 2px 18px rgb(0 0 0 / 55%)">
           {{ t('hero.title') }}
         </h1>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-white/75 sm:text-base">{{ t('hero.lead') }}</p>
+        <p class="mx-auto mt-4 max-w-xl text-[15px] sm:text-base" style="color: #d5dde6; text-shadow: 0 1px 10px rgb(0 0 0 / 60%)">{{ t('hero.lead') }}</p>
         <div class="mx-auto mt-8 max-w-2xl text-left">
           <SearchBox examples dark />
         </div>
-        <NuxtLink :to="localePath('/lucky')" class="btn btn-glass mt-6">🎡 {{ t('nav.lucky') }}</NuxtLink>
+        <NuxtLink :to="localePath('/lucky')" class="btn btn-quiet mt-6" style="background: rgb(16 25 35 / 70%)">{{ t('hero.surprise') }}</NuxtLink>
       </div>
     </section>
 
-    <section class="container-page mt-12" aria-labelledby="cols-h">
-      <div class="flex items-end justify-between gap-4">
-        <div>
-          <h2 id="cols-h" class="text-2xl">{{ t('home.collections') }}</h2>
-          <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ t('home.collectionsLead') }}</p>
+    <section class="pb-14 pt-2" style="background: var(--bg-2)" aria-labelledby="cols-h">
+      <div class="container-page">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <h2 id="cols-h" class="text-2xl sm:text-[1.7rem]">{{ t('home.collections') }}</h2>
+            <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ t('home.collectionsLead') }}</p>
+          </div>
+          <NuxtLink :to="localePath('/collections')" class="text-sm font-semibold underline underline-offset-4" style="color: var(--gold)">{{ t('home.allCollections') }}</NuxtLink>
         </div>
-        <NuxtLink :to="localePath('/collections')" class="text-sm font-medium underline underline-offset-4">{{ t('home.allCollections') }}</NuxtLink>
-      </div>
-      <div class="mt-5">
-        <ApiState :pending="colsPending" :error="colsError" :empty="!cols?.collections?.length">
-          <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <li v-for="(c, i) in cols?.collections" :key="c.slug">
-              <CollectionCard :collection="c" :index="i + 1" />
-            </li>
-          </ul>
-        </ApiState>
-      </div>
-    </section>
-
-    <section class="container-page mt-14" aria-labelledby="up-h">
-      <div class="flex items-end justify-between gap-4">
-        <div>
-          <h2 id="up-h" class="text-2xl">{{ t('home.upcoming') }}</h2>
-          <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ t('home.upcomingLead') }}</p>
+        <div class="mt-6">
+          <ApiState :pending="colsPending" :error="colsError" :empty="!cols?.collections?.length">
+            <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <li v-for="(c, i) in cols?.collections" :key="c.slug" class="rise" :style="{ animationDelay: `${i * 60}ms` }">
+                <CollectionCard :collection="c" :index="i + 1" />
+              </li>
+            </ul>
+          </ApiState>
         </div>
-        <NuxtLink :to="localePath('/upcoming')" class="text-sm font-medium underline underline-offset-4">{{ t('home.allUpcoming') }}</NuxtLink>
-      </div>
-      <div class="mt-5">
-        <ApiState :pending="upPending" :error="upError" :empty="!upcoming.length">
-          <TitleGrid :items="upcoming" />
-        </ApiState>
       </div>
     </section>
 
-    <section class="container-page mt-14" aria-labelledby="how-h">
-      <h2 id="how-h" class="text-2xl">{{ t('home.howTitle') }}</h2>
-      <ol class="mt-5 grid gap-4 sm:grid-cols-3">
+    <section class="surface-light -mt-6 rounded-t-[28px] pb-14 pt-12" aria-labelledby="up-h">
+      <div class="container-page">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <h2 id="up-h" class="text-2xl sm:text-[1.7rem]">{{ t('home.upcoming') }}</h2>
+            <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ t('home.upcomingLead') }}</p>
+          </div>
+          <NuxtLink :to="localePath('/upcoming')" class="text-sm font-semibold underline underline-offset-4" style="color: var(--accent)">{{ t('home.allUpcoming') }}</NuxtLink>
+        </div>
+        <div class="mt-6">
+          <ApiState :pending="upPending" :error="upError" :empty="!upcoming.length">
+            <TitleGrid :items="upcoming" />
+          </ApiState>
+        </div>
+      </div>
+    </section>
+
+    <section class="container-page py-14" aria-labelledby="how-h">
+      <h2 id="how-h" class="text-2xl sm:text-[1.7rem]">{{ t('home.howTitle') }}</h2>
+      <ol class="mt-6 grid gap-4 sm:grid-cols-3">
         <li
           v-for="(step, i) in ($tm('home.how') as { t: string; d: string }[])"
           :key="i"
           class="rounded-[18px] border p-6"
-          :style="{ borderColor: ['#4c3a8f', '#8a2f66', '#8a6516'][i], background: '#161f33', boxShadow: ['0 0 24px rgb(139 92 246 / 18%)', '0 0 24px rgb(236 72 153 / 18%)', '0 0 24px rgb(245 158 11 / 16%)'][i] }"
+          style="border-color: var(--border); background: var(--elevated); box-shadow: var(--shadow)"
         >
-          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full font-serif text-xl font-semibold" style="background: linear-gradient(135deg,#f59e0b,#fbbf24); color: #1c1306">{{ i + 1 }}</span>
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full font-serif text-xl font-bold" :style="{ background: i === 1 ? 'var(--teal)' : 'var(--gold)', color: i === 1 ? '#fff' : '#1a1305' }">{{ i + 1 }}</span>
           <h3 class="mt-3 font-sans text-lg font-semibold">{{ $rt(step.t as any) }}</h3>
           <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ $rt(step.d as any) }}</p>
         </li>

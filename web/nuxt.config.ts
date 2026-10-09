@@ -1,4 +1,4 @@
-const isDev = process.env.NODE_ENV === 'development'
+﻿const isDev = process.env.NODE_ENV === 'development'
 const swr = (seconds: number) => (isDev ? {} : { swr: seconds })
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
@@ -13,11 +13,12 @@ export default defineNuxtConfig({
     public: { siteUrl },
   },
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       titleTemplate: '%s',
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       meta: [
-        { name: 'theme-color', content: '#f7f5f0' },
+        { name: 'theme-color', content: '#101923' },
         { name: 'application-name', content: 'CINEGLOB' },
       ],
     },
@@ -29,7 +30,7 @@ export default defineNuxtConfig({
     defaultLocale: 'tr',
     detectBrowserLanguage: false,
     locales: [
-      { code: 'tr', language: 'tr-TR', name: 'Türkçe', file: 'tr.json' },
+      { code: 'tr', language: 'tr-TR', name: 'TÃ¼rkÃ§e', file: 'tr.json' },
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
     ],
   },

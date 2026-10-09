@@ -20,12 +20,13 @@
   "hero": {
     "eyebrow": "Movie recommendations and discovery platform",
     "title": "If you can't decide what to watch, you're in the right place.",
-    "lead": "Write what you feel like in your own words: “a light short-episode series” or “a thriller with a twist ending”. We find it and tell you why we picked it."
+    "lead": "Write what you feel like in your own words: “a light short-episode series” or “a thriller with a twist ending”. We find it and tell you why we picked it.",
+    "surprise": "Surprise me 🎲"
   },
   "search": {
     "label": "What do you want to watch?",
     "placeholder": "What do you want to watch? e.g. a fast-paced movie that ends in one evening",
-    "button": "Suggest",
+    "button": "Find me a movie",
     "type": "Type",
     "types": {
       "both": "All",
@@ -40,7 +41,7 @@
       "A crime series you can't stop watching"
     ],
     "title": "Search results",
-    "searching": "Thinking…",
+    "searching": "Picking for you…",
     "resultsFor": "Recommendations for “{query}”",
     "empty": "We found nothing for that sentence. Try other words or a clearer description.",
     "aiQuota": "AI search is used up for today. Classic search is on and results still come.",
@@ -80,7 +81,8 @@
     "pageOf": "Page {page} / {total}",
     "prev": "Previous",
     "next": "Next",
-    "notFound": "This collection was not found."
+    "notFound": "This collection was not found.",
+    "explore": "Explore"
   },
   "upcoming": {
     "title": "Upcoming releases",

@@ -20,12 +20,13 @@
   "hero": {
     "eyebrow": "Film önerileri ve keşif platformu",
     "title": "Ne izleyeceğine karar veremiyorsan doğru yerdesin.",
-    "lead": "Canının çektiğini kendi cümlenle yaz: “kısa bölümlü, hafif bir dizi” ya da “sonu şaşırtan gerilim”. Gerisini biz bulalım, neden önerdiğimizi de yazalım."
+    "lead": "Canının çektiğini kendi cümlenle yaz: “kısa bölümlü, hafif bir dizi” ya da “sonu şaşırtan gerilim”. Gerisini biz bulalım, neden önerdiğimizi de yazalım.",
+    "surprise": "Beni Şaşırt 🎲"
   },
   "search": {
     "label": "Ne izlemek istersin?",
     "placeholder": "Ne izlemek istersin? Örn. tek akşamda biten, tempolu bir film",
-    "button": "Öner",
+    "button": "Bana Film Bul",
     "type": "Tür",
     "types": {
       "both": "Hepsi",
@@ -40,7 +41,7 @@
       "Telefonu bırakmadan izlenen suç dizisi"
     ],
     "title": "Arama sonuçları",
-    "searching": "Düşünüyorum…",
+    "searching": "Senin için seçiyoruz…",
     "resultsFor": "“{query}” için öneriler",
     "empty": "Bu cümleyle sonuç bulamadık. Farklı kelimelerle ya da daha açık bir cümleyle dene.",
     "aiQuota": "Yapay zekâ ile arama bugünlük doldu. Klasik arama açık, sonuçlar yine geliyor.",
@@ -80,7 +81,8 @@
     "pageOf": "Sayfa {page} / {total}",
     "prev": "Önceki",
     "next": "Sonraki",
-    "notFound": "Bu koleksiyon bulunamadı."
+    "notFound": "Bu koleksiyon bulunamadı.",
+    "explore": "Keşfet"
   },
   "upcoming": {
     "title": "Yakında çıkacaklar",
