@@ -99,10 +99,9 @@ function pick(text: string) {
 .panel {
   padding: 14px;
   border-radius: 22px;
-  background: rgb(255 255 255 / 9%);
-  border: 1px solid rgb(255 255 255 / 18%);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 35%);
+  background: #1b3a5c;
+  border: 1px solid #2d5580;
+  box-shadow: 0 20px 44px rgb(6 16 30 / 40%);
 }
 .bar {
   display: flex;
@@ -116,8 +115,8 @@ function pick(text: string) {
   color: var(--ink-soft);
 }
 .bar.focused {
-  border-color: #34d399;
-  box-shadow: 0 0 0 4px rgb(52 211 153 / 30%);
+  border-color: #e9b44c;
+  box-shadow: 0 0 0 4px rgb(233 180 76 / 35%);
 }
 .search-input {
   flex: 1;
@@ -141,52 +140,33 @@ function pick(text: string) {
   padding: 0 22px 0 14px;
   border: 0;
   border-radius: 14px;
-  overflow: hidden;
   cursor: pointer;
   font-weight: 700;
   font-size: 1rem;
-  color: #04251d;
-  background: var(--grad);
-  box-shadow: 0 8px 22px rgb(34 181 115 / 45%);
+  color: #fff;
+  background: #1c7d57;
+  box-shadow: 0 4px 0 #14573d;
   transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
 }
-.go::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 55%), transparent);
-  transform: skewX(-20deg);
-  animation: shine 3.4s ease-in-out infinite;
-}
 .go:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 12px 28px rgb(34 181 115 / 55%);
+  transform: translateY(-1px);
+  background: #218c63;
 }
 .go:hover .gomark {
   transform: rotate(40deg) scale(1.1);
 }
 .go:active {
-  transform: scale(0.97);
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #14573d;
 }
 .gomark {
   transition: transform 320ms var(--ease);
   filter: drop-shadow(0 2px 3px rgb(42 19 6 / 30%));
 }
-@keyframes shine {
-  0%,
-  55% {
-    left: -60%;
-  }
-  100% {
-    left: 130%;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .go::after {
-    animation: none;
+  .go,
+  .gomark {
+    transition: none;
   }
 }
 .seg {
@@ -198,7 +178,7 @@ function pick(text: string) {
   background: var(--line);
 }
 .seg.dark {
-  background: rgb(255 255 255 / 12%);
+  background: #12263f;
 }
 .seg label {
   display: inline-flex;
@@ -223,7 +203,7 @@ function pick(text: string) {
   box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
 }
 .seg label:focus-within {
-  outline: 2px solid #34d399;
+  outline: 2px solid #e9b44c;
 }
 @media (max-width: 480px) {
   .go span {

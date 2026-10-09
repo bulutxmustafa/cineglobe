@@ -8,7 +8,7 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 10%); background: rgb(11 29 58 / 92%)">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: rgb(255 255 255 / 10%); background: rgb(18 38 63 / 97%)">
     <div class="container-page flex h-16 items-center gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="CINEGLOB">
         <LogoMark :size="34" />
@@ -55,14 +55,12 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
   color: #fff;
 }
 .logo {
-  background: linear-gradient(135deg, #f1fffb, #5eead4);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  background: none;
+  color: #f6f1e1;
 }
 .nav-link.router-link-exact-active {
   text-decoration: underline;
-  text-decoration-color: var(--accent);
+  text-decoration-color: #e9b44c;
   text-underline-offset: 6px;
   text-decoration-thickness: 2px;
 }

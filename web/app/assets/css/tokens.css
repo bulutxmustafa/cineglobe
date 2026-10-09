@@ -1,20 +1,20 @@
 /* CINEGLOB design tokens: warm paper, ink text, one accent. */
 :root {
-  --paper: #eef6f4;
+  --paper: #eaf0ec;
   --surface: #ffffff;
-  --ink: #0c1b2e;
-  --ink-soft: #44596b;
-  --ink-faint: #6f8394;
-  --line: #d5e6e1;
-  --line-strong: #b9d3cc;
-  --accent: #0b7a63;
-  --accent-ink: #04251d;
-  --accent-soft: #d7f3ea;
-  --night: #0b1d3a;
-  --night-2: #12305c;
-  --grad: linear-gradient(135deg, #5eead4 0%, #34d399 55%, #22b573 100%);
+  --ink: #14212e;
+  --ink-soft: #41566a;
+  --ink-faint: #6b7f8f;
+  --line: #d3dfd8;
+  --line-strong: #b4c7bc;
+  --accent: #1c7d57;
+  --accent-ink: #ffffff;
+  --accent-soft: #d7ebe1;
+  --night: #12263f;
+  --night-2: #1b3a5c;
+  --grad: #e9b44c;
   --gold: #ffc857;
-  --star: #e0a21a;
+  --star: #d9992a;
   --radius: 6px;
   --radius-lg: 10px;
   --shadow: 0 1px 2px rgb(29 27 23 / 8%), 0 4px 14px rgb(29 27 23 / 6%);
