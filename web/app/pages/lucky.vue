@@ -43,7 +43,7 @@ async function spin() {
 
 <template>
   <div>
-    <section class="relative overflow-hidden" style="background: radial-gradient(ellipse at 50% 20%, #2a1f6b, var(--night) 70%)">
+    <section class="relative overflow-hidden" style="background: radial-gradient(ellipse at 50% 15%, #2e2418, var(--night) 72%)">
       <div class="container-page relative py-12 text-center text-white">
         <h1 class="text-3xl sm:text-4xl">{{ t('lucky.title') }}</h1>
         <p class="mx-auto mt-2 max-w-xl text-white/80">{{ t('lucky.lead') }}</p>

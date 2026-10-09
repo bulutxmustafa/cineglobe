@@ -19,6 +19,9 @@ from apps.catalog.tmdb_client import (
 
 logger = logging.getLogger(__name__)
 
+# TMDB genres: News, Reality, Soap, Talk.
+NOT_CINEMATIC = {10763, 10764, 10766, 10767}
+
 
 def _fetch_and_cache_title(
     media_type: str, tmdb_id: int, language: str = "tr-TR"
@@ -150,3 +153,71 @@ class TitleDetailView(APIView):
 
         serializer = TitleSerializer(title, context={"language": lang})
         return Response(serializer.data)
+
+
+class PopularView(APIView):
+    """GET /api/v1/popular/: what people watch most right now (home page wall)."""
+
+    # Public and anonymous: no `Vary: Cookie`, so the CDN can share the response.
+    authentication_classes: list = []
+
+    @extend_schema(
+        summary="Currently popular movies and series",
+        parameters=[
+            OpenApiParameter(
+                "media_type", str, enum=["both", "movie", "tv"], default="both"
+            ),
+            OpenApiParameter("lang", str, enum=["tr", "en"], default="tr"),
+        ],
+        tags=["Catalog"],
+    )
+    def get(self, request):
+        from apps.catalog.formatting import format_tmdb_item
+        from apps.catalog.http import cdn_cache
+
+        media_type = request.query_params.get("media_type", "both")
+        if media_type not in ("both", "movie", "tv"):
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid",
+                        "message": "media_type must be both, movie or tv.",
+                        "status_code": 400,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        language = normalize_language(get_language(request))
+        try:
+            client = TMDBClient()
+            items: list[dict] = []
+            if media_type in ("both", "movie"):
+                data = client.get_popular_movies(language=language)
+                items += [format_tmdb_item(i, "movie") for i in data.get("results", [])]
+            if media_type in ("both", "tv"):
+                data = client.get_popular_tv(language=language)
+                items += [format_tmdb_item(i, "tv") for i in data.get("results", [])]
+        except (TMDBError, ValueError) as exc:
+            logger.warning("Popular titles unavailable: %s", exc)
+            return Response(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "TMDB is unavailable.",
+                        "status_code": 503,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        # No talk/news/reality/soap shows: the wall is meant to feel cinematic.
+        items = [
+            i
+            for i in items
+            if i["poster_url"] and not NOT_CINEMATIC.intersection(i["genre_ids"])
+        ]
+        items.sort(key=lambda i: i["popularity"], reverse=True)
+        return cdn_cache(
+            Response({"count": len(items), "results": items}), request, 3600
+        )

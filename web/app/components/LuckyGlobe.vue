@@ -69,7 +69,7 @@ onMounted(() => {
   scene.add(globe)
   const glow = new THREE.Mesh(
     new THREE.SphereGeometry(1.12, 48, 48),
-    new THREE.MeshBasicMaterial({ color: 0x7c8cff, transparent: true, opacity: 0.16, side: THREE.BackSide }),
+    new THREE.MeshBasicMaterial({ color: 0xf2c25c, transparent: true, opacity: 0.14, side: THREE.BackSide }),
   )
   scene.add(glow)
   scene.add(new THREE.AmbientLight(0xffffff, 0.9))

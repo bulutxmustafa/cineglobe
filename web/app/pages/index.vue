@@ -30,7 +30,7 @@ useHead({
 
 const { data: cols, pending: colsPending, error: colsError } = await useApiFetch<{ collections: Collection[] }>('/collections/')
 const { data: up, pending: upPending, error: upError } = await useApiFetch<{ results: TitleItem[] }>('/upcoming/', { media_type: 'both' })
-const { data: wall } = await useApiFetch<{ results: TitleItem[] }>('/collections/never-boring/')
+const { data: wall } = await useApiFetch<{ results: TitleItem[] }>('/popular/')
 const posters = computed(() => (wall.value?.results ?? []).map((r) => r.poster_url || '').filter(Boolean))
 const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster_url).slice(0, 5))
 </script>
@@ -41,10 +41,10 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
       <ClientOnly><PosterWall :posters="posters" /></ClientOnly>
       <div
         class="absolute inset-0"
-        style="background: radial-gradient(ellipse at 20% 30%, rgb(109 40 217 / 55%), transparent 60%), linear-gradient(180deg, rgb(13 11 31 / 55%), rgb(13 11 31 / 92%))"
+        style="background: linear-gradient(90deg, rgb(20 17 15 / 88%) 0%, rgb(20 17 15 / 55%) 50%, rgb(20 17 15 / 10%) 100%), linear-gradient(180deg, rgb(20 17 15 / 0%) 60%, rgb(20 17 15 / 90%) 100%)"
       />
       <div class="container-page relative py-16 sm:py-24">
-        <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white" style="background: var(--grad)">
+        <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]" style="background: var(--grad); color: #1c1306">
           {{ t('hero.eyebrow') }}
         </p>
         <h1 class="mt-4 max-w-3xl text-[2.2rem] leading-[1.1] text-white sm:text-[3.4rem]">
@@ -98,12 +98,12 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
         <li
           v-for="(step, i) in ($tm('home.how') as { t: string; d: string }[])"
           :key="i"
-          class="rounded-[16px] p-6 text-white"
-          :style="{ background: ['linear-gradient(135deg,#e11d48,#f97316)', 'linear-gradient(135deg,#6d28d9,#06b6d4)', 'linear-gradient(135deg,#0ea5e9,#6366f1)'][i], boxShadow: '0 10px 28px rgb(13 11 31 / 16%)' }"
+          class="rounded-[18px] border p-6"
+          style="border-color: var(--line-strong); background: linear-gradient(160deg, #fffdf8, #f6eddc); box-shadow: 0 8px 22px rgb(60 40 10 / 8%)"
         >
-          <span class="font-serif text-4xl font-semibold opacity-90">{{ i + 1 }}</span>
-          <h3 class="mt-2 font-sans text-lg font-semibold">{{ $rt(step.t as any) }}</h3>
-          <p class="mt-1 text-sm text-white/90">{{ $rt(step.d as any) }}</p>
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full font-serif text-xl font-semibold" style="background: var(--grad); color: #1c1306">{{ i + 1 }}</span>
+          <h3 class="mt-3 font-sans text-lg font-semibold">{{ $rt(step.t as any) }}</h3>
+          <p class="mt-1 text-sm" style="color: var(--ink-soft)">{{ $rt(step.d as any) }}</p>
         </li>
       </ol>
     </section>

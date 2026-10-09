@@ -54,7 +54,7 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
   color: #fff;
 }
 .logo {
-  background: linear-gradient(135deg, #ff7a9a, #ffc15e);
+  background: linear-gradient(135deg, #f9dd8f, #e39a2e);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

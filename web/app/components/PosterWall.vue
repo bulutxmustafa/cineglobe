@@ -32,7 +32,7 @@ const columns = computed(() => {
   padding: 0 12px;
   overflow: hidden;
   transform: rotate(-6deg) scale(1.25);
-  opacity: 0.75;
+  opacity: 0.85;
 }
 .col {
   display: flex;
