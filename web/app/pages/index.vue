@@ -55,7 +55,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 
     <div class="blend" aria-hidden="true" />
 
-    <section class="container-page -mt-6" aria-labelledby="cols-h">
+    <section class="container-page -mt-16" aria-labelledby="cols-h">
       <div class="sec-head flex items-end justify-between gap-4">
         <div>
           <h2 id="cols-h">{{ t('home.collections') }}</h2>
@@ -110,23 +110,29 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
   background:
     radial-gradient(ellipse at 30% 40%, rgb(5 10 20 / 68%) 0%, transparent 62%),
     linear-gradient(135deg, rgb(7 13 26 / 35%) 0%, rgb(13 23 41 / 22%) 100%),
-    linear-gradient(180deg, transparent 76%, rgb(10 24 56 / 30%) 86%, rgb(10 24 56 / 75%) 95%, #0a1838 100%);
+    linear-gradient(180deg, transparent 70%, rgb(10 24 56 / 12%) 78%, rgb(10 24 56 / 38%) 86%, rgb(10 24 56 / 72%) 94%, #0a1838 100%);
 }
 .blend {
-  height: 190px;
+  height: 300px;
   background: linear-gradient(
     180deg,
-    #0a1838 0%,
-    #0e1f44 10%,
-    #172b55 20%,
-    #23396a 30%,
-    #344c80 40%,
-    #4b6496 50%,
-    #677fad 60%,
-    #8a9fc4 70%,
-    #adbfd9 80%,
-    #cbd8ea 90%,
-    #e6edf7 100%
+    rgb(10 24 56) 0.0%,
+    rgb(10 24 56) 6.25%,
+    rgb(14 27 59) 12.5%,
+    rgb(21 34 65) 18.75%,
+    rgb(33 46 76) 25.0%,
+    rgb(50 62 90) 31.25%,
+    rgb(71 83 109) 37.5%,
+    rgb(94 106 129) 43.75%,
+    rgb(120 130 152) 50.0%,
+    rgb(146 155 174) 56.25%,
+    rgb(169 178 194) 62.5%,
+    rgb(190 199 213) 68.75%,
+    rgb(207 215 227) 75.0%,
+    rgb(219 227 238) 81.25%,
+    rgb(226 234 244) 87.5%,
+    rgb(230 237 247) 93.75%,
+    rgb(230 237 247) 100.0%
   );
 }
 .step {
