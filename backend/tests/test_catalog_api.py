@@ -259,3 +259,13 @@ def test_backdrop_override_replaces_key_art():
         media_type="tv", tmdb_id=1396, title="Breaking Bad", backdrop_path="/scene.jpg"
     )
     assert TitleSerializer().get_backdrop_url(other).endswith("/scene.jpg")
+
+
+@pytest.mark.django_db
+def test_backdrop_override_full_url_used_as_is():
+    from apps.catalog.serializers import BACKDROP_OVERRIDES, TitleSerializer
+
+    title = Title(
+        media_type="tv", tmdb_id=5920, title="The Mentalist", backdrop_path="/x.jpg"
+    )
+    assert TitleSerializer().get_backdrop_url(title) == BACKDROP_OVERRIDES[("tv", 5920)]

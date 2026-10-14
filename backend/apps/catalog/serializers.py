@@ -11,10 +11,12 @@ from apps.catalog.image_utils import backdrop_url, poster_url
 from apps.catalog.models import Genre, Person, Title, TVDetails
 
 # Hand-picked scene stills (characters in a real scene) for titles whose default TMDB
-# backdrop is promotional key art. TMDB does not label stills vs. key art, so this stays manual.
+# backdrop is promotional key art. A full https URL is used as-is (episode stills
+# come only in "original" size, not w1280). TMDB does not label stills vs. key art, so this stays manual.
 BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
     ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
-    ("tv", 5920): "/nFljbcf6fVnPH46JXGlxGzVdsyk.jpg",  # The Mentalist: Patrick Jane
+    # The Mentalist: Patrick Jane laughing, a real frame from S3E10 (episode still).
+    ("tv", 5920): "https://image.tmdb.org/t/p/original/eN10haOFmLlhtDK5HBKP08GC3ZC.jpg",
     (
         "movie",
         634649,
@@ -89,6 +91,8 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def get_backdrop_url(self, obj: Title) -> str:
         override = BACKDROP_OVERRIDES.get((obj.media_type, obj.tmdb_id))
+        if override and override.startswith("https://"):
+            return override
         return backdrop_url(override or obj.backdrop_path)
 
     def get_display_title(self, obj: Title) -> str:
