@@ -73,50 +73,142 @@ useHead({
 
 <template>
   <article v-if="data">
-    <div v-if="data.backdrop_url" class="relative h-48 overflow-hidden sm:h-72" style="background: var(--ink)">
-      <img :src="data.backdrop_url" alt="" class="h-full w-full object-cover opacity-80" width="1280" height="720" />
-    </div>
-    <div class="container-page py-8">
-      <div class="grid gap-8 md:grid-cols-[240px_1fr]" :class="{ 'md:-mt-24': data.backdrop_url }">
-        <div class="relative z-10 mx-auto w-48 md:w-full">
-          <div class="aspect-[2/3] overflow-hidden rounded-[6px]" style="background: var(--line); box-shadow: var(--shadow)">
-            <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
+    <!-- Cinematic hero: the backdrop slowly drifts (Ken Burns), poster and facts sit on top -->
+    <section class="hero relative overflow-hidden">
+      <img v-if="data.backdrop_url" :src="data.backdrop_url" alt="" class="bg" width="1280" height="720" />
+      <img v-else-if="data.poster_url" :src="data.poster_url" alt="" class="bg bg-blur" width="342" height="513" />
+      <div class="shine" aria-hidden="true" />
+      <div class="veil absolute inset-0" aria-hidden="true" />
+      <div class="container-page relative py-12 sm:py-16 lg:py-20">
+        <div class="grid items-end gap-8 md:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
+          <div class="mx-auto w-48 md:w-full">
+            <div class="poster aspect-[2/3] overflow-hidden rounded-[16px]">
+              <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
+            </div>
           </div>
-        </div>
-        <div class="md:pt-28" :class="{ 'md:pt-28': data.backdrop_url, 'md:pt-0': !data.backdrop_url }">
-          <p class="text-sm font-semibold uppercase tracking-wide" style="color: var(--accent)">
-            {{ type === 'tv' ? t('title.tv') : t('title.movie') }}
-          </p>
-          <h1 class="mt-1 text-3xl sm:text-4xl">
-            {{ name }} <span v-if="year" class="font-normal" style="color: var(--ink-faint)">({{ year }})</span>
-          </h1>
-          <p
-            v-if="data.original_title && data.original_title !== name"
-            class="mt-1 text-sm"
-            style="color: var(--ink-soft)"
-          >{{ t('title.originalTitle') }}: {{ data.original_title }}</p>
-
-          <ul class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style="color: var(--ink-soft)">
-            <li v-if="data.vote_average" class="font-semibold" style="color: var(--star)">★ {{ data.vote_average.toFixed(1) }} <span class="font-normal" style="color: var(--ink-soft)">· {{ t('title.votes', { n: data.vote_count }) }}</span></li>
-            <li v-if="data.tv_details">{{ t('title.seasons', { n: data.tv_details.number_of_seasons }) }} · {{ t('title.episodes', { n: data.tv_details.number_of_episodes }) }}</li>
-            <li v-if="data.tv_details?.episode_runtime">{{ t('title.runtime', { n: data.tv_details.episode_runtime }) }}</li>
-          </ul>
-          <ul v-if="data.genres?.length" class="mt-3 flex flex-wrap gap-2">
-            <li v-for="g in data.genres" :key="g.id" class="chip !min-h-[30px] text-xs">{{ g.name }}</li>
-          </ul>
-
-          <h2 class="mt-6 text-xl">{{ t('title.overview') }}</h2>
-          <p class="mt-2 max-w-2xl leading-relaxed">{{ data.display_overview || t('title.noOverview') }}</p>
-
-          <div class="mt-6 flex flex-wrap gap-2">
-            <ClientOnly><TrailerButton :media-type="data.media_type" :tmdb-id="data.tmdb_id" :title="name" /></ClientOnly>
-            <FavoriteButton :item="{ media_type: data.media_type, tmdb_id: data.tmdb_id, title: data.title, display_title: data.display_title, poster_url: data.poster_url, release_date: data.release_date ?? undefined, vote_average: data.vote_average ?? undefined }" />
-            <NuxtLink :to="localePath({ path: '/search', query: { q: name } })" class="btn btn-quiet">
-              {{ t('title.more') }}
-            </NuxtLink>
+          <div class="text-center md:text-left">
+            <p class="eyebrow">{{ type === 'tv' ? t('title.tv') : t('title.movie') }}</p>
+            <h1 class="mt-4 text-[2.2rem] leading-[1.05] sm:text-[3rem] lg:text-[3.6rem]" style="color: #fff">
+              {{ name }} <span v-if="year" class="font-normal" style="color: #c9d3e4">({{ year }})</span>
+            </h1>
+            <p v-if="data.original_title && data.original_title !== name" class="mt-2 text-sm" style="color: #c9d3e4">
+              {{ t('title.originalTitle') }}: {{ data.original_title }}
+            </p>
+            <ul class="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm md:justify-start" style="color: #dbe3ef">
+              <li v-if="data.vote_average" class="font-bold" style="color: var(--gold)">★ {{ data.vote_average.toFixed(1) }} <span class="font-normal" style="color: #c9d3e4">· {{ t('title.votes', { n: data.vote_count }) }}</span></li>
+              <li v-if="data.tv_details">{{ t('title.seasons', { n: data.tv_details.number_of_seasons }) }} · {{ t('title.episodes', { n: data.tv_details.number_of_episodes }) }}</li>
+              <li v-if="data.tv_details?.episode_runtime">{{ t('title.runtime', { n: data.tv_details.episode_runtime }) }}</li>
+            </ul>
+            <ul v-if="data.genres?.length" class="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
+              <li v-for="g in data.genres" :key="g.id" class="chip chip-dark !min-h-[30px] text-xs">{{ g.name }}</li>
+            </ul>
+            <p class="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed sm:text-base md:mx-0" style="color: #e3e9f2">
+              {{ data.display_overview || t('title.noOverview') }}
+            </p>
+            <div class="mt-7 flex flex-wrap justify-center gap-2.5 md:justify-start">
+              <ClientOnly><TrailerButton :media-type="data.media_type" :tmdb-id="data.tmdb_id" :title="name" /></ClientOnly>
+              <FavoriteButton :item="{ media_type: data.media_type, tmdb_id: data.tmdb_id, title: data.title, display_title: data.display_title, poster_url: data.poster_url, release_date: data.release_date ?? undefined, vote_average: data.vote_average ?? undefined }" />
+              <NuxtLink :to="localePath({ path: '/search', query: { q: name } })" class="btn btn-glass">
+                {{ t('title.more') }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+    <div class="blend" aria-hidden="true" />
   </article>
 </template>
+
+<style scoped>
+.hero {
+  background: var(--bg);
+  min-height: min(78vh, 760px);
+  display: flex;
+  align-items: flex-end;
+}
+.hero > .container-page {
+  width: 100%;
+}
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transform-origin: 60% 40%;
+  animation: drift 32s ease-in-out infinite alternate;
+}
+.bg-blur {
+  filter: blur(28px) saturate(1.2);
+  transform: scale(1.2);
+  animation: none;
+}
+@keyframes drift {
+  from {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.16) translate3d(-2.5%, -1.5%, 0);
+  }
+}
+.shine {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(115deg, transparent 40%, rgb(255 214 140 / 10%) 50%, transparent 60%);
+  animation: sweep 14s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes sweep {
+  0%,
+  15% {
+    transform: translateX(-60%);
+  }
+  85%,
+  100% {
+    transform: translateX(60%);
+  }
+}
+.veil {
+  background:
+    linear-gradient(90deg, rgb(10 24 56 / 92%) 0%, rgb(10 24 56 / 70%) 40%, rgb(10 24 56 / 25%) 75%, rgb(10 24 56 / 35%) 100%),
+    linear-gradient(180deg, rgb(10 24 56 / 35%) 0%, transparent 30%, rgb(10 24 56 / 60%) 72%, #0a1838 95%, #0a1838 100%);
+}
+.poster {
+  border: 1px solid rgb(255 255 255 / 18%);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 55%), 0 0 0 6px rgb(255 255 255 / 4%);
+  background: #13244a;
+}
+.blend {
+  position: relative;
+  margin-top: -3px;
+  height: 170px;
+  background: linear-gradient(
+    180deg,
+    rgb(10 24 56) 0.0%,
+    rgb(10 24 56) 6.25%,
+    rgb(14 27 59) 12.5%,
+    rgb(21 34 65) 18.75%,
+    rgb(33 46 76) 25.0%,
+    rgb(50 62 90) 31.25%,
+    rgb(71 83 109) 37.5%,
+    rgb(94 106 129) 43.75%,
+    rgb(120 130 152) 50.0%,
+    rgb(146 155 174) 56.25%,
+    rgb(169 178 194) 62.5%,
+    rgb(190 199 213) 68.75%,
+    rgb(207 215 227) 75.0%,
+    rgb(219 227 238) 81.25%,
+    rgb(226 234 244) 87.5%,
+    rgb(230 237 247) 93.75%,
+    rgb(230 237 247) 100.0%
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg,
+  .shine {
+    animation: none;
+  }
+}
+</style>
