@@ -4,7 +4,7 @@
 // from the pool, so the wall keeps changing.
 const props = defineProps<{ posters: string[] }>()
 const N = 9
-const PER_COL = 5
+const PER_COL = 6
 const slots = ref<string[]>([])
 
 function shuffle<T>(list: T[]): T[] {
