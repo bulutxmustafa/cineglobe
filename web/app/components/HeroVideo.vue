@@ -5,13 +5,16 @@ const props = defineProps<{ mediaType: 'movie' | 'tv'; tmdbId: number }>()
 const { t } = useI18n()
 const trailer = useTrailer(props.mediaType, props.tmdbId)
 const modalOpen = useTrailerModal()
+const videoOn = useHeroVideoOn()
 
 const enabled = ref(false)
 const visible = ref(false)
 const muted = ref(true)
 const frame = ref<HTMLIFrameElement | null>(null)
 
+onBeforeUnmount(() => (videoOn.value = false))
 onMounted(() => {
+  videoOn.value = false
   const saveData = (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData
   enabled.value =
     window.innerWidth >= 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !saveData
@@ -41,7 +44,10 @@ function command(func: string, args: unknown[] = []) {
 }
 function onLoad() {
   // Let YouTube's title overlay fade out before showing the video.
-  setTimeout(() => (visible.value = true), 2200)
+  setTimeout(() => {
+    visible.value = true
+    videoOn.value = true
+  }, 2200)
 }
 function toggleSound() {
   muted.value = !muted.value

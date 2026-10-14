@@ -31,3 +31,6 @@ export function useTrailer(mediaType: string, tmdbId: number) {
 
 /** Whether the trailer pop-up is open (the hero background pauses meanwhile). */
 export const useTrailerModal = () => useState<boolean>('trailer-modal', () => false)
+
+/** True while the trailer plays behind the title hero (the poster steps aside). */
+export const useHeroVideoOn = () => useState<boolean>('hero-video-on', () => false)

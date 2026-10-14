@@ -20,6 +20,7 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const base = useApiBase()
 const config = useRuntimeConfig()
+const videoOn = useHeroVideoOn()
 const type = String(route.params.type)
 const id = String(route.params.id)
 
@@ -81,8 +82,8 @@ useHead({
       <div class="shine" aria-hidden="true" />
       <div class="veil absolute inset-0" aria-hidden="true" />
       <div class="container-page relative py-12 sm:py-16 lg:py-20">
-        <div class="grid items-start gap-8 md:grid-cols-[330px_minmax(0,1fr)] lg:gap-12">
-          <div class="mx-auto w-60 md:w-full">
+        <div class="layout grid items-start gap-8 md:grid-cols-[330px_minmax(0,1fr)] lg:gap-12" :class="{ cinema: videoOn }">
+          <div class="poster-col mx-auto w-60 md:w-full">
             <div class="poster aspect-[2/3] overflow-hidden rounded-[16px]">
               <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
             </div>
@@ -172,13 +173,32 @@ useHead({
 }
 .veil {
   background:
-    linear-gradient(90deg, rgb(8 18 42 / 80%) 0%, rgb(8 18 42 / 45%) 38%, rgb(8 18 42 / 8%) 70%, rgb(8 18 42 / 12%) 100%),
+    linear-gradient(90deg, rgb(8 18 42 / 66%) 0%, rgb(8 18 42 / 32%) 36%, rgb(8 18 42 / 4%) 68%, rgb(8 18 42 / 8%) 100%),
     linear-gradient(180deg, rgb(10 24 56 / 25%) 0%, transparent 25%, rgb(10 24 56 / 55%) 70%, rgb(10 24 56 / 88%) 88%, #0a1838 100%);
 }
 .hero h1,
 .hero p,
 .hero li {
   text-shadow: 0 2px 12px rgb(0 0 0 / 70%);
+}
+/* Once the trailer plays behind, the poster fades away and the text takes its place. */
+.layout {
+  transition: grid-template-columns 900ms var(--ease), gap 900ms var(--ease);
+}
+.poster-col {
+  transition: opacity 700ms ease, transform 900ms var(--ease);
+}
+@media (min-width: 768px) {
+  .layout.cinema {
+    grid-template-columns: 0px minmax(0, 1fr);
+    gap: 0;
+  }
+  .layout.cinema .poster-col {
+    opacity: 0;
+    transform: scale(0.9);
+    overflow: hidden;
+    pointer-events: none;
+  }
 }
 .poster {
   border: 1px solid rgb(255 255 255 / 18%);
