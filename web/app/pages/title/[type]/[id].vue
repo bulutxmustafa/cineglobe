@@ -20,7 +20,6 @@ const { t, locale } = useI18n()
 const localePath = useLocalePath()
 const base = useApiBase()
 const config = useRuntimeConfig()
-const videoOn = useHeroVideoOn()
 const type = String(route.params.type)
 const id = String(route.params.id)
 
@@ -78,12 +77,11 @@ useHead({
     <section class="hero relative overflow-hidden">
       <img v-if="data.backdrop_url" :src="data.backdrop_url" alt="" class="bg" width="1280" height="720" />
       <img v-else-if="data.poster_url" :src="data.poster_url" alt="" class="bg bg-blur" width="342" height="513" />
-      <ClientOnly><HeroVideo :media-type="data.media_type" :tmdb-id="data.tmdb_id" /></ClientOnly>
       <div class="shine" aria-hidden="true" />
       <div class="veil absolute inset-0" aria-hidden="true" />
       <div class="container-page relative py-12 sm:py-16 lg:py-20">
-        <div class="layout grid items-start gap-8 md:grid-cols-[330px_minmax(0,1fr)] lg:gap-12" :class="{ cinema: videoOn }">
-          <div class="poster-col mx-auto w-60 md:w-full">
+        <div class="grid items-start gap-8 md:grid-cols-[330px_minmax(0,1fr)] lg:gap-12">
+          <div class="mx-auto w-60 md:w-full">
             <div class="poster aspect-[2/3] overflow-hidden rounded-[16px]">
               <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
             </div>
@@ -139,7 +137,7 @@ useHead({
   object-fit: cover;
   object-position: center 30%;
   transform-origin: 60% 40%;
-  animation: drift 32s ease-in-out infinite alternate;
+  animation: drift 26s ease-in-out infinite alternate;
 }
 .bg-blur {
   filter: blur(28px) saturate(1.2);
@@ -151,7 +149,7 @@ useHead({
     transform: scale(1.05) translate3d(0, 0, 0);
   }
   to {
-    transform: scale(1.16) translate3d(-2.5%, -1.5%, 0);
+    transform: scale(1.2) translate3d(-3%, -2%, 0);
   }
 }
 .shine {
@@ -180,25 +178,6 @@ useHead({
 .hero p,
 .hero li {
   text-shadow: 0 2px 12px rgb(0 0 0 / 70%);
-}
-/* Once the trailer plays behind, the poster fades away and the text takes its place. */
-.layout {
-  transition: grid-template-columns 900ms var(--ease), gap 900ms var(--ease);
-}
-.poster-col {
-  transition: opacity 700ms ease, transform 900ms var(--ease);
-}
-@media (min-width: 768px) {
-  .layout.cinema {
-    grid-template-columns: 0px minmax(0, 1fr);
-    gap: 0;
-  }
-  .layout.cinema .poster-col {
-    opacity: 0;
-    transform: scale(0.9);
-    overflow: hidden;
-    pointer-events: none;
-  }
 }
 .poster {
   border: 1px solid rgb(255 255 255 / 18%);
