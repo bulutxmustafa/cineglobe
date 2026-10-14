@@ -25,12 +25,12 @@
   --box-warm: linear-gradient(160deg, #2b1f0d 0%, #181108 100%);
 
   /* Semantic aliases used across pages */
-  --paper: #f3f7fd;
+  --paper: #e6edf7;
   --surface: #ffffff;
   --ink: #0d1b33;
   --ink-soft: #46597a;
   --ink-faint: #6f82a0;
-  --line: #dbe4f0;
+  --line: #d3ddeb;
   --line-strong: #c2d1e6;
   --accent: #1f63e0;
   --accent-ink: #1b1406;

@@ -106,7 +106,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 }
 .veil {
   background:
-    radial-gradient(ellipse at 30% 45%, rgb(5 10 20 / 55%) 0%, transparent 65%),
+    radial-gradient(ellipse at 30% 40%, rgb(5 10 20 / 68%) 0%, transparent 62%),
     linear-gradient(135deg, rgb(7 13 26 / 35%) 0%, rgb(13 23 41 / 22%) 100%),
     linear-gradient(180deg, transparent 80%, rgb(10 24 56 / 70%) 100%);
 }

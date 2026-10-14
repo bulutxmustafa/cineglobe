@@ -10,7 +10,7 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b backdrop-blur-xl" style="border-color: rgb(255 255 255 / 7%); background: rgb(10 24 56 / 82%)">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-xl" style="border-color: rgb(255 255 255 / 7%); background: rgb(5 12 30 / 94%)">
     <div class="container-page flex h-[64px] items-center gap-3 sm:h-[68px] sm:gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="FilmPusula">
         <LogoMark :size="32" class="shrink-0" />
