@@ -99,6 +99,9 @@
     }
   },
   "title": {
+    "trailer": "Fragmanı izle",
+    "trailerOf": "{name} fragmanı",
+    "closeTrailer": "Fragmanı kapat",
     "movie": "Film",
     "tv": "Dizi",
     "posterAlt": "{name} afişi",

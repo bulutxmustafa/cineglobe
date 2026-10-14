@@ -155,6 +155,129 @@ class TitleDetailView(APIView):
         return Response(serializer.data)
 
 
+def rank_trailers(videos: list[dict]) -> list[dict]:
+    """YouTube trailers and teasers, best first: official trailers, then any
+    trailer, then teasers."""
+
+    def rank(v: dict) -> tuple:
+        kind = {"Trailer": 0, "Teaser": 1}.get(v.get("type", ""), 9)
+        return (kind, not v.get("official", False), v.get("published_at") or "")
+
+    usable = [
+        v
+        for v in videos
+        if v.get("site") == "YouTube"
+        and v.get("key")
+        and v.get("type") in ("Trailer", "Teaser")
+    ]
+    return sorted(usable, key=rank)
+
+
+def pick_trailer(videos: list[dict]) -> dict | None:
+    """Best YouTube trailer, without checking whether it still plays."""
+    ranked = rank_trailers(videos)
+    return ranked[0] if ranked else None
+
+
+def youtube_playable(key: str) -> bool:
+    """Whether a YouTube video still exists and may be embedded (oEmbed check).
+
+    TMDB keeps links to videos that were later deleted or made private. A network
+    problem counts as playable so a slow YouTube never hides every trailer."""
+    import httpx
+    from django.core.cache import cache
+
+    cache_key = f"yt:playable:{key}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+    try:
+        response = httpx.get(
+            "https://www.youtube.com/oembed",
+            params={"url": f"https://www.youtube.com/watch?v={key}", "format": "json"},
+            timeout=3,
+        )
+    except httpx.HTTPError:
+        return True
+    playable = response.status_code == 200
+    if response.status_code in (200, 401, 403, 404):
+        cache.set(cache_key, playable, 86400)
+    return playable
+
+
+TRAILER_MAX_CHECKS = 6
+
+
+class TitleTrailerView(APIView):
+    """GET /api/v1/titles/{media_type}/{tmdb_id}/trailer/: a YouTube trailer, if any.
+
+    The site language is tried first; when there is no trailer in it, English."""
+
+    authentication_classes: list = []
+
+    @extend_schema(
+        summary="YouTube trailer of a movie or series",
+        parameters=[OpenApiParameter("lang", str, enum=["tr", "en"], default="tr")],
+        tags=["Catalog"],
+    )
+    def get(self, request, media_type: str, tmdb_id: int):
+        from apps.catalog.http import cdn_cache
+
+        if media_type not in ("movie", "tv"):
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid",
+                        "message": "media_type must be movie or tv.",
+                        "status_code": 400,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        language = normalize_language(get_language(request))
+        client = TMDBClient()
+        candidates: list[dict] = []
+        try:
+            for lang in dict.fromkeys([language, "en-US"]):
+                videos = client.get_videos(media_type, tmdb_id, language=lang)
+                candidates += rank_trailers(videos.get("results", []))
+        except TMDBNotFoundError:
+            candidates = []
+        except TMDBError as exc:
+            logger.warning("Trailer unavailable: %s", exc)
+            return Response(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "TMDB is unavailable.",
+                        "status_code": 503,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        # The first few candidates that still play on YouTube (deleted videos skipped).
+        seen: set[str] = set()
+        trailer = None
+        for video in candidates:
+            if video["key"] in seen or len(seen) >= TRAILER_MAX_CHECKS:
+                continue
+            seen.add(video["key"])
+            if youtube_playable(video["key"]):
+                trailer = video
+                break
+        body = {"trailer": None}
+        if trailer:
+            body["trailer"] = {
+                "key": trailer["key"],
+                "name": trailer.get("name", ""),
+                "language": trailer.get("iso_639_1", ""),
+                "type": trailer.get("type", ""),
+            }
+        return cdn_cache(Response(body), request, 86400)
+
+
 # Titles always on the home wall (TV: The Mentalist), plus filters for the rest.
 WALL_PINS: list[tuple[str, int]] = [("tv", 5920)]
 WALL_MIN_VOTES = 150

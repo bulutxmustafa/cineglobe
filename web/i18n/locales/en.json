@@ -99,6 +99,9 @@
     }
   },
   "title": {
+    "trailer": "Watch trailer",
+    "trailerOf": "{name} trailer",
+    "closeTrailer": "Close trailer",
     "movie": "Movie",
     "tv": "Series",
     "posterAlt": "{name} poster",

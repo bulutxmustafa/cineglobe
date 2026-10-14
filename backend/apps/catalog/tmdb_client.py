@@ -228,6 +228,18 @@ class TMDBClient:
             ttl=TTL_DISCOVER,
         )
 
+    def get_videos(
+        self, media_type: str, tmdb_id: int, language: str = "tr-TR"
+    ) -> dict[str, Any]:
+        """Trailers, teasers and clips of a movie or series. Cached 24 hours."""
+        lang = normalize_language(language)
+        return self._cached_get(
+            f"/{media_type}/{tmdb_id}/videos",
+            params={"language": lang},
+            cache_key=self._key(media_type, tmdb_id, lang, "videos"),
+            ttl=TTL_DETAIL,
+        )
+
     def get_movie_release_dates(self, tmdb_id: int) -> dict[str, Any]:
         """Per-country release dates and types for one movie. Cached 24 hours."""
         return self._cached_get(
