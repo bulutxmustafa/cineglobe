@@ -55,7 +55,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 
     <div class="blend" aria-hidden="true" />
 
-    <section class="container-page -mt-10" aria-labelledby="cols-h">
+    <section class="container-page -mt-6" aria-labelledby="cols-h">
       <div class="sec-head flex items-end justify-between gap-4">
         <div>
           <h2 id="cols-h">{{ t('home.collections') }}</h2>
@@ -110,11 +110,24 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
   background:
     radial-gradient(ellipse at 30% 40%, rgb(5 10 20 / 68%) 0%, transparent 62%),
     linear-gradient(135deg, rgb(7 13 26 / 35%) 0%, rgb(13 23 41 / 22%) 100%),
-    linear-gradient(180deg, transparent 60%, rgb(10 24 56 / 45%) 78%, rgb(10 24 56 / 88%) 93%, #0a1838 100%);
+    linear-gradient(180deg, transparent 76%, rgb(10 24 56 / 30%) 86%, rgb(10 24 56 / 75%) 95%, #0a1838 100%);
 }
 .blend {
-  height: 150px;
-  background: linear-gradient(180deg, #0a1838 0%, rgb(10 24 56 / 82%) 18%, rgb(42 70 120 / 45%) 48%, rgb(150 175 212 / 30%) 72%, rgb(230 237 247 / 0%) 100%);
+  height: 190px;
+  background: linear-gradient(
+    180deg,
+    #0a1838 0%,
+    #0e1f44 10%,
+    #172b55 20%,
+    #23396a 30%,
+    #344c80 40%,
+    #4b6496 50%,
+    #677fad 60%,
+    #8a9fc4 70%,
+    #adbfd9 80%,
+    #cbd8ea 90%,
+    #e6edf7 100%
+  );
 }
 .step {
   padding: 24px;

@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from apps.catalog.tmdb_client import TMDBServiceUnavailableError
+from apps.catalog.tmdb_client import TMDBNotFoundError, TMDBServiceUnavailableError
 from django.core.cache import cache
 
 URL = "/api/v1/popular/"
@@ -24,13 +24,21 @@ def item(tmdb_id, popularity, poster="/p.jpg", genres=(18,)):
         "popularity": popularity,
         "poster_path": poster,
         "genre_ids": list(genres),
+        "vote_count": 500,
     }
 
 
 def client_with(movies, tv):
     client = MagicMock()
-    client.get_popular_movies.return_value = {"results": movies}
-    client.get_popular_tv.return_value = {"results": tv}
+    client.get_trending.return_value = {"results": []}
+    client.get_popular_movies.side_effect = lambda page, language: {
+        "results": movies if page == 1 else []
+    }
+    client.get_popular_tv.side_effect = lambda page, language: {
+        "results": tv if page == 1 else []
+    }
+    # Pinned titles are skipped when TMDB cannot find them.
+    client.get_tv_detail.side_effect = TMDBNotFoundError("gone")
     return patch("apps.catalog.views.TMDBClient", return_value=client)
 
 
@@ -54,7 +62,7 @@ def test_popular_invalid_media_type(api_client):
 
 def test_popular_tmdb_down(api_client):
     client = MagicMock()
-    client.get_popular_movies.side_effect = TMDBServiceUnavailableError("down")
+    client.get_trending.side_effect = TMDBServiceUnavailableError("down")
     with patch("apps.catalog.views.TMDBClient", return_value=client):
         assert api_client.get(URL).status_code == 503
 

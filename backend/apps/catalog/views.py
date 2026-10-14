@@ -155,6 +155,12 @@ class TitleDetailView(APIView):
         return Response(serializer.data)
 
 
+# Titles always on the home wall (TV: The Mentalist), plus filters for the rest.
+WALL_PINS: list[tuple[str, int]] = [("tv", 5920)]
+WALL_MIN_VOTES = 150
+WALL_MAX = 90
+
+
 class PopularView(APIView):
     """GET /api/v1/popular/: what people watch most right now (home page wall)."""
 
@@ -191,13 +197,36 @@ class PopularView(APIView):
         language = normalize_language(get_language(request))
         try:
             client = TMDBClient()
-            items: list[dict] = []
-            if media_type in ("both", "movie"):
-                data = client.get_popular_movies(language=language)
-                items += [format_tmdb_item(i, "movie") for i in data.get("results", [])]
-            if media_type in ("both", "tv"):
-                data = client.get_popular_tv(language=language)
-                items += [format_tmdb_item(i, "tv") for i in data.get("results", [])]
+            raw: list[dict] = []
+            # What people watch most this week, then the classic popular lists.
+            for page in (1, 2):
+                for i in client.get_trending(page=page, language=language).get(
+                    "results", []
+                ):
+                    if i.get("media_type") in ("movie", "tv"):
+                        raw.append(format_tmdb_item(i, i["media_type"]))
+            for page in (1, 2):
+                if media_type in ("both", "movie"):
+                    data = client.get_popular_movies(page=page, language=language)
+                    raw += [
+                        format_tmdb_item(i, "movie") for i in data.get("results", [])
+                    ]
+                if media_type in ("both", "tv"):
+                    data = client.get_popular_tv(page=page, language=language)
+                    raw += [format_tmdb_item(i, "tv") for i in data.get("results", [])]
+            pins = []
+            for pin_type, pin_id in WALL_PINS:
+                if media_type not in ("both", pin_type):
+                    continue
+                try:
+                    detail = (
+                        client.get_tv_detail(pin_id, language=language)
+                        if pin_type == "tv"
+                        else client.get_movie_detail(pin_id, language=language)
+                    )
+                    pins.append(format_tmdb_item(detail, pin_type))
+                except (TMDBError, ValueError):
+                    continue
         except (TMDBError, ValueError) as exc:
             logger.warning("Popular titles unavailable: %s", exc)
             return Response(
@@ -211,13 +240,23 @@ class PopularView(APIView):
                 },
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
-        # No talk/news/reality/soap shows: the wall is meant to feel cinematic.
-        items = [
-            i
-            for i in items
-            if i["poster_url"] and not NOT_CINEMATIC.intersection(i["genre_ids"])
-        ]
-        items.sort(key=lambda i: i["popularity"], reverse=True)
+        # Only well-known, cinematic titles: no talk/news/reality/soap shows and
+        # nothing too obscure (few votes), so the wall shows what people really watch.
+        seen: set[tuple[str, int]] = set()
+        items: list[dict] = []
+        for i in pins + sorted(raw, key=lambda i: i["popularity"], reverse=True):
+            key = (i["media_type"], i["tmdb_id"])
+            if key in seen or not i["poster_url"]:
+                continue
+            if i not in pins and (
+                media_type not in ("both", i["media_type"])
+                or NOT_CINEMATIC.intersection(i["genre_ids"])
+                or (i.get("vote_count") or 0) < WALL_MIN_VOTES
+            ):
+                continue
+            seen.add(key)
+            items.append(i)
+        items = items[:WALL_MAX]
         return cdn_cache(
             Response({"count": len(items), "results": items}), request, 3600
         )

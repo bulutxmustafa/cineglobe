@@ -198,3 +198,46 @@ def test_title_detail_english_language_support(api_client):
     assert data["title_en"] == "Interstellar"
     assert data["display_title"] == "Interstellar"
     assert "wormhole" in data["display_overview"]
+
+
+def _wall_item(tmdb_id, media_type="movie", votes=500, popularity=50.0, genres=None):
+    return {
+        "id": tmdb_id,
+        "media_type": media_type,
+        "title": f"T{tmdb_id}",
+        "name": f"T{tmdb_id}",
+        "poster_path": f"/p{tmdb_id}.jpg",
+        "vote_count": votes,
+        "popularity": popularity,
+        "genre_ids": genres or [18],
+    }
+
+
+@pytest.mark.django_db
+def test_popular_wall_pins_trending_and_filters(api_client):
+    """The home wall pins The Mentalist, adds this week's trending titles and drops
+    obscure (few votes) or non-cinematic (talk show) titles and duplicates."""
+    trending = [_wall_item(1, popularity=90), _wall_item(2, "tv", votes=10)]
+    popular_movies = [_wall_item(1, popularity=90), _wall_item(3, popularity=70)]
+    popular_tv = [
+        _wall_item(4, "tv", genres=[10767]),
+        _wall_item(5, "tv", popularity=60),
+    ]
+    mentalist = {**_wall_item(5920, "tv", votes=3000, popularity=5), "genres": []}
+    with patch("apps.catalog.views.TMDBClient") as mock_client_cls:
+        client = mock_client_cls.return_value
+        client.get_trending.side_effect = lambda page, language: {
+            "results": trending if page == 1 else []
+        }
+        client.get_popular_movies.side_effect = lambda page, language: {
+            "results": popular_movies if page == 1 else []
+        }
+        client.get_popular_tv.side_effect = lambda page, language: {
+            "results": popular_tv if page == 1 else []
+        }
+        client.get_tv_detail.return_value = mentalist
+        response = api_client.get("/api/v1/popular/?lang=tr")
+
+    assert response.status_code == status.HTTP_200_OK
+    keys = [(i["media_type"], i["tmdb_id"]) for i in response.json()["results"]]
+    assert keys == [("tv", 5920), ("movie", 1), ("movie", 3), ("tv", 5)]

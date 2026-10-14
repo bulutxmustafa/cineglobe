@@ -215,6 +215,19 @@ class TMDBClient:
             ttl=TTL_DISCOVER,
         )
 
+    def get_trending(
+        self, window: str = "week", page: int = 1, language: str = "tr-TR"
+    ) -> dict[str, Any]:
+        """Movies and series people watch most this day/week. Cached 1 hour."""
+        lang = normalize_language(language)
+        cache_key = self._key("trending_all", window, page, lang)
+        return self._cached_get(
+            f"/trending/all/{window}",
+            params={"page": page, "language": lang},
+            cache_key=cache_key,
+            ttl=TTL_DISCOVER,
+        )
+
     def get_movie_release_dates(self, tmdb_id: int) -> dict[str, Any]:
         """Per-country release dates and types for one movie. Cached 24 hours."""
         return self._cached_get(
