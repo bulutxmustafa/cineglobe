@@ -16,8 +16,7 @@ from apps.catalog.models import Genre, Person, Title, TVDetails
 # so this stays manual.
 BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
     ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
-    # The Mentalist: Patrick Jane laughing, a real frame from S3E10 (episode still).
-    ("tv", 5920): "https://image.tmdb.org/t/p/original/eN10haOFmLlhtDK5HBKP08GC3ZC.jpg",
+    ("tv", 5920): "/q3pCsNvJ7CmdJUz2sJEEUY3pOPC.jpg",  # The Mentalist: Jane close-up
 }
 
 
