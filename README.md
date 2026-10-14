@@ -1,6 +1,8 @@
-# 🎬 CineGlobe — Film & Dizi Keşif Platformu
+# 🎬 FilmPusula — Film & Dizi Keşif Platformu
 
-CineGlobe, kullanıcıların doğal dille ne izlemek istediklerini ifade edebildikleri ("Silahlı çatışma var ama istihbarat da işin içinde olsun"), yapay zekanın bu istekleri anlayıp gerekçeleriyle birlikte zengin film ve dizi önerileri sunduğu modern bir keşif platformudur.
+**Canlı site:** [www.filmpusula.com](https://www.filmpusula.com)
+
+FilmPusula (eski çalışma adı CineGlobe), kullanıcıların doğal dille ne izlemek istediklerini ifade edebildikleri ("Silahlı çatışma var ama istihbarat da işin içinde olsun"), yapay zekanın bu istekleri anlayıp gerekçeleriyle birlikte zengin film ve dizi önerileri sunduğu modern bir keşif platformudur.
 
 ---
 

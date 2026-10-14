@@ -7,9 +7,9 @@
    Ortam değişkenleri (Build ve Runtime):
    | Değişken | Değer |
    |---|---|
-   | `NUXT_API_ORIGIN` | API projesinin adresi, ör. `https://cineglob-api.vercel.app` (sonunda `/` olmasın) |
-   | `NUXT_PUBLIC_SITE_URL` | web projesinin adresi, ör. `https://cineglob.vercel.app` |
-3. API projesinde `CSRF_TRUSTED_ORIGINS` değerini web adresine ayarla (`https://cineglob.vercel.app`) ve yeniden dağıt.
+   | `NUXT_API_ORIGIN` | API projesinin adresi, ör. `https://cineglob.vercel.app` (sonunda `/` olmasın) |
+   | `NUXT_PUBLIC_SITE_URL` | sitenin adresi, ör. `https://www.filmpusula.com` |
+3. API projesinde `CSRF_TRUSTED_ORIGINS` değerini site adresine ayarla (`https://www.filmpusula.com`; birden çok adres virgülle ayrılır) ve yeniden dağıt.
 4. Tarayıcı yalnızca web adresiyle konuşur; `/api/v1/*` istekleri sunucuda API'ye yönlendirilir. Böylece oturum çerezi aynı siteye ait olur.
 
 Bilinen nokta: iki Vercel katmanı arka arkaya olduğu için API tarafında hız sınırı IP'si doğrulanmalı (test sırasında bakılacak).

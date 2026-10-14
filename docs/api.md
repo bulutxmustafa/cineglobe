@@ -1,6 +1,6 @@
-# CineGlobe API v1 Dokümantasyonu
+# FilmPusula API v1 Dokümantasyonu
 
-Bu belge, CineGlobe Backend API endpoint'lerinin teknik detaylarını ve şemalarını içerir.
+Bu belge, FilmPusula Backend API endpoint'lerinin teknik detaylarını ve şemalarını içerir.
 
 ## 📌 İnteraktif Dokümantasyon Arayüzleri
 
