@@ -99,6 +99,8 @@
     }
   },
   "title": {
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
     "trailer": "Watch trailer",
     "trailerOf": "{name} trailer",
     "closeTrailer": "Close trailer",

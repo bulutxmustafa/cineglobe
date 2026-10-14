@@ -1,29 +1,10 @@
 <script setup lang="ts">
-// "Watch trailer": asks the API for a YouTube trailer after the page loads (no cost to
-// first paint) and shows the button only when one exists. The privacy-friendly
-// youtube-nocookie player is created only after a click.
+// "Watch trailer": shown only when the API found a playable YouTube trailer. The
+// privacy-friendly youtube-nocookie player is created only after a click.
 const props = defineProps<{ mediaType: 'movie' | 'tv'; tmdbId: number; title: string }>()
-const { t, locale } = useI18n()
-const base = useApiBase()
-
-interface Trailer {
-  key: string
-  name: string
-  language: string
-}
-const trailer = ref<Trailer | null>(null)
-const open = ref(false)
-
-onMounted(async () => {
-  try {
-    const res = await $fetch<{ trailer: Trailer | null }>(`${base}/titles/${props.mediaType}/${props.tmdbId}/trailer/`, {
-      query: { lang: locale.value },
-    })
-    trailer.value = res.trailer
-  } catch {
-    trailer.value = null
-  }
-})
+const { t } = useI18n()
+const trailer = useTrailer(props.mediaType, props.tmdbId)
+const open = useTrailerModal()
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') open.value = false

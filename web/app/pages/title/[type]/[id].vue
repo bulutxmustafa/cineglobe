@@ -77,16 +77,17 @@ useHead({
     <section class="hero relative overflow-hidden">
       <img v-if="data.backdrop_url" :src="data.backdrop_url" alt="" class="bg" width="1280" height="720" />
       <img v-else-if="data.poster_url" :src="data.poster_url" alt="" class="bg bg-blur" width="342" height="513" />
+      <ClientOnly><HeroVideo :media-type="data.media_type" :tmdb-id="data.tmdb_id" /></ClientOnly>
       <div class="shine" aria-hidden="true" />
       <div class="veil absolute inset-0" aria-hidden="true" />
       <div class="container-page relative py-12 sm:py-16 lg:py-20">
-        <div class="grid items-end gap-8 md:grid-cols-[300px_minmax(0,1fr)] lg:gap-12">
-          <div class="mx-auto w-56 md:w-full">
+        <div class="grid items-start gap-8 md:grid-cols-[330px_minmax(0,1fr)] lg:gap-12">
+          <div class="mx-auto w-60 md:w-full">
             <div class="poster aspect-[2/3] overflow-hidden rounded-[16px]">
               <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
             </div>
           </div>
-          <div class="text-center md:text-left">
+          <div class="text-center md:pt-6 md:text-left">
             <p class="eyebrow">{{ type === 'tv' ? t('title.tv') : t('title.movie') }}</p>
             <h1 class="mt-4 text-[2.2rem] leading-[1.05] sm:text-[3rem] lg:text-[3.6rem]" style="color: #fff">
               {{ name }} <span v-if="year" class="font-normal" style="color: #c9d3e4">({{ year }})</span>

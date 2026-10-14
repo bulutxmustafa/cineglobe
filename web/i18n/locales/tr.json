@@ -99,6 +99,8 @@
     }
   },
   "title": {
+    "soundOn": "Sesi aç",
+    "soundOff": "Sesi kapat",
     "trailer": "Fragmanı izle",
     "trailerOf": "{name} fragmanı",
     "closeTrailer": "Fragmanı kapat",
