@@ -61,10 +61,6 @@ function pick(text: string) {
 
 <template>
   <form role="search" class="panel" :class="{ 'panel-dark': dark }" @submit.prevent="go()">
-    <div v-if="dark" class="mb-4 flex flex-wrap items-center justify-between gap-2">
-      <p class="font-serif text-[1.5rem] font-bold leading-tight" style="color: #fbf6ec" aria-hidden="true">{{ t('search.label') }}</p>
-      <span class="ai">✦ {{ t('search.aiBadge') }}</span>
-    </div>
     <label for="q" class="sr-only">{{ t('search.label') }}</label>
     <div class="bar" :class="{ focused }">
       <svg class="mag" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -107,8 +103,10 @@ function pick(text: string) {
   box-shadow: 0 30px 60px rgb(0 0 0 / 45%);
 }
 .panel-dark {
-  padding: 26px;
-  border-radius: 24px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgb(13 23 41 / 88%);
+  backdrop-filter: blur(6px);
 }
 .ai {
   padding: 5px 11px;

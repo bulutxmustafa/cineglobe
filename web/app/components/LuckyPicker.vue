@@ -76,7 +76,6 @@ function landed() {
       <div class="flex items-center justify-between gap-2">
         <p class="eyebrow !py-1">🎲 {{ t('lucky.title') }}</p>
       </div>
-      <p class="mt-3 font-serif text-[1.3rem] font-bold leading-snug" style="color: #fbf6ec">{{ t('lucky.headline') }}</p>
 
       <div class="wheel-wrap wheel-compact">
         <div class="rays" :class="{ fast: spinning }" aria-hidden="true" />
@@ -176,9 +175,9 @@ function landed() {
 .cp {
   position: relative;
   overflow: hidden;
-  padding: 26px 22px 22px;
-  border-radius: 24px;
-  background: var(--box-warm);
+  padding: 24px 18px 18px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgb(43 31 13 / 92%) 0%, rgb(24 17 8 / 94%) 100%);
   border: 1px solid rgb(242 192 102 / 32%);
   box-shadow: 0 30px 60px rgb(0 0 0 / 45%);
 }
