@@ -18,8 +18,6 @@ BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
     ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
     # The Mentalist: Patrick Jane laughing, a real frame from S3E10 (episode still).
     ("tv", 5920): "https://image.tmdb.org/t/p/original/eN10haOFmLlhtDK5HBKP08GC3ZC.jpg",
-    # Spider-Man: No Way Home: Peter with MJ and Ned in the school hallway (film still).
-    ("movie", 634649): "/6CMOX1XI9277hUO6rM1GFBKeNww.jpg",
 }
 
 
