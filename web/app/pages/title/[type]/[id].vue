@@ -172,8 +172,13 @@ useHead({
 }
 .veil {
   background:
-    linear-gradient(90deg, rgb(10 24 56 / 92%) 0%, rgb(10 24 56 / 70%) 40%, rgb(10 24 56 / 25%) 75%, rgb(10 24 56 / 35%) 100%),
-    linear-gradient(180deg, rgb(10 24 56 / 35%) 0%, transparent 30%, rgb(10 24 56 / 55%) 70%, rgb(10 24 56 / 88%) 88%, #0a1838 100%);
+    linear-gradient(90deg, rgb(8 18 42 / 80%) 0%, rgb(8 18 42 / 45%) 38%, rgb(8 18 42 / 8%) 70%, rgb(8 18 42 / 12%) 100%),
+    linear-gradient(180deg, rgb(10 24 56 / 25%) 0%, transparent 25%, rgb(10 24 56 / 55%) 70%, rgb(10 24 56 / 88%) 88%, #0a1838 100%);
+}
+.hero h1,
+.hero p,
+.hero li {
+  text-shadow: 0 2px 12px rgb(0 0 0 / 70%);
 }
 .poster {
   border: 1px solid rgb(255 255 255 / 18%);
