@@ -72,7 +72,7 @@ useHead({
 </script>
 
 <template>
-  <article v-if="data">
+  <article v-if="data" class="detail">
     <!-- Cinematic hero: the backdrop slowly drifts (Ken Burns), poster and facts sit on top -->
     <section class="hero relative overflow-hidden">
       <img v-if="data.backdrop_url" :src="data.backdrop_url" alt="" class="bg" width="1280" height="720" />
@@ -80,8 +80,8 @@ useHead({
       <div class="shine" aria-hidden="true" />
       <div class="veil absolute inset-0" aria-hidden="true" />
       <div class="container-page relative py-12 sm:py-16 lg:py-20">
-        <div class="grid items-end gap-8 md:grid-cols-[260px_minmax(0,1fr)] lg:gap-12">
-          <div class="mx-auto w-48 md:w-full">
+        <div class="grid items-end gap-8 md:grid-cols-[300px_minmax(0,1fr)] lg:gap-12">
+          <div class="mx-auto w-56 md:w-full">
             <div class="poster aspect-[2/3] overflow-hidden rounded-[16px]">
               <img v-if="data.poster_url" :src="data.poster_url" :alt="t('title.posterAlt', { name })" class="h-full w-full object-cover" width="342" height="513" />
             </div>
@@ -116,16 +116,15 @@ useHead({
         </div>
       </div>
     </section>
-    <div class="blend" aria-hidden="true" />
   </article>
 </template>
 
 <style scoped>
 .hero {
   background: var(--bg);
-  min-height: min(78vh, 760px);
+  min-height: calc(100svh - 68px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 .hero > .container-page {
   width: 100%;
@@ -173,37 +172,16 @@ useHead({
 .veil {
   background:
     linear-gradient(90deg, rgb(10 24 56 / 92%) 0%, rgb(10 24 56 / 70%) 40%, rgb(10 24 56 / 25%) 75%, rgb(10 24 56 / 35%) 100%),
-    linear-gradient(180deg, rgb(10 24 56 / 35%) 0%, transparent 30%, rgb(10 24 56 / 60%) 72%, #0a1838 95%, #0a1838 100%);
+    linear-gradient(180deg, rgb(10 24 56 / 35%) 0%, transparent 30%, rgb(10 24 56 / 55%) 70%, rgb(10 24 56 / 88%) 88%, #0a1838 100%);
 }
 .poster {
   border: 1px solid rgb(255 255 255 / 18%);
   box-shadow: 0 30px 60px rgb(0 0 0 / 55%), 0 0 0 6px rgb(255 255 255 / 4%);
   background: #13244a;
 }
-.blend {
-  position: relative;
-  margin-top: -3px;
-  height: 170px;
-  background: linear-gradient(
-    180deg,
-    rgb(10 24 56) 0.0%,
-    rgb(10 24 56) 6.25%,
-    rgb(14 27 59) 12.5%,
-    rgb(21 34 65) 18.75%,
-    rgb(33 46 76) 25.0%,
-    rgb(50 62 90) 31.25%,
-    rgb(71 83 109) 37.5%,
-    rgb(94 106 129) 43.75%,
-    rgb(120 130 152) 50.0%,
-    rgb(146 155 174) 56.25%,
-    rgb(169 178 194) 62.5%,
-    rgb(190 199 213) 68.75%,
-    rgb(207 215 227) 75.0%,
-    rgb(219 227 238) 81.25%,
-    rgb(226 234 244) 87.5%,
-    rgb(230 237 247) 93.75%,
-    rgb(230 237 247) 100.0%
-  );
+/* The hero runs straight into the footer (same navy), no light strip in between. */
+.detail {
+  margin-bottom: -4rem;
 }
 @media (prefers-reduced-motion: reduce) {
   .bg,
