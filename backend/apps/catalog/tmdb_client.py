@@ -240,6 +240,15 @@ class TMDBClient:
             ttl=TTL_DETAIL,
         )
 
+    def get_images(self, media_type: str, tmdb_id: int) -> dict[str, Any]:
+        """Textless backdrops and posters of a title. Cached 24 hours."""
+        return self._cached_get(
+            f"/{media_type}/{tmdb_id}/images",
+            params={"include_image_language": "null"},
+            cache_key=self._key(media_type, tmdb_id, "images_textless"),
+            ttl=TTL_DETAIL,
+        )
+
     def get_movie_release_dates(self, tmdb_id: int) -> dict[str, Any]:
         """Per-country release dates and types for one movie. Cached 24 hours."""
         return self._cached_get(

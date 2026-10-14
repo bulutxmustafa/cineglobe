@@ -17,3 +17,13 @@ def pytest_configure():
 def api_client():
     """Return an unauthenticated DRF API client."""
     return APIClient()
+
+
+@pytest.fixture(autouse=True)
+def _no_image_downloads(monkeypatch):
+    """Tests never download TMDB images; the backdrop check then keeps the default."""
+
+    def offline(url):
+        raise OSError("image downloads are disabled in tests")
+
+    monkeypatch.setattr("apps.catalog.backdrops.load_image", offline)

@@ -41,10 +41,16 @@ def _fetch_and_cache_title(
     fetched_title = data.get("title") or data.get("name", "")
     fetched_overview = data.get("overview", "")
 
+    from apps.catalog.backdrops import choose_backdrop
+
+    poster_path = data.get("poster_path", "") or ""
+    backdrop_path = choose_backdrop(
+        client, media_type, tmdb_id, poster_path, data.get("backdrop_path", "") or ""
+    )
     common = {
         "original_title": data.get("original_title") or data.get("original_name", ""),
-        "poster_path": data.get("poster_path", "") or "",
-        "backdrop_path": data.get("backdrop_path", "") or "",
+        "poster_path": poster_path,
+        "backdrop_path": backdrop_path,
         "original_language": data.get("original_language", ""),
         "vote_average": data.get("vote_average", 0.0),
         "vote_count": data.get("vote_count", 0),
