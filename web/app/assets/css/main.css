@@ -42,14 +42,14 @@
     transition: background var(--dur), border-color var(--dur), transform var(--dur) var(--spring), box-shadow var(--dur), filter var(--dur);
   }
   .btn-primary {
-    background: linear-gradient(180deg, #f6cd7d 0%, var(--gold) 55%, #e9ad48 100%);
+    background: linear-gradient(180deg, #ffd477 0%, var(--gold) 55%, #f5ab2a 100%);
     color: var(--accent-ink);
     border-radius: 999px;
-    box-shadow: 0 2px 0 #b9852a, 0 10px 24px rgb(242 192 102 / 22%);
+    box-shadow: 0 2px 0 #c98a14, 0 10px 24px rgb(255 194 71 / 28%);
   }
   .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.06); }
   .btn-primary:active { transform: translateY(1px) scale(0.98); box-shadow: 0 0 0 #b9852a, 0 4px 8px rgb(0 0 0 / 30%); }
-  .btn-quiet { border: 1px solid var(--line-strong); background: rgb(255 255 255 / 5%); color: var(--ink); border-radius: 999px; }
+  .btn-quiet { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); border-radius: 999px; }
   .btn-quiet:hover { border-color: var(--gold); background: rgb(242 192 102 / 8%); }
   .btn-glass { border: 1px solid rgb(255 255 255 / 22%); background: rgb(255 255 255 / 7%); color: var(--text); border-radius: 999px; }
   .btn-glass:hover { border-color: var(--gold); background: rgb(242 185 80 / 8%); }
@@ -57,11 +57,11 @@
   .chip {
     @apply inline-flex min-h-[34px] items-center rounded-full px-3 text-[13px];
     border: 1px solid var(--line-strong);
-    background: rgb(255 255 255 / 4%);
+    background: var(--surface);
     color: var(--ink-soft);
     transition: border-color var(--dur), color var(--dur), background var(--dur);
   }
-  .chip:hover { border-color: var(--gold); color: var(--ink); }
+  .chip:hover { border-color: var(--accent); color: var(--ink); }
   .chip-dark { background: rgb(255 255 255 / 6%); border-color: rgb(255 255 255 / 16%); color: #d3dae6; }
   .chip-dark:hover { border-color: var(--gold); color: var(--text); }
   .badge {
@@ -74,8 +74,8 @@
     background: rgb(242 192 102 / 12%);
     border: 1px solid rgb(242 192 102 / 35%);
   }
-  .sec-head h2 { @apply text-[1.6rem] sm:text-[1.9rem]; color: #fbf6ec; }
-  .sec-link { @apply text-sm font-semibold; color: var(--gold); }
+  .sec-head h2 { @apply text-[1.6rem] sm:text-[1.9rem]; color: var(--ink); }
+  .sec-link { @apply text-sm font-semibold; color: var(--accent); }
   .sec-link:hover { text-decoration: underline; text-underline-offset: 4px; }
   .panel-light { background: transparent; padding: 0; }
   .rise { animation: rise 460ms var(--ease) both; }

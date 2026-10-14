@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-16 border-t" style="border-color: rgb(255 255 255 / 7%); background: #050a14">
+  <footer class="mt-16 border-t" style="border-color: rgb(255 255 255 / 7%); background: #0a1838">
     <div class="container-page grid gap-6 py-10 text-sm sm:grid-cols-[1.4fr_1fr]" style="color: var(--text-2)">
       <div>
         <p class="flex items-center gap-2.5"><LogoMark :size="30" /><span class="word">Film<span style="color: var(--gold)">Pusula</span></span></p>

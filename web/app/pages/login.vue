@@ -83,7 +83,7 @@ async function submit() {
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   padding: 0 12px;
-  background: var(--bg-2);
+  background: var(--surface);
   color: var(--ink);
   outline: none;
 }

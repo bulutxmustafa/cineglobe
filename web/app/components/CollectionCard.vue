@@ -17,18 +17,18 @@ const { data: posters } = await useFetch<string[]>(() => `${base}/collections/${
       .slice(0, 3),
   default: () => [],
 })
-// Deep cinema tones: rust, ocean, aubergine, forest, plum, amber.
+// Vivid tones: royal blue, emerald, violet, cyan, magenta, sunset orange.
 const pairs = [
-  ['#7a2a18', '#2a0f0b'],
-  ['#14476a', '#071827'],
-  ['#3d3172', '#120e26'],
-  ['#1d5236', '#08190f'],
-  ['#62244b', '#1d0b17'],
-  ['#7a4f12', '#221505'],
+  ['#1d4ed8', '#3b82f6'],
+  ['#047857', '#10b981'],
+  ['#6d28d9', '#a855f7'],
+  ['#0e7490', '#06b6d4'],
+  ['#be185d', '#ec4899'],
+  ['#c2410c', '#f59e0b'],
 ]
 const bg = computed(() => {
   const [a, b] = pairs[(props.index - 1) % pairs.length]!
-  return `radial-gradient(120% 90% at 85% 20%, rgb(255 255 255 / 9%), transparent 55%), linear-gradient(135deg, ${a}, ${b})`
+  return `radial-gradient(120% 90% at 85% 15%, rgb(255 255 255 / 18%), transparent 55%), linear-gradient(135deg, ${a}, ${b})`
 })
 </script>
 
@@ -55,7 +55,7 @@ const bg = computed(() => {
 <style scoped>
 .card {
   border: 1px solid rgb(255 255 255 / 10%);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 25%), 0 18px 36px rgb(0 0 0 / 35%);
+  box-shadow: 0 2px 4px rgb(13 40 90 / 12%), 0 16px 32px rgb(13 40 90 / 20%);
   transition: transform 280ms var(--spring), border-color 200ms var(--ease), box-shadow 200ms var(--ease);
 }
 .card:hover {
@@ -67,10 +67,10 @@ const bg = computed(() => {
   font-family: var(--font-serif);
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--gold);
+  color: #ffe3a3;
 }
 .more {
-  color: var(--gold);
+  color: #ffe3a3;
 }
 .arrow {
   transition: transform 220ms var(--spring);

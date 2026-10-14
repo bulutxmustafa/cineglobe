@@ -1,12 +1,12 @@
-/* FilmPusula design system: one dark "cinema night" palette for every page. */
+/* FilmPusula design system: dark cinematic hero and header, bright vivid pages below. */
 :root {
   /* Core palette */
-  --bg: #070d1a;
-  --bg-2: #0d1729;
-  --elevated: #14223a;
-  --gold: #f2c066;
-  --gold-deep: #d99a2b;
-  --teal: #4fc9b5;
+  --bg: #0a1838;
+  --bg-2: #10224a;
+  --elevated: #1a3266;
+  --gold: #ffc247;
+  --gold-deep: #e59a14;
+  --teal: #19c3a6;
   --coral: #e0734f;
   --cream: #f6f1e7;
   --text: #f6f1e7;
@@ -21,27 +21,27 @@
   --card-5: #4f1f3d;
   --card-6: #5a3a10;
 
-  --box: linear-gradient(160deg, #15243f 0%, #0d182c 100%);
+  --box: linear-gradient(160deg, #1a3266 0%, #10224a 100%);
   --box-warm: linear-gradient(160deg, #2b1f0d 0%, #181108 100%);
 
   /* Semantic aliases used across pages */
-  --paper: #070d1a;
-  --surface: #0f1a2e;
-  --ink: #f6f1e7;
-  --ink-soft: #b9c3d4;
-  --ink-faint: #7f8aa0;
-  --line: #1c2a42;
-  --line-strong: #2b3d5c;
-  --accent: #f2c066;
+  --paper: #f3f7fd;
+  --surface: #ffffff;
+  --ink: #0d1b33;
+  --ink-soft: #46597a;
+  --ink-faint: #6f82a0;
+  --line: #dbe4f0;
+  --line-strong: #c2d1e6;
+  --accent: #1f63e0;
   --accent-ink: #1b1406;
-  --accent-soft: rgb(242 192 102 / 14%);
+  --accent-soft: rgb(31 99 224 / 12%);
   --night: var(--bg);
   --night-2: var(--bg-2);
-  --star: #f2c066;
+  --star: #e39a0e;
 
   --radius: 12px;
   --radius-lg: 18px;
-  --shadow: 0 2px 4px rgb(0 0 0 / 30%), 0 14px 30px rgb(0 0 0 / 35%);
+  --shadow: 0 2px 4px rgb(13 40 90 / 8%), 0 12px 26px rgb(13 40 90 / 12%);
   --font-serif: 'Playfair Display Variable', 'Source Serif 4 Variable', Georgia, serif;
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ease: cubic-bezier(0.2, 0, 0, 1);

@@ -53,7 +53,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
       </div>
     </section>
 
-    <section class="container-page mt-16" aria-labelledby="cols-h">
+    <section class="container-page pt-14" aria-labelledby="cols-h">
       <div class="sec-head flex items-end justify-between gap-4">
         <div>
           <h2 id="cols-h">{{ t('home.collections') }}</h2>
@@ -92,7 +92,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
       <ol class="mt-6 grid gap-5 sm:grid-cols-3">
         <li v-for="(step, i) in ($tm('home.how') as { t: string; d: string }[])" :key="i" class="step">
           <span class="num">{{ i + 1 }}</span>
-          <h3 class="mt-4 font-sans text-lg font-semibold" style="color: #fbf6ec">{{ $rt(step.t as any) }}</h3>
+          <h3 class="mt-4 font-sans text-lg font-semibold" style="color: var(--ink)">{{ $rt(step.t as any) }}</h3>
           <p class="mt-1.5 text-sm leading-relaxed" style="color: var(--ink-soft)">{{ $rt(step.d as any) }}</p>
         </li>
       </ol>
@@ -102,19 +102,20 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 
 <style scoped>
 .hero {
-  background: #070d1a;
+  background: var(--bg);
 }
 .veil {
   background:
     radial-gradient(ellipse at 30% 45%, rgb(5 10 20 / 55%) 0%, transparent 65%),
     linear-gradient(135deg, rgb(7 13 26 / 35%) 0%, rgb(13 23 41 / 22%) 100%),
-    linear-gradient(180deg, transparent 75%, #070d1a 100%);
+    linear-gradient(180deg, transparent 80%, rgb(10 24 56 / 70%) 100%);
 }
 .step {
   padding: 24px;
   border-radius: 20px;
-  background: var(--box);
-  border: 1px solid rgb(255 255 255 / 8%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
 }
 .num {
   display: inline-flex;
@@ -126,8 +127,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
   font-family: var(--font-serif);
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--gold);
-  border: 1.5px solid rgb(242 192 102 / 55%);
-  background: rgb(242 192 102 / 8%);
+  color: #1b1406;
+  background: var(--gold);
 }
 </style>
