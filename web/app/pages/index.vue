@@ -108,7 +108,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
   background:
     radial-gradient(ellipse at 30% 40%, rgb(5 10 20 / 68%) 0%, transparent 62%),
     linear-gradient(135deg, rgb(7 13 26 / 35%) 0%, rgb(13 23 41 / 22%) 100%),
-    linear-gradient(180deg, transparent 80%, rgb(10 24 56 / 70%) 100%);
+    linear-gradient(180deg, transparent 62%, rgb(230 237 247 / 18%) 76%, rgb(230 237 247 / 62%) 90%, #e6edf7 100%);
 }
 .step {
   padding: 24px;
