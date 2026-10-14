@@ -241,3 +241,21 @@ def test_popular_wall_pins_trending_and_filters(api_client):
     assert response.status_code == status.HTTP_200_OK
     keys = [(i["media_type"], i["tmdb_id"]) for i in response.json()["results"]]
     assert keys == [("tv", 5920), ("movie", 1), ("movie", 3), ("tv", 5)]
+
+
+@pytest.mark.django_db
+def test_backdrop_override_replaces_key_art():
+    from apps.catalog.serializers import BACKDROP_OVERRIDES, TitleSerializer
+
+    title = Title(
+        media_type="movie",
+        tmdb_id=1061474,
+        title="Superman",
+        backdrop_path="/key-art.jpg",
+    )
+    url = TitleSerializer().get_backdrop_url(title)
+    assert url.endswith(BACKDROP_OVERRIDES[("movie", 1061474)])
+    other = Title(
+        media_type="tv", tmdb_id=1396, title="Breaking Bad", backdrop_path="/scene.jpg"
+    )
+    assert TitleSerializer().get_backdrop_url(other).endswith("/scene.jpg")

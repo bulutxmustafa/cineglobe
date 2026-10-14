@@ -10,6 +10,12 @@ from rest_framework import serializers
 from apps.catalog.image_utils import backdrop_url, poster_url
 from apps.catalog.models import Genre, Person, Title, TVDetails
 
+# Hand-picked textless scene stills for titles whose default TMDB backdrop is just
+# the poster's key art. TMDB does not label stills vs. key art, so this stays manual.
+BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
+    ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
+}
+
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,7 +83,8 @@ class TitleSerializer(serializers.ModelSerializer):
         return poster_url(obj.poster_path)
 
     def get_backdrop_url(self, obj: Title) -> str:
-        return backdrop_url(obj.backdrop_path)
+        override = BACKDROP_OVERRIDES.get((obj.media_type, obj.tmdb_id))
+        return backdrop_url(override or obj.backdrop_path)
 
     def get_display_title(self, obj: Title) -> str:
         lang = self.context.get("language", "tr")
