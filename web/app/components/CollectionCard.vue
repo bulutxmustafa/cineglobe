@@ -17,31 +17,32 @@ const { data: posters } = await useFetch<string[]>(() => `${base}/collections/${
       .slice(0, 3),
   default: () => [],
 })
+// Deep cinema tones: rust, ocean, aubergine, forest, plum, amber.
 const pairs = [
-  ['#0a3a8a', '#2f6fd6'],
-  ['#0a7a55', '#22b880'],
-  ['#0f6a8c', '#1296a0'],
-  ['#33349f', '#2f66d0'],
-  ['#0f8a5f', '#34c08c'],
-  ['#0f5f7a', '#14867f'],
+  ['#7a2a18', '#2a0f0b'],
+  ['#14476a', '#071827'],
+  ['#3d3172', '#120e26'],
+  ['#1d5236', '#08190f'],
+  ['#62244b', '#1d0b17'],
+  ['#7a4f12', '#221505'],
 ]
 const bg = computed(() => {
   const [a, b] = pairs[(props.index - 1) % pairs.length]!
-  return `linear-gradient(145deg, ${a}, ${b})`
+  return `radial-gradient(120% 90% at 85% 20%, rgb(255 255 255 / 9%), transparent 55%), linear-gradient(135deg, ${a}, ${b})`
 })
 </script>
 
 <template>
   <NuxtLink
     :to="localePath(`/collections/${collection.slug}`)"
-    class="card group relative flex h-full min-h-[180px] overflow-hidden rounded-[18px] p-4"
+    class="card group relative flex h-full min-h-[210px] overflow-hidden rounded-[22px] p-5"
     :style="{ background: bg }"
   >
     <div class="relative z-10 flex max-w-[56%] flex-col justify-between">
       <span class="num">{{ String(index).padStart(2, '0') }}</span>
       <div>
-        <span class="block font-serif text-[1rem] font-bold leading-tight text-white">{{ collection.name }}</span>
-        <span class="mt-1 block text-[12px] leading-snug text-white/85">{{ collection.description }}</span>
+        <span class="block font-serif text-[1.2rem] font-bold leading-tight text-white">{{ collection.name }}</span>
+        <span class="mt-1.5 block text-[13px] leading-snug text-white/80">{{ collection.description }}</span>
         <span class="more mt-2.5 inline-flex items-center gap-1 text-[12px] font-semibold">{{ $t('collections.explore') }} <span aria-hidden="true" class="arrow">→</span></span>
       </div>
     </div>
@@ -53,18 +54,18 @@ const bg = computed(() => {
 
 <style scoped>
 .card {
-  border: 1px solid rgb(255 255 255 / 16%);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 14px 30px rgb(0 0 0 / 28%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 25%), 0 18px 36px rgb(0 0 0 / 35%);
   transition: transform 280ms var(--spring), border-color 200ms var(--ease), box-shadow 200ms var(--ease);
 }
 .card:hover {
   transform: translateY(-5px);
-  border-color: rgb(242 185 80 / 85%);
+  border-color: rgb(242 192 102 / 70%);
   box-shadow: 0 2px 4px rgb(0 0 0 / 25%), 0 18px 34px rgb(0 0 0 / 36%);
 }
 .num {
   font-family: var(--font-serif);
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--gold);
 }

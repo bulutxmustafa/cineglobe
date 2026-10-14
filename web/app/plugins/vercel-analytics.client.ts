@@ -1,7 +1,7 @@
 // Cookie-free page view counting (Vercel Web Analytics, free on Hobby). Loaded in the browser only.
 // Same snippet as the @vercel/analytics package without adding a dependency; Vercel serves the script.
 export default defineNuxtPlugin(() => {
-  if (import.meta.dev) return
+  if (import.meta.dev || location.hostname === 'localhost') return
   const w = window as unknown as { va?: (...args: unknown[]) => void; vaq?: unknown[] }
   w.va =
     w.va ||

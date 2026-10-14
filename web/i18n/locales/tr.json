@@ -24,6 +24,7 @@
     "surprise": "Beni Şaşırt 🎲"
   },
   "search": {
+    "aiBadge": "Yapay zekâ destekli",
     "label": "Ne izlemek istersin?",
     "placeholder": "Ne izlemek istersin? Örn. tek akşamda biten, tempolu bir film",
     "button": "Öner",
@@ -50,6 +51,7 @@
     "try": "Dene:"
   },
   "home": {
+    "popular": "Şu an popüler",
     "collections": "Hazır koleksiyonlar",
     "collectionsLead": "Ruh haline göre seçilmiş, tek tek kontrol edilmiş listeler.",
     "allCollections": "Tüm koleksiyonlar",

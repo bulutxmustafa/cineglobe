@@ -10,65 +10,127 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b backdrop-blur-md" style="border-color: var(--border); background: rgb(11 31 58 / 92%)">
-    <div class="container-page flex h-16 items-center gap-4">
+  <header class="sticky top-0 z-40 border-b backdrop-blur-xl" style="border-color: rgb(255 255 255 / 7%); background: rgb(7 13 26 / 78%)">
+    <div class="container-page flex h-[64px] items-center gap-3 sm:h-[68px] sm:gap-6">
       <NuxtLink :to="localePath('/')" class="flex items-center gap-2.5" aria-label="FilmPusula">
-        <LogoMark :size="34" />
-        <span class="logo text-[1.15rem] font-extrabold tracking-[0.14em]">FilmPusula</span>
+        <LogoMark :size="32" class="shrink-0" />
+        <span class="word">Film<span class="gold">Pusula</span></span>
       </NuxtLink>
-      <nav class="hidden items-center gap-1.5 text-sm sm:flex" :aria-label="$t('nav.main')">
+      <nav class="hidden items-center gap-7 text-[15px] font-medium md:flex" :aria-label="$t('nav.main')">
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
         <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
         <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
         <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
       </nav>
-      <div class="ml-auto flex items-center gap-2">
-        <NuxtLink :to="localePath('/search')" class="btn hbtn">{{ $t('nav.search') }}</NuxtLink>
-        <NuxtLink :to="localePath(me ? '/account' : '/login')" class="btn hbtn">
+      <div class="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <NuxtLink :to="localePath('/search')" class="icon-btn" :aria-label="$t('nav.search')">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        </NuxtLink>
+        <a :href="switchLocalePath(otherCode)" class="pill uppercase" :hreflang="otherCode" :aria-label="$t('nav.language')">{{ otherCode }}</a>
+        <NuxtLink :to="localePath(me ? '/account' : '/login')" class="cta">
           {{ me ? $t('auth.account') : $t('auth.login') }}
         </NuxtLink>
-        <a :href="switchLocalePath(otherCode)" class="btn hbtn !px-3 uppercase" :hreflang="otherCode" :aria-label="$t('nav.language')">{{ otherCode }}</a>
       </div>
     </div>
-    <nav class="container-page flex gap-1.5 overflow-x-auto pb-2 text-sm sm:hidden" :aria-label="$t('nav.main')">
-      <NuxtLink :to="localePath('/')" class="nav-link py-2">{{ $t('nav.discover') }}</NuxtLink>
-      <NuxtLink :to="localePath('/collections')" class="nav-link py-2">{{ $t('nav.collections') }}</NuxtLink>
-      <NuxtLink :to="localePath('/upcoming')" class="nav-link py-2">{{ $t('nav.upcoming') }}</NuxtLink>
-      <NuxtLink :to="localePath('/favorites')" class="nav-link py-2">{{ $t('nav.favorites') }}</NuxtLink>
+    <nav class="container-page flex gap-5 overflow-x-auto pb-3 text-sm font-medium md:hidden" :aria-label="$t('nav.main')">
+      <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
+      <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
+      <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
+      <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
     </nav>
   </header>
 </template>
 
 <style scoped>
-/* One look for every header box: filled dark navy */
-.nav-link,
-.hbtn {
-  background: #163766;
-  border: 1px solid #2b5190;
-  color: #f6cf6e;
+.word {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
   font-weight: 700;
-  white-space: nowrap;
-  border-radius: 10px;
-  transition: background var(--dur), border-color var(--dur), transform var(--dur) var(--spring);
+  letter-spacing: -0.01em;
+  color: #fbf6ec;
+}
+.gold {
+  color: var(--gold);
 }
 .nav-link {
-  padding: 7px 13px;
+  position: relative;
+  padding: 6px 0;
+  white-space: nowrap;
+  color: #c3cbd9;
+  transition: color var(--dur);
 }
-.nav-link:hover,
-.hbtn:hover {
-  background: #1d4682;
-  border-color: #3b6fc0;
-  transform: translateY(-1px);
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 240ms var(--ease);
+}
+.nav-link:hover {
+  color: #fbf6ec;
 }
 .nav-link.router-link-exact-active {
-  background: #1d4682;
-  border-color: var(--gold);
-  color: #ffe08a;
+  color: #fbf6ec;
 }
-.logo {
-  background: linear-gradient(95deg, #fff3c9 0%, #f9d57a 45%, #f2b950 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.nav-link.router-link-exact-active::after,
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+.icon-btn,
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  min-width: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  color: #e8ecf3;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color var(--dur), background var(--dur);
+}
+.icon-btn {
+  display: none;
+  padding: 0;
+}
+.icon-btn:hover,
+.pill:hover {
+  border-color: var(--gold);
+  background: rgb(242 192 102 / 8%);
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform var(--dur) var(--spring), filter var(--dur);
+}
+@media (min-width: 640px) {
+  .icon-btn {
+    display: inline-flex;
+  }
+  .word {
+    font-size: 1.45rem;
+  }
+  .cta {
+    padding: 0 20px;
+  }
+}
+.cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
 }
 </style>

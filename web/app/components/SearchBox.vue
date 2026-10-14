@@ -60,7 +60,11 @@ function pick(text: string) {
 </script>
 
 <template>
-  <form role="search" class="panel" @submit.prevent="go()">
+  <form role="search" class="panel" :class="{ 'panel-dark': dark }" @submit.prevent="go()">
+    <div v-if="dark" class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <p class="font-serif text-[1.5rem] font-bold leading-tight" style="color: #fbf6ec" aria-hidden="true">{{ t('search.label') }}</p>
+      <span class="ai">✦ {{ t('search.aiBadge') }}</span>
+    </div>
     <label for="q" class="sr-only">{{ t('search.label') }}</label>
     <div class="bar" :class="{ focused }">
       <svg class="mag" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -89,73 +93,84 @@ function pick(text: string) {
     </fieldset>
 
     <div v-if="examples" class="mt-3 flex flex-wrap items-center gap-2" :aria-label="t('search.tryLabel')">
-      <button v-for="e in exampleList.slice(0, 2)" :key="e" type="button" class="chip chip-dark" @click="pick(e)">{{ e }}</button>
+      <button v-for="e in exampleList.slice(0, 3)" :key="e" type="button" class="chip chip-dark" @click="pick(e)">{{ e }}</button>
     </div>
   </form>
 </template>
 
 <style scoped>
 .panel {
-  padding: 14px;
-  border-radius: 20px;
+  padding: 16px;
+  border-radius: 22px;
   background: var(--box);
-  border: 1px solid rgb(255 255 255 / 16%);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 14px 30px rgb(0 0 0 / 30%);
+  border: 1px solid rgb(255 255 255 / 9%);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 45%);
+}
+.panel-dark {
+  padding: 26px;
+  border-radius: 24px;
+}
+.ai {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6fe0cd;
+  background: rgb(79 201 181 / 13%);
+  border: 1px solid rgb(79 201 181 / 28%);
 }
 .bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 5px 5px 5px 16px;
+  background: #f8f4ec;
+  border-radius: 16px;
+  padding: 6px 6px 6px 18px;
   border: 2px solid transparent;
-  color: #5a7a88;
+  color: #7a6a4a;
   transition: border-color var(--dur), box-shadow var(--dur);
 }
 .bar.focused {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgb(242 185 80 / 30%);
+  box-shadow: 0 0 0 4px rgb(242 192 102 / 25%);
 }
 .search-input {
   flex: 1;
   min-width: 0;
-  min-height: 48px;
+  min-height: 50px;
   border: 0;
   outline: none;
   background: transparent;
-  font-size: 0.9rem;
-  color: #0d2b3a;
+  font-size: 0.95rem;
+  color: #1d1a14;
 }
 .search-input::placeholder {
-  color: #6f8a96;
+  color: #7d7564;
 }
 .go {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 48px;
+  min-height: 50px;
   padding: 0 22px;
   border: 0;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--accent-ink);
-  background: var(--gold);
-  box-shadow: 0 2px 0 #b9852a, 0 10px 20px rgb(0 0 0 / 30%);
-  transition: transform var(--dur) var(--spring), filter var(--dur), box-shadow var(--dur);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gold);
+  background: #0f1d34;
+  transition: transform var(--dur) var(--spring), background var(--dur);
 }
 .go:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.07);
+  transform: translateY(-1px);
+  background: #16294a;
 }
 .go:hover .spark {
   transform: rotate(40deg) scale(1.12);
 }
 .go:active {
   transform: translateY(1px) scale(0.97);
-  box-shadow: 0 0 0 #b9852a, 0 4px 8px rgb(0 0 0 / 30%);
 }
 .spark {
   flex: none;
@@ -164,24 +179,24 @@ function pick(text: string) {
 }
 .seg {
   display: inline-flex;
-  margin-top: 12px;
+  margin-top: 14px;
   padding: 3px;
   gap: 2px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 14%);
-  border: 1px solid rgb(255 255 255 / 22%);
+  background: rgb(255 255 255 / 5%);
+  border: 1px solid rgb(255 255 255 / 12%);
 }
 .seg label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 38px;
+  min-height: 36px;
   padding: 0 14px;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  color: #e3f5f8;
+  color: #c3cbd9;
   transition: background var(--dur), color var(--dur);
 }
 .seg label:hover {
@@ -199,8 +214,8 @@ function pick(text: string) {
   .go {
     padding: 0 14px;
   }
-  .go span:last-child {
-    font-size: 0.9rem;
+  .panel-dark {
+    padding: 18px;
   }
 }
 </style>

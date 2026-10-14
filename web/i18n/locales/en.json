@@ -24,6 +24,7 @@
     "surprise": "Surprise me 🎲"
   },
   "search": {
+    "aiBadge": "AI powered",
     "label": "What do you want to watch?",
     "placeholder": "What do you want to watch? e.g. a fast-paced movie that ends in one evening",
     "button": "Suggest",
@@ -50,6 +51,7 @@
     "try": "Try:"
   },
   "home": {
+    "popular": "Popular right now",
     "collections": "Ready-made collections",
     "collectionsLead": "Lists picked by mood and checked one by one.",
     "allCollections": "All collections",

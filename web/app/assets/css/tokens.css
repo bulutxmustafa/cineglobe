@@ -1,46 +1,48 @@
-/* FilmPusula design system: one set of tokens for every page. */
+/* FilmPusula design system: one dark "cinema night" palette for every page. */
 :root {
   /* Core palette */
-  --bg: #0b1f3a;
-  --bg-2: #10294d;
-  --elevated: #17386a;
-  --gold: #f2b950;
-  --teal: #10b981;
-  --cream: #eef4fa;
-  --text: #f4fbfb;
-  --text-2: #c3d3e8;
-  --border: #2b4d80;
+  --bg: #070d1a;
+  --bg-2: #0d1729;
+  --elevated: #14223a;
+  --gold: #f2c066;
+  --gold-deep: #d99a2b;
+  --teal: #4fc9b5;
+  --coral: #e0734f;
+  --cream: #f6f1e7;
+  --text: #f6f1e7;
+  --text-2: #b9c3d4;
+  --border: #22324d;
 
-  /* Collection card family (all derived from the navy / petrol / aubergine range) */
-  --card-1: #0369a1;
-  --card-2: #047857;
-  --card-3: #0e7490;
-  --card-4: #0f766e;
-  --card-5: #1d6fb8;
-  --card-6: #15803d;
+  /* Collection card family: rust, ocean, aubergine, forest, plum, amber */
+  --card-1: #6e2616;
+  --card-2: #0f3b57;
+  --card-3: #33295f;
+  --card-4: #173f2c;
+  --card-5: #4f1f3d;
+  --card-6: #5a3a10;
 
-  --box: linear-gradient(160deg, #17396a 0%, #0f2b52 100%);
+  --box: linear-gradient(160deg, #15243f 0%, #0d182c 100%);
+  --box-warm: linear-gradient(160deg, #2b1f0d 0%, #181108 100%);
 
-  /* Semantic aliases: the page itself is light; dark areas (header, hero, footer,
-     picker) use the core palette above directly. */
-  --paper: #eef4fa;
-  --surface: #ffffff;
-  --ink: #0c2038;
-  --ink-soft: #3f5873;
-  --ink-faint: #6a829c;
-  --line: #d3e0ee;
-  --line-strong: #b8cde3;
-  --accent: #1857a4;
-  --accent-ink: #1a1305;
-  --accent-soft: rgb(24 87 164 / 14%);
+  /* Semantic aliases used across pages */
+  --paper: #070d1a;
+  --surface: #0f1a2e;
+  --ink: #f6f1e7;
+  --ink-soft: #b9c3d4;
+  --ink-faint: #7f8aa0;
+  --line: #1c2a42;
+  --line-strong: #2b3d5c;
+  --accent: #f2c066;
+  --accent-ink: #1b1406;
+  --accent-soft: rgb(242 192 102 / 14%);
   --night: var(--bg);
   --night-2: var(--bg-2);
-  --star: #d98a0b;
+  --star: #f2c066;
 
   --radius: 12px;
-  --radius-lg: 16px;
-  --shadow: 0 2px 4px rgb(8 52 74 / 10%), 0 10px 22px rgb(8 52 74 / 14%);
-  --font-serif: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
+  --radius-lg: 18px;
+  --shadow: 0 2px 4px rgb(0 0 0 / 30%), 0 14px 30px rgb(0 0 0 / 35%);
+  --font-serif: 'Playfair Display Variable', 'Source Serif 4 Variable', Georgia, serif;
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --spring: cubic-bezier(0.34, 1.4, 0.64, 1);

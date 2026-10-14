@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [
-        { name: 'theme-color', content: '#0b1f3a' },
+        { name: 'theme-color', content: '#070d1a' },
         { name: 'application-name', content: 'FilmPusula' },
         { name: 'google-site-verification', content: '7pSt2B5Q3CerwgQoKqLy2BH1HquQtl-qcuKdOTlUZEI' },
       ],

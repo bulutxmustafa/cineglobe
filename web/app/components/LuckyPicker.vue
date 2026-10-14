@@ -68,13 +68,19 @@ function landed() {
 </script>
 
 <template>
-  <!-- Compact card (home hero, right side) -->
+  <!-- Compact card (home, next to the search box) -->
   <section v-if="compact" id="sans" class="cp scroll-mt-24" :aria-label="t('lucky.title')">
     <ConfettiBurst :fire="confetti" />
+    <div class="bulbs" aria-hidden="true"><span v-for="n in 14" :key="n" :class="{ on: spinning }" :style="{ animationDelay: `${(n % 2) * 0.45}s` }" /></div>
     <div class="relative">
-      <p class="inline-block rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.14em]" style="border-color: rgb(255 255 255 / 30%); color: #dbe8f8">🎲 {{ t('lucky.title') }}</p>
+      <div class="flex items-center justify-between gap-2">
+        <p class="eyebrow !py-1">🎲 {{ t('lucky.title') }}</p>
+      </div>
+      <p class="mt-3 font-serif text-[1.3rem] font-bold leading-snug" style="color: #fbf6ec">{{ t('lucky.headline') }}</p>
 
       <div class="wheel-wrap wheel-compact">
+        <div class="rays" :class="{ fast: spinning }" aria-hidden="true" />
+        <div class="pointer" aria-hidden="true" />
         <ClientOnly>
           <PosterWheel :posters="wheel ?? []" :spinning="spinning" :pick-poster="pick?.poster_url ?? null" @landed="landed" />
         </ClientOnly>
@@ -84,7 +90,7 @@ function landed() {
       <select id="lcol" v-model="slug" class="sel min-h-[46px] w-full rounded-[12px] border px-3 text-sm" :disabled="spinning">
         <option v-for="c in cols?.collections" :key="c.slug" :value="c.slug">{{ c.icon }} {{ c.name }}</option>
       </select>
-      <button class="btn btn-primary mt-3 min-h-[46px] w-full text-sm" :disabled="spinning || !slug" @click="spin">
+      <button class="btn btn-primary spin-btn mt-3 min-h-[50px] w-full text-[15px]" :disabled="spinning || !slug" @click="spin">
         <LogoMark :size="24" variant="default" class="spin-logo" :class="{ going: spinning }" />
         {{ spinning ? t('lucky.spinning') : pick ? t('lucky.again') : t('lucky.go') }}
       </button>
@@ -107,7 +113,7 @@ function landed() {
       <ConfettiBurst :fire="confetti" />
       <div class="relative grid items-center gap-6 p-6 sm:p-10 lg:grid-cols-[1fr_1.15fr]">
         <div>
-          <p class="inline-block rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.14em]" style="border-color: rgb(255 255 255 / 30%); color: #dbe8f8">🎲 {{ t('lucky.title') }}</p>
+          <p class="eyebrow">🎲 {{ t('lucky.title') }}</p>
           <h2 class="mt-4 text-lg sm:text-[1.4rem]" style="color: var(--text)">{{ t('lucky.headline') }}</h2>
           <p class="mt-3 max-w-md text-sm" style="color: var(--text-2)">{{ t('lucky.lead') }}</p>
 
@@ -138,7 +144,7 @@ function landed() {
       <div
         v-if="pick && shown"
         class="reveal mx-auto mt-6 grid max-w-3xl gap-6 rounded-[20px] border p-5 sm:grid-cols-[200px_1fr]"
-        style="border-color: var(--line-strong); background: #fffdf8; box-shadow: 0 18px 44px rgb(20 32 44 / 16%)"
+        style="border-color: rgb(242 192 102 / 35%); background: var(--box); box-shadow: 0 18px 44px rgb(0 0 0 / 40%)"
       >
         <TitleCard :item="pick" />
         <div>
@@ -163,21 +169,86 @@ function landed() {
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 14px 30px rgb(0 0 0 / 30%);
 }
 .sel {
-  background: rgb(0 0 0 / 28%);
-  border-color: var(--border);
+  background: rgb(0 0 0 / 30%);
+  border-color: rgb(242 192 102 / 25%);
   color: var(--text);
 }
 .cp {
   position: relative;
   overflow: hidden;
-  padding: 18px;
-  border-radius: 22px;
-  background: var(--box);
-  border: 1px solid rgb(255 255 255 / 16%);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 14px 30px rgb(0 0 0 / 30%);
+  padding: 26px 22px 22px;
+  border-radius: 24px;
+  background: var(--box-warm);
+  border: 1px solid rgb(242 192 102 / 32%);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 45%);
+}
+.bulbs {
+  position: absolute;
+  top: 9px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.bulbs span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f2c066;
+  box-shadow: 0 0 8px 2px rgb(242 192 102 / 60%);
+  animation: twinkle 0.9s ease-in-out infinite alternate;
+}
+.bulbs span.on {
+  animation-duration: 0.22s;
+}
+@keyframes twinkle {
+  from {
+    opacity: 0.25;
+    box-shadow: none;
+  }
+}
+.rays {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 260px;
+  height: 260px;
+  margin: -150px 0 0 -130px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgb(242 192 102 / 13%) 0deg 10deg, transparent 10deg 30deg);
+  mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+  animation: rays 24s linear infinite;
+  pointer-events: none;
+}
+.rays.fast {
+  animation-duration: 2.5s;
+}
+@keyframes rays {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.pointer {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  margin-left: -9px;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 14px solid var(--gold);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 50%));
+}
+.spin-btn {
+  border-radius: 14px;
 }
 .wheel-compact {
-  margin: 8px -8px 6px;
+  position: relative;
+  margin: 10px -8px 8px;
 }
 .wheel-compact :deep(.stage) {
   --w: 84px;
@@ -189,8 +260,8 @@ function landed() {
   margin-top: 14px;
   padding: 10px;
   border-radius: 14px;
-  background: rgb(255 255 255 / 6%);
-  border: 1px solid var(--border);
+  background: rgb(0 0 0 / 25%);
+  border: 1px solid rgb(242 192 102 / 25%);
 }
 .mini img {
   width: 48px;
