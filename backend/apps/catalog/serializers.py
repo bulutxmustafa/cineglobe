@@ -10,10 +10,15 @@ from rest_framework import serializers
 from apps.catalog.image_utils import backdrop_url, poster_url
 from apps.catalog.models import Genre, Person, Title, TVDetails
 
-# Hand-picked textless scene stills for titles whose default TMDB backdrop is just
-# the poster's key art. TMDB does not label stills vs. key art, so this stays manual.
+# Hand-picked scene stills (characters in a real scene) for titles whose default TMDB
+# backdrop is promotional key art. TMDB does not label stills vs. key art, so this stays manual.
 BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
     ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
+    ("tv", 5920): "/nFljbcf6fVnPH46JXGlxGzVdsyk.jpg",  # The Mentalist: Patrick Jane
+    (
+        "movie",
+        634649,
+    ): "/3HOIbNlir4Xej4E4sfefyLGZXo.jpg",  # Spider-Man NWH: Peter, Ned, MJ
 }
 
 
