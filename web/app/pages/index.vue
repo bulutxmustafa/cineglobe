@@ -55,7 +55,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
 
     <div class="blend" aria-hidden="true" />
 
-    <section class="container-page -mt-16" aria-labelledby="cols-h">
+    <section class="container-page -mt-6" aria-labelledby="cols-h">
       <div class="sec-head flex items-end justify-between gap-4">
         <div>
           <h2 id="cols-h">{{ t('home.collections') }}</h2>
@@ -113,7 +113,7 @@ const upcoming = computed(() => (up.value?.results ?? []).filter((i) => i.poster
     linear-gradient(180deg, transparent 70%, rgb(10 24 56 / 12%) 78%, rgb(10 24 56 / 38%) 86%, rgb(10 24 56 / 72%) 94%, #0a1838 100%);
 }
 .blend {
-  height: 300px;
+  height: 170px;
   background: linear-gradient(
     180deg,
     rgb(10 24 56) 0.0%,
