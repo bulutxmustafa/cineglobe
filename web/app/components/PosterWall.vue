@@ -4,7 +4,7 @@
 // from the pool, so the wall keeps changing.
 const props = defineProps<{ posters: string[] }>()
 const N = 9
-const PER_COL = 6
+const PER_COL = 5
 const slots = ref<string[]>([])
 
 function shuffle<T>(list: T[]): T[] {
@@ -26,10 +26,14 @@ let timer: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   timer = setInterval(() => {
-    const pool = props.posters.filter((p) => p && !slots.value.includes(p))
-    if (!pool.length || !slots.value.length) return
+    const all = props.posters.filter(Boolean)
+    if (all.length < 2 || !slots.value.length) return
+    // Prefer a poster that is not on the wall yet; with a small list, any other one.
+    const unused = all.filter((p) => !slots.value.includes(p))
+    const at = Math.floor(Math.random() * slots.value.length)
+    const pool = unused.length ? unused : all.filter((p) => p !== slots.value[at])
     const next = [...slots.value]
-    next[Math.floor(Math.random() * next.length)] = pool[Math.floor(Math.random() * pool.length)]!
+    next[at] = pool[Math.floor(Math.random() * pool.length)]!
     slots.value = next
   }, 2500)
 })
@@ -47,7 +51,7 @@ const columns = computed(() =>
 <template>
   <div class="wall" aria-hidden="true">
     <div v-for="(col, c) in columns" :key="c" class="col" :class="c % 2 ? 'down' : 'up'" :style="{ animationDuration: `${70 + c * 9}s` }">
-      <img v-for="(src, i) in col" :key="`${i}-${src}`" :src="src" alt="" decoding="async" width="200" height="300" class="swap" />
+      <img v-for="(src, i) in col" :key="`${i}-${src}`" :src="src" alt="" decoding="async" width="200" height="300" />
     </div>
     <div class="veil" />
   </div>
@@ -70,14 +74,6 @@ const columns = computed(() =>
   flex-direction: column;
   gap: 10px;
   will-change: transform;
-}
-.swap {
-  animation: swap-in 900ms ease both;
-}
-@keyframes swap-in {
-  from {
-    opacity: 0;
-  }
 }
 .col img {
   width: 100%;
