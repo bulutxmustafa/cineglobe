@@ -20,7 +20,6 @@ BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
         "tv",
         5920,
     ): "/nFljbcf6fVnPH46JXGlxGzVdsyk.jpg",  # The Mentalist: Jane on the right
-    ("movie", 969681): "/dzeCorl61ZdxbzfnciUkrc8JSZj.jpg",  # Spider-Man: Brand New Day
 }
 
 
