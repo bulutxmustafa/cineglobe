@@ -16,7 +16,11 @@ from apps.catalog.models import Genre, Person, Title, TVDetails
 # so this stays manual.
 BACKDROP_OVERRIDES: dict[tuple[str, int], str] = {
     ("movie", 1061474): "/eGX66zonvc4bXg3rM08RUxdYSDx.jpg",  # Superman (2025)
-    ("tv", 5920): "/q3pCsNvJ7CmdJUz2sJEEUY3pOPC.jpg",  # The Mentalist: Jane close-up
+    (
+        "tv",
+        5920,
+    ): "/nFljbcf6fVnPH46JXGlxGzVdsyk.jpg",  # The Mentalist: Jane on the right
+    ("movie", 969681): "/dzeCorl61ZdxbzfnciUkrc8JSZj.jpg",  # Spider-Man: Brand New Day
 }
 
 
