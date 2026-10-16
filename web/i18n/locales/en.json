@@ -138,6 +138,7 @@
     "emptyBody": "Try changing the filters."
   },
   "footer": {
+    "contact": "Contact",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB. Movie and series data and images belong to TMDB."
   },
   "error": {

@@ -138,6 +138,7 @@
     "emptyBody": "Filtreleri değiştirmeyi dene."
   },
   "footer": {
+    "contact": "İletişim",
     "tmdb": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır. Film ve dizi verileri ile görseller TMDB'ye aittir."
   },
   "error": {
