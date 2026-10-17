@@ -15,7 +15,8 @@
     "search": "Ara",
     "language": "Switch to English",
     "favorites": "Favoriler",
-    "lucky": "Şans Seçici"
+    "lucky": "Şans Seçici",
+    "guides": "Listeler"
   },
   "hero": {
     "eyebrow": "Film önerileri ve keşif platformu",
@@ -139,7 +140,8 @@
   },
   "footer": {
     "contact": "İletişim",
-    "tmdb": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır. Film ve dizi verileri ile görseller TMDB'ye aittir."
+    "tmdb": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır. Film ve dizi verileri ile görseller TMDB'ye aittir.",
+    "pages": "Sayfalar"
   },
   "error": {
     "title": "Sayfa bulunamadı",
@@ -185,5 +187,15 @@
     "toRegister": "Hesabın yok mu? Ücretsiz hesap aç",
     "toLogin": "Zaten hesabın var mı? Giriş yap",
     "signedInAs": "Giriş yapılan hesap"
+  },
+  "guides": {
+    "title": "Film ve dizi listeleri",
+    "metaTitle": "Film ve Dizi Listeleri: En İyi Filmler, Diziler ve Öneriler {'|'} FilmPusula",
+    "metaDescription": "En iyi gerilim, komedi, korku, bilim kurgu ve dram filmleri; suç ve komedi dizileri; bu akşam ne izlesem diyenler için güncel listeler.",
+    "lead": "En çok aranan sorulara hazır cevaplar: türe ve ruh haline göre, izleyici puanı en yüksek film ve diziler.",
+    "home": "Ana sayfa",
+    "open": "Listeyi aç",
+    "others": "Diğer listeler",
+    "notFound": "Bu liste bulunamadı."
   }
 }

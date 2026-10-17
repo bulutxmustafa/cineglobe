@@ -284,6 +284,110 @@ class TitleTrailerView(APIView):
         return cdn_cache(Response(body), request, 86400)
 
 
+class GuideListView(APIView):
+    """GET /api/v1/guides/: the search-friendly film and series guides."""
+
+    authentication_classes: list = []
+
+    @extend_schema(
+        summary="List film and series guides",
+        parameters=[OpenApiParameter("lang", str, enum=["tr", "en"], default="tr")],
+        tags=["Catalog"],
+    )
+    def get(self, request):
+        from apps.catalog.guides import GUIDES
+        from apps.catalog.http import cdn_cache
+
+        lang = normalize_language(get_language(request))
+        body = {
+            "guides": [
+                {
+                    "slug": g.slug,
+                    "media_type": g.media_type,
+                    "title": g.title(lang),
+                    "intro": g.intro(lang),
+                }
+                for g in GUIDES
+            ]
+        }
+        return cdn_cache(Response(body), request, 86400)
+
+
+class GuideDetailView(APIView):
+    """GET /api/v1/guides/{slug}/: one guide with its ranked titles."""
+
+    authentication_classes: list = []
+
+    @extend_schema(
+        summary="One film or series guide with its titles",
+        parameters=[OpenApiParameter("lang", str, enum=["tr", "en"], default="tr")],
+        tags=["Catalog"],
+    )
+    def get(self, request, slug: str):
+        from apps.catalog.formatting import format_tmdb_item
+        from apps.catalog.guides import GUIDES_BY_SLUG
+        from apps.catalog.http import cdn_cache
+
+        guide = GUIDES_BY_SLUG.get(slug)
+        if guide is None:
+            return Response(
+                {
+                    "error": {
+                        "code": "not_found",
+                        "message": "Guide not found.",
+                        "status_code": 404,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        lang = normalize_language(get_language(request))
+        try:
+            client = TMDBClient()
+            discover = (
+                client.discover_movies
+                if guide.media_type == "movie"
+                else client.discover_tv
+            )
+            items: list[dict] = []
+            for page in (1, 2):
+                data = discover(
+                    {**guide.discover_params(), "page": page}, language=lang
+                )
+                items += [
+                    format_tmdb_item(i, guide.media_type)
+                    for i in data.get("results", [])
+                ]
+        except (TMDBError, ValueError) as exc:
+            logger.warning("Guide %s unavailable: %s", slug, exc)
+            return Response(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "TMDB is unavailable.",
+                        "status_code": 503,
+                        "details": None,
+                    }
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        results = [
+            i
+            for i in items
+            if i["poster_url"] and not NOT_CINEMATIC.intersection(i["genre_ids"])
+        ][:30]
+        body = {
+            "guide": {
+                "slug": guide.slug,
+                "media_type": guide.media_type,
+                "title": guide.title(lang),
+                "intro": guide.intro(lang),
+            },
+            "results": results,
+        }
+        return cdn_cache(Response(body), request, 21600)
+
+
 # Titles always on the home wall (TV: The Mentalist), plus filters for the rest.
 WALL_PINS: list[tuple[str, int]] = [("tv", 5920)]
 WALL_MIN_VOTES = 150

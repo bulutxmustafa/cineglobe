@@ -30,6 +30,11 @@ useSeoMeta({
   ogTitle: () => name.value,
   ogDescription: () => data.value?.collection.description ?? '',
 })
+useBreadcrumbs(() => [
+  { name: t('guides.home'), path: '/' },
+  { name: t('collections.title'), path: '/collections' },
+  { name: name.value, path: `/collections/${slug}` },
+])
 watch(media, () => (page.value = 1))
 </script>
 

@@ -16,9 +16,10 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
         <LogoMark :size="32" class="shrink-0" />
         <span class="word">Film<span class="gold">Pusula</span></span>
       </NuxtLink>
-      <nav class="hidden items-center gap-7 text-[15px] font-medium md:flex" :aria-label="$t('nav.main')">
+      <nav class="hidden items-center gap-6 text-[15px] font-medium lg:flex" :aria-label="$t('nav.main')">
         <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
         <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
+        <NuxtLink :to="localePath('/liste')" class="nav-link">{{ $t('nav.guides') }}</NuxtLink>
         <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
         <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
       </nav>
@@ -32,9 +33,10 @@ const otherCode = computed<'tr' | 'en'>(() => (locale.value === 'tr' ? 'en' : 't
         </NuxtLink>
       </div>
     </div>
-    <nav class="container-page flex gap-5 overflow-x-auto pb-3 text-sm font-medium md:hidden" :aria-label="$t('nav.main')">
+    <nav class="container-page flex gap-5 overflow-x-auto pb-3 text-sm font-medium lg:hidden" :aria-label="$t('nav.main')">
       <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.discover') }}</NuxtLink>
       <NuxtLink :to="localePath('/collections')" class="nav-link">{{ $t('nav.collections') }}</NuxtLink>
+      <NuxtLink :to="localePath('/liste')" class="nav-link">{{ $t('nav.guides') }}</NuxtLink>
       <NuxtLink :to="localePath('/upcoming')" class="nav-link">{{ $t('nav.upcoming') }}</NuxtLink>
       <NuxtLink :to="localePath('/favorites')" class="nav-link">{{ $t('nav.favorites') }}</NuxtLink>
     </nav>

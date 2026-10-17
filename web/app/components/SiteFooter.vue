@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The contact address is assembled in the browser only, so it never appears as plain
 // text in the server HTML that spam bots scrape.
+const localePath = useLocalePath()
 const contact = ref('')
 onMounted(() => {
   contact.value = ['iletisim', 'filmpusula.com'].join('@')
@@ -19,12 +20,30 @@ onMounted(() => {
           <a v-if="contact" :href="`mailto:${contact}`" class="mail">{{ contact }}</a>
         </p>
       </div>
-      <p class="text-xs leading-relaxed" style="color: var(--ink-faint)">{{ $t('footer.tmdb') }}</p>
+      <div>
+        <p class="font-semibold" style="color: #fbf6ec">{{ $t('footer.pages') }}</p>
+        <ul class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+          <li><NuxtLink :to="localePath('/liste')" class="flink">{{ $t('nav.guides') }}</NuxtLink></li>
+          <li><NuxtLink :to="localePath('/collections')" class="flink">{{ $t('nav.collections') }}</NuxtLink></li>
+          <li><NuxtLink :to="localePath('/upcoming')" class="flink">{{ $t('nav.upcoming') }}</NuxtLink></li>
+          <li><NuxtLink :to="localePath('/lucky')" class="flink">{{ $t('nav.lucky') }}</NuxtLink></li>
+          <li><NuxtLink :to="localePath('/favorites')" class="flink">{{ $t('nav.favorites') }}</NuxtLink></li>
+          <li><NuxtLink :to="localePath('/search')" class="flink">{{ $t('nav.search') }}</NuxtLink></li>
+        </ul>
+        <p class="mt-6 text-xs leading-relaxed" style="color: var(--ink-faint)">{{ $t('footer.tmdb') }}</p>
+      </div>
     </div>
   </footer>
 </template>
 
 <style scoped>
+.flink {
+  color: var(--text-2);
+  transition: color var(--dur);
+}
+.flink:hover {
+  color: var(--gold);
+}
 .mail {
   color: var(--gold);
   font-weight: 600;

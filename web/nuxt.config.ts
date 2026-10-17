@@ -49,6 +49,8 @@ export default defineNuxtConfig({
     '/en': swr(3600),
     '/*/collections': swr(3600),
     '/*/collections/**': swr(3600),
+    '/*/liste': swr(3600),
+    '/*/liste/**': swr(21600),
     '/*/upcoming': swr(1800),
     '/*/title/**': swr(86400),
     '/*/person/**': swr(86400),

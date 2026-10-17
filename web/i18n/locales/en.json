@@ -15,7 +15,8 @@
     "search": "Search",
     "language": "Türkçe'ye geç",
     "favorites": "Favourites",
-    "lucky": "Lucky Pick"
+    "lucky": "Lucky Pick",
+    "guides": "Lists"
   },
   "hero": {
     "eyebrow": "Movie recommendations and discovery platform",
@@ -139,7 +140,8 @@
   },
   "footer": {
     "contact": "Contact",
-    "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB. Movie and series data and images belong to TMDB."
+    "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB. Movie and series data and images belong to TMDB.",
+    "pages": "Pages"
   },
   "error": {
     "title": "Page not found",
@@ -185,5 +187,15 @@
     "toRegister": "No account yet? Create a free one",
     "toLogin": "Already have an account? Sign in",
     "signedInAs": "Signed in as"
+  },
+  "guides": {
+    "title": "Film and series lists",
+    "metaTitle": "Film and Series Lists: Best Films, Series and Picks {'|'} FilmPusula",
+    "metaDescription": "The best thriller, comedy, horror, science fiction and drama films; crime and comedy series; up-to-date picks for when you don't know what to watch tonight.",
+    "lead": "Ready answers to the most searched questions: the highest-rated films and series by genre and mood.",
+    "home": "Home",
+    "open": "Open list",
+    "others": "More lists",
+    "notFound": "This list was not found."
   }
 }

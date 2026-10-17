@@ -10,7 +10,9 @@ export async function buildSitemap(event: H3Event, langs: readonly string[] = ['
   const get = <T>(path: string, query: Record<string, unknown> = {}) =>
     $fetch<T>(`${api}${path}`, { query: { lang: 'tr', ...query }, timeout: 8000 }).catch(() => null)
 
-  const paths = new Set<string>(['', '/collections', '/upcoming', '/lucky'])
+  const paths = new Set<string>(['', '/collections', '/upcoming', '/lucky', '/liste'])
+  const guides = await get<{ guides: { slug: string }[] }>('/guides/')
+  for (const g of guides?.guides ?? []) paths.add(`/liste/${g.slug}`)
   const cols = await get<{ collections: { slug: string }[] }>('/collections/')
   const slugs = (cols?.collections ?? []).map((c) => c.slug)
   slugs.forEach((s) => paths.add(`/collections/${s}`))

@@ -46,6 +46,10 @@ useSeoMeta({
   ogImage: () => data.value?.backdrop_url || data.value?.poster_url || undefined,
   ogType: () => (type === 'tv' ? 'video.tv_show' : 'video.movie'),
 })
+useBreadcrumbs(() => [
+  { name: t('guides.home'), path: '/' },
+  { name: name.value, path: `/title/${type}/${id}` },
+])
 useHead({
   script: [
     {
