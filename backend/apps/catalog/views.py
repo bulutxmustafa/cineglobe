@@ -299,6 +299,10 @@ class GuideListView(APIView):
         from apps.catalog.http import cdn_cache
 
         lang = normalize_language(get_language(request))
+        try:
+            client = TMDBClient()
+        except ValueError:
+            client = None
         body = {
             "guides": [
                 {
@@ -306,11 +310,33 @@ class GuideListView(APIView):
                     "media_type": g.media_type,
                     "title": g.title(lang),
                     "intro": g.intro(lang),
+                    "posters": _guide_posters(client, g, lang),
                 }
                 for g in GUIDES
             ]
         }
         return cdn_cache(Response(body), request, 86400)
+
+
+def _guide_posters(client, guide, lang: str, count: int = 3) -> list[str]:
+    """A few poster images for a guide card (first discover page, cached upstream)."""
+    from apps.catalog.formatting import format_tmdb_item
+
+    if client is None:
+        return []
+    discover = (
+        client.discover_movies if guide.media_type == "movie" else client.discover_tv
+    )
+    try:
+        data = discover({**guide.discover_params(), "page": 1}, language=lang)
+    except (TMDBError, ValueError):
+        return []
+    items = [format_tmdb_item(i, guide.media_type) for i in data.get("results", [])]
+    return [
+        i["poster_url"]
+        for i in items
+        if i["poster_url"] and not NOT_CINEMATIC.intersection(i["genre_ids"])
+    ][:count]
 
 
 class GuideDetailView(APIView):

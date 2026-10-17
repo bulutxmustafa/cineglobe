@@ -39,10 +39,15 @@ def test_recent_guide_limits_release_year():
     assert params["primary_release_date.gte"] == "2023-01-01"
 
 
-def test_guide_list(api_client):
-    data = api_client.get("/api/v1/guides/", {"lang": "en"}).json()
+def test_guide_list_with_card_posters(api_client):
+    client = MagicMock()
+    client.discover_movies.return_value = {"results": [item(1), item(2, poster=None)]}
+    client.discover_tv.return_value = {"results": [item(5)]}
+    with patch("apps.catalog.views.TMDBClient", return_value=client):
+        data = api_client.get("/api/v1/guides/", {"lang": "en"}).json()
     assert [g["slug"] for g in data["guides"]] == [g.slug for g in GUIDES]
     assert data["guides"][1]["title"] == "Best thriller films"
+    assert len(data["guides"][1]["posters"]) == 1
 
 
 def test_guide_detail_filters_posterless_and_talk_shows(api_client):
